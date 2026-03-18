@@ -10,10 +10,10 @@ jobs:
   evaluate:
     runs-on: ubuntu-latest
     
-    # This tells GitHub that all 'run' commands happen in your subfolder
+    # Use dot (.) if your files (rag.py, requirements.txt) are in the root
     defaults:
       run:
-        working-directory: ./Agents/RAGstage2
+        working-directory: .
 
     steps:
     - name: Checkout code
