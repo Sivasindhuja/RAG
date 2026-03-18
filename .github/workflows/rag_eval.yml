@@ -1,0 +1,36 @@
+name: RAG Evaluation CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    
+    # This tells GitHub that all 'run' commands happen in your subfolder
+    defaults:
+      run:
+        working-directory: ./Agents/RAGstage2
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run RAG Evaluation
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        CO_API_KEY: ${{ secrets.CO_API_KEY }}
+      run: python generateanswerplusevaluation.py

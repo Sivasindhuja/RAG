@@ -1,0 +1,4 @@
+.env
+evaluationRAG.py
+generate_answers.py
+temp_results.json
