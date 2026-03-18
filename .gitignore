@@ -2,3 +2,7 @@
 evaluationRAG.py
 generate_answers.py
 temp_results.json
+__pycache__
+chroma_db
+python
+
