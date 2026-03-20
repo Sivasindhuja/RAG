@@ -1,17 +1,22 @@
 import os
-import google.generativeai as genai
-import cohere
-from config.prompts import PROMPTS
+import logging
 from dotenv import load_dotenv
 from pypdf import PdfReader
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain.retrievers import ParentDocumentRetriever
+from langchain.storage import LocalFileStore
+from langchain.storage._lc_store import create_kv_docstore
 from rank_bm25 import BM25Okapi
 
-import logging
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+import google.generativeai as genai
+import cohere
+from config.prompts import PROMPTS
 
 
 load_dotenv()
@@ -22,6 +27,7 @@ genai.configure(api_key=api_key)
 co = cohere.Client(cohere_key)
 
 DB_DIR = "./chroma_db"
+STORE_DIR = "./parent_store"
 PDF_PATH = "satcom-ngp.pdf"
 
 
@@ -91,6 +97,44 @@ chunk_texts = [doc.page_content for doc in chunks]
 tokenized_chunks = [text.split() for text in chunk_texts]
 bm25 = BM25Okapi(tokenized_chunks)
 
+def initialize_pdr_system():
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+    child_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=20)
+
+    # Note: Use a separate collection or directory for PDR to avoid metadata conflicts
+    vectorstore = Chroma(
+        collection_name="satcom_pdr",
+        embedding_function=embeddings,
+        persist_directory="./pdr_db" 
+    )
+
+    fs = LocalFileStore("./pdr_parent_store")
+    store = create_kv_docstore(fs)
+
+    # IMPROVEMENT: Enable MMR search type here
+    # fetch_k: gets 20 candidates, k: picks 5 most diverse from them
+    retriever = ParentDocumentRetriever(
+        vectorstore=vectorstore,
+        docstore=store,
+        child_splitter=child_splitter,
+        parent_splitter=parent_splitter,
+        search_type="mmr", 
+        search_kwargs={"k": 5, "fetch_k": 20, "lambda_mult": 0.5} 
+    )
+
+    if not os.path.exists("./pdr_parent_store") or len(vectorstore.get()['ids']) == 0:
+        logger.info("🚀 Indexing PDR System...")
+        docs = load_pdf(PDF_PATH)
+        retriever.add_documents(docs)
+    
+    return retriever
+
+
+
+# Global Instance
+pdr_retriever = initialize_pdr_system()
+
 # --- RAG PIPELINE ---
 
 def hybrid_retrieve(query, k=10):
@@ -127,28 +171,35 @@ def expand_query(query):
         logger.error(f"Failed to expand query: {e}")
         raise # Raise so tenacity can catch and retry
 
+
 @retry_logic
 def ask_question(question):
     try:
+        # Step A: Query Expansion
         expanded_query = expand_query(question)
-        
-        retrieved_docs = hybrid_retrieve(expanded_query)
-        docs = rerank(question, retrieved_docs)
+        logger.info(f" Searching for: {expanded_query}")
+
+        # Step B: PDR Retrieval (Implicitly uses MMR)
+        # Finds tiny child matches -> returns large parent articles
+        parent_docs = pdr_retriever.invoke(expanded_query)
+
+        # Step C: Reranking (Ensures the top 3 of the 5 parents are the best)
+        docs = rerank(question, parent_docs, top_n=3)
 
         context = ""
         for i, doc in enumerate(docs):
             page = doc.metadata.get("page", "Unknown")
-            context += f"[Source {i+1} - Page {page}]\n{doc.page_content}\n\n"
+            # These are now full articles, so context is much richer!
+            context += f"[Full Policy Article - Page {page}]\n{doc.page_content}\n\n"
 
         prompt = PROMPTS["rag_answer"].format(context=context, question=question)
         
-        # Using the powerful model for the final answer
         model = genai.GenerativeModel("models/gemma-3-27b-it")
         response = model.generate_content(prompt)
         
         return response.text, docs
     except Exception as e:
-        logger.error(f" Error in ask_question pipeline: {e}")
+        logger.error(f"Error in ask_question: {e}")
         raise
 
 # --- ENTRY POINT ---
