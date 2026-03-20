@@ -10,7 +10,7 @@ jobs:
   evaluate:
     runs-on: ubuntu-latest
     
-    # Use dot (.) if your files (rag.py, requirements.txt) are in the root
+   
     defaults:
       run:
         working-directory: .
