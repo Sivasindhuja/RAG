@@ -49,7 +49,7 @@ def load_pdf(path):
 
     return documents
 
-docs= load_pdf("satcom-ngp.pdf")
+docs= load_pdf("src/satcom-ngp.pdf")
 # print(docs)
 
 print("Document loaded")
