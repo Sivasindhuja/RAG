@@ -3,7 +3,7 @@ import os
 import time
 import math
 from datasets import Dataset
-from rag import ask_question 
+from src.rag import ask_question 
 from ragas.run_config import RunConfig
 from ragas.metrics import (
     Faithfulness,
