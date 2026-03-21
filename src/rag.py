@@ -6,111 +6,129 @@ from pypdf import PdfReader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-
 from langchain_chroma import Chroma
-
 from langchain_core.documents import Document
+from langchain.retrievers import ParentDocumentRetriever
+from langchain.storage import InMemoryStore
 
-# from google import genai
 import google.generativeai as genai
-
 from rank_bm25 import BM25Okapi
-
 import cohere
 
-# Load gemini API Key
+# Load API keys
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
-#load cohere api key
 cohere_key = os.getenv("CO_API_KEY")
 
-#create a google gen ai client
-# client = genai.Client(api_key=api_key)
 genai.configure(api_key=api_key)
-#create cohere client
 co = cohere.Client(cohere_key)
 
-# Step 1: Load PDF using pypdf
-def load_pdf(path):
-    reader = PdfReader(path)
-    documents = []
 
-    for page_num, page in enumerate(reader.pages):
-        text = page.extract_text()
-        documents.append(
+# Step 1: Load PDF and group pages into larger raw documents
+def load_pdf_grouped(path, pages_per_parent=3):
+    reader = PdfReader(path)
+    grouped_docs = []
+    batch_text = []
+    batch_pages = []
+
+    for page_num, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+        batch_text.append(text)
+        batch_pages.append(page_num)
+
+        if len(batch_pages) == pages_per_parent:
+            grouped_docs.append(
+                Document(
+                    page_content="\n\n".join(batch_text),
+                    metadata={
+                        "source": path,
+                        "page_start": batch_pages[0],
+                        "page_end": batch_pages[-1],
+                    },
+                )
+            )
+            batch_text = []
+            batch_pages = []
+
+    if batch_pages:
+        grouped_docs.append(
             Document(
-                page_content=text,
+                page_content="\n\n".join(batch_text),
                 metadata={
                     "source": path,
-                    "page": page_num + 1
-                }
+                    "page_start": batch_pages[0],
+                    "page_end": batch_pages[-1],
+                },
             )
         )
 
-    return documents
+    return grouped_docs
 
-docs= load_pdf("src/satcom-ngp.pdf")
-# print(docs)
 
+raw_docs = load_pdf_grouped("src/satcom-ngp.pdf", pages_per_parent=3)
 print("Document loaded")
 
 
-# Step 2: Chunking
-#using Recursive splitting
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=800,
-    chunk_overlap=150
+# Step 2: Splitters
+# parent_splitter -> larger chunks returned as context
+# child_splitter  -> smaller chunks embedded in vector DB
+parent_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1800,
+    chunk_overlap=200
 )
 
-chunks = splitter.split_documents(docs)
-
-print("Total chunks:", len(chunks))
-# print(chunks)
+child_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=400,
+    chunk_overlap=80
+)
 
 
 # Step 3: Embeddings
-#other options,openAI,openrouter etc
-
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
-# Step 4: Create ChromaDB3
-vectorstore = Chroma.from_documents(
-    chunks,
-    embedding=embeddings,
+
+# Step 4: Chroma vector store for child chunks
+vectorstore = Chroma(
+    collection_name="satcom_parent_retrieval",
+    embedding_function=embeddings,
     persist_directory="./chroma_db"
 )
 
 
+# Step 5: Parent document store + retriever
+store = InMemoryStore()
 
-print("Vector DB created")
-
-
-
-#step -5
-#1.vector retriver
-#retrives top 10 relevant chunks
-vector_retriever = vectorstore.as_retriever(
-search_kwargs={"k": 10}
+parent_retriever = ParentDocumentRetriever(
+    vectorstore=vectorstore,
+    docstore=store,
+    child_splitter=child_splitter,
+    parent_splitter=parent_splitter,
+    search_kwargs={"k": 10},
 )
 
-#2.BM25 setup
-chunk_texts = [doc.page_content for doc in chunks]
+parent_retriever.add_documents(raw_docs)
 
-tokenized_chunks = [text.split() for text in chunk_texts]
+print("ParentDocumentRetriever created")
 
-bm25 = BM25Okapi(tokenized_chunks)
 
-#hybrid retrival representation
+# Step 6: BM25 setup on parent-level chunks
+parent_docs_for_bm25 = parent_splitter.split_documents(raw_docs)
+parent_texts = [doc.page_content for doc in parent_docs_for_bm25]
+tokenized_parent_docs = [text.split() for text in parent_texts]
+bm25 = BM25Okapi(tokenized_parent_docs)
+
+print("BM25 created on parent documents")
+
+
+# Step 7: Hybrid retrieval
 def hybrid_retrieve(query, k=10):
+    # Vector retrieval returns parent docs
+    vector_docs = parent_retriever.invoke(query)
 
-# Vector retrieval
-    vector_docs = vector_retriever.invoke(query)
-
-    # BM25 retrieval
+    # BM25 retrieval over parent docs
     tokenized_query = query.split()
-
     bm25_scores = bm25.get_scores(tokenized_query)
 
     top_bm25_indices = sorted(
@@ -119,21 +137,17 @@ def hybrid_retrieve(query, k=10):
         reverse=True
     )[:k]
 
-    bm25_docs = [chunks[i] for i in top_bm25_indices]
+    bm25_docs = [parent_docs_for_bm25[i] for i in top_bm25_indices]
 
-    # Combine
+    # Combine and deduplicate
     combined = vector_docs + bm25_docs
-
-    # Remove duplicates
     unique_docs = list({doc.page_content: doc for doc in combined}.values())
 
-    return unique_docs
+    return unique_docs[:k]
 
-#step 6
 
-#cohere reranking
+# Step 8: Cohere reranking
 def rerank(query, docs, top_n=3):
-
     texts = [doc.page_content for doc in docs]
 
     results = co.rerank(
@@ -144,84 +158,73 @@ def rerank(query, docs, top_n=3):
     )
 
     reranked_docs = [docs[result.index] for result in results.results]
-
     return reranked_docs
 
-#step 7 query expansion
 
-
+# Step 9: Query expansion
 def expand_query(query):
+    prompt = PROMPTS["query_expansion"].format(question=query)
 
-    prompt =  PROMPTS["query_expansion"].format(
-    question=query
-)
-
-    model = genai.GenerativeModel("models/gemma-3-27b-it") 
+    model = genai.GenerativeModel("models/gemma-3-27b-it")
     response = model.generate_content(prompt)
 
     return response.text.strip()
 
-# Step 8: Ask Question
 
+def format_page_label(doc):
+    if "page" in doc.metadata:
+        return str(doc.metadata["page"])
+
+    if "page_start" in doc.metadata and "page_end" in doc.metadata:
+        start = doc.metadata["page_start"]
+        end = doc.metadata["page_end"]
+        return f"{start}-{end}"
+
+    return "Unknown"
+
+
+# Step 10: Ask question
 def ask_question(question):
-
-# Hybrid retrieval
     expanded_query = expand_query(question)
-
     print("\nExpanded Query:", expanded_query)
 
-    retrieved_docs = hybrid_retrieve(expanded_query)
-    # DEBUG: see retrieved docs before rerank
+    retrieved_docs = hybrid_retrieve(expanded_query, k=10)
+
     print("\n--- Retrieved Before Rerank ---")
     for d in retrieved_docs[:5]:
-        print("Page:", d.metadata["page"])
+        print("Pages:", format_page_label(d))
 
-    # Reranking
-    docs = rerank(question, retrieved_docs)
-     # DEBUG: see docs after rerank
+    docs = rerank(question, retrieved_docs, top_n=3)
+
     print("\n--- After Rerank ---")
     for d in docs:
-        print("Page:", d.metadata["page"])
+        print("Pages:", format_page_label(d))
 
-    # Build context
     context = ""
-
     for i, doc in enumerate(docs):
-
-        page = doc.metadata.get("page", "Unknown")
-
-        context += f"[Source {i+1} - Page {page}]\n{doc.page_content}\n\n"
+        page_label = format_page_label(doc)
+        context += f"[Source {i+1} - Pages {page_label}]\n{doc.page_content}\n\n"
 
     prompt = PROMPTS["rag_answer"].format(
-    context=context,
-    question=question
-)
-    
-
-    # response = client.models.generate_content(
-    #     model="gemini-2.0-flash",
-    #     contents=prompt
-    # )
-
-    # return response.text,docs
+        context=context,
+        question=question
+    )
 
     model = genai.GenerativeModel("models/gemma-3-27b-it")
-
     response = model.generate_content(prompt)
 
-    return response.text,docs
+    return response.text, docs
 
 
-#chat loop
+# Chat loop
 if __name__ == "__main__":
     while True:
-
         query = input("\nAsk a question (type exit to quit): ")
 
         if query.lower() == "exit":
             break
 
-        answer,docs = ask_question(query)
+        answer, docs = ask_question(query)
 
         print("\nAnswer:\n")
         print(answer)
