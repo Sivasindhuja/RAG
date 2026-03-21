@@ -1,4 +1,4 @@
-from config.prompts import PROMPTS
+from src.config.prompts import PROMPTS
 import os
 from dotenv import load_dotenv
 
