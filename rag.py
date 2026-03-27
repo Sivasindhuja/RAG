@@ -1,4 +1,3 @@
-from config.prompts import PROMPTS
 import os
 from config.prompts import PROMPTS
 
