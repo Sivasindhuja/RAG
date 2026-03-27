@@ -50,7 +50,11 @@ def load_pdf(path):
 
     return documents
 
-docs= load_pdf("satcom-ngp.pdf")
+# Create an absolute path dynamically based on where rag.py lives
+current_dir = os.path.dirname(os.path.abspath(__file__))
+pdf_path = os.path.join(current_dir, "satcom-ngp.pdf")
+
+docs = load_pdf(pdf_path)
 # print(docs)
 
 print("Document loaded")
