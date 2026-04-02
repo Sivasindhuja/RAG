@@ -2,7 +2,6 @@
 
 [![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/Siva-Sindhuja2646/RAG-chatbot)
 
-A production-grade Retrieval-Augmented Generation (RAG) system...
 
 A production-grade Retrieval-Augmented Generation (RAG) system designed to query the Indian Satellite Communication Regulatory Policy. This project implements a modular architecture to solve common retrieval challenges in technical and regulatory documentation, validated by automated evaluation metrics.
 
