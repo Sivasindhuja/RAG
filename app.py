@@ -1,5 +1,5 @@
 import streamlit as st
-from rag import ask_question
+from src.rag import ask_question
 import time
 
 # --- PAGE CONFIG ---
