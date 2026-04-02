@@ -19,5 +19,4 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          
-          git push --force https://Siva-Sindhuja2646:$HF_TOKEN@huggingface.co/spaces/Siva-Sindhuja2646/RAG-chatbot main
+          git push --force https://Siva-Sindhuja2646:$HF_TOKEN@huggingface.co/spaces/Siva-Sindhuja2646/RAG-chatbot HEAD:main
