@@ -74,5 +74,3 @@ This project is configured for Continuous Deployment. Pushing to the `main` bran
 - **Self-Correction:** Implementing a rerank-score threshold to proactively inform users when the knowledge base does not contain sufficient information.
 
 ---
-
-### Instructions for your Architecture Diagram:
