@@ -58,7 +58,7 @@ Evaluated using a synthesized "Golden Dataset" of 50 ground-truth question-answe
 
 ### Local Setup
 1. Clone the repository:
-   `git clone https://github.com/Siva-Sindhuja2646/RAGstage2.git`
+   `git clone https://github.com/Sivasindhuja/RAG.git`
 2. Install dependencies:
    `pip install -r requirements.txt`
 3. Configure environment variables in a `.env` file:
