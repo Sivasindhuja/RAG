@@ -10,3 +10,4 @@ rank_bm25
 cohere
 python-dotenv
 sentence-transformers
+langfuse
