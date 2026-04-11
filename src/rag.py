@@ -150,11 +150,7 @@ def ask_question(question):
             seen_pages.add(page)
         
         context += f"{doc.page_content}\n\n"
-    # for i, doc in enumerate(docs):
-    #     page = doc.metadata.get("page", "Unknown")
-    #     unique_pages.add(page)
-    #     context += f"[Source {i+1} - Page {page}]\n{doc.page_content}\n\n"
-    # print(f"DEBUG: Retrieval spanned pages: {list(unique_pages)}")
+   
     # 6. Generate final answer
     prompt = PROMPTS["rag_answer"].format(context=context, question=question)
     model = genai.GenerativeModel("models/gemma-3-27b-it")
