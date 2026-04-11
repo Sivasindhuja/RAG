@@ -72,15 +72,17 @@ result = evaluate(
 # 1. Extract lists
 f_scores = result["faithfulness"]
 a_scores = result["answer_correctness"]
+r_scores = result["context_recall"]
 
 # 2. Calculate averages
 avg_faithfulness = sum(f_scores) / len(f_scores) if f_scores else 0
 avg_correctness = sum(a_scores) / len(a_scores) if a_scores else 0
+avg_recall = sum(r_scores) / len(r_scores) if r_scores else 0
 
 print(f"\n--- CI/CD Report ---")
 print(f"Average Faithfulness: {avg_faithfulness:.4f}")
 print(f"Average Answer Correctness: {avg_correctness:.4f}") # Good to see in logs!
-
+print(f"Average Context Recall: {avg_recall:.4f}") # Good to see in logs!
 # 3. The Gatekeeper (Threshold check)
 threshold_f = 0.85
 
