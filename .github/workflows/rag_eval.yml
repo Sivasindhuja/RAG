@@ -10,11 +10,6 @@ jobs:
   evaluate:
     runs-on: ubuntu-latest
     
-   
-    defaults:
-      run:
-        working-directory: .
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -33,4 +28,7 @@ jobs:
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         CO_API_KEY: ${{ secrets.CO_API_KEY }}
-      run: python generateanswerplusevaluation.py
+        # This is the key: it tells GitHub Actions where to find your 'src' folder
+        PYTHONPATH: ${{ github.workspace }}
+      # Updated to run the new script name as a module
+      run: python -m tests.eval_pipeline
