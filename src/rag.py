@@ -7,7 +7,7 @@ import cohere
 import google.generativeai as genai
 
 from dotenv import load_dotenv
-from langfuse.decorators import observe, langfuse_context
+# from langfuse.decorators import observe, langfuse_context
 from langchain_core.documents import Document
 from langgraph.store.memory import InMemoryStore
 from langchain_chroma import Chroma
@@ -20,9 +20,6 @@ try:
 except ImportError:
     from config.prompts import PROMPTS
 
-for model in client.models.list():
-    print(f"Name: {model.name}")
-    print(f"Supported Methods: {model.supported_generation_methods}\n")
 
 
 # ---------------- PATHS ---------------- #
@@ -286,7 +283,7 @@ bm25 = BM25Okapi(
 
 # ---------------- RETRIEVAL ---------------- #
 
-@observe()
+# @observe()
 def hybrid_retrieve(query, k=5):
 
     vector_parents = hier_retriever.get_relevant_documents(query)
@@ -308,7 +305,7 @@ def hybrid_retrieve(query, k=5):
     return list({doc.page_content: doc for doc in combined}.values())
 
 
-@observe()
+# @observe()
 def rerank(query, docs, top_n=3):
 
     texts = [doc.page_content for doc in docs]
@@ -329,7 +326,7 @@ def rerank(query, docs, top_n=3):
 
 # ---------------- QUERY EXPANSION ---------------- #
 
-@observe()
+# @observe()
 def expand_query(query):
 
     prompt = PROMPTS["query_expansion"].format(question=query)
@@ -342,13 +339,13 @@ def expand_query(query):
 
 # ---------------- QA ---------------- #
 
-@observe()
+# @observe()
 def ask_question(question):
 
-    langfuse_context.update_current_trace(
-        name="Research_Paper_RAG",
-        user_id="siva_dev"
-    )
+    # langfuse_context.update_current_trace(
+    #     name="Research_Paper_RAG",
+    #     user_id="siva_dev"
+    # )
 
     expanded_query = expand_query(question)
 
