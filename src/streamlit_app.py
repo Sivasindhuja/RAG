@@ -1,69 +1,126 @@
 import streamlit as st
 from rag import ask_question
-import time
 
-# --- PAGE CONFIG ---
-st.set_page_config(page_title="SatCom Intelligence Agent", page_icon="🛰️")
 
-# --- SIDEBAR: Project Info & Metrics ---
+# ---------------- PAGE CONFIG ---------------- #
+
+st.set_page_config(
+    page_title="AI Research Intelligence Agent",
+    page_icon="🤖"
+)
+
+
+# ---------------- SIDEBAR ---------------- #
+
 with st.sidebar:
-    st.title("🛰️ Project Info")
+
+    st.title("🤖 AI Research RAG")
+
     st.markdown("""
-    **SatCom-NGP RAG Agent**
-    Validated with Gemma-3 and Ragas.
+    Research-paper RAG system for:
+
+    - Transformers
+    - LoRA
+    - RAG
+    - RLHF
+    - DistilBERT
+    - Switch Transformers
+    - LLM Agents
     """)
-    
+
     st.divider()
-    st.subheader("📊 Performance Metrics")
-    st.metric(label="Faithfulness", value="1.00", help="Perfect grounding in PDF")
-    st.metric(label="Context Recall", value="0.80", delta="-0.40", delta_color="inverse")
-    
+
+    st.subheader("📊 System")
+
+    st.success("Hybrid Retrieval")
+
+    st.success("Cohere Reranking")
+
+    st.success("Hierarchical Retrieval")
+
+    st.success("Grounded Generation")
+
     if st.button("Clear Chat"):
+
         st.session_state.messages = []
+
         st.rerun()
 
-# --- MAIN CHAT UI ---
-st.title("SatCom Intelligence Explorer")
-st.info("Ask questions about the India Satellite Communication Regulatory Policy.")
 
-# Initialize chat history
+# ---------------- MAIN UI ---------------- #
+
+st.title("AI Research Intelligence Agent")
+
+st.info(
+    "Ask questions about transformers, RAG, LoRA, RLHF, LLM agents, and modern AI architectures."
+)
+
+
+# ---------------- CHAT HISTORY ---------------- #
+
 if "messages" not in st.session_state:
+
     st.session_state.messages = []
 
-# Display chat messages from history on app rerun
+
 for message in st.session_state.messages:
+
     with st.chat_message(message["role"]):
+
         st.markdown(message["content"])
 
-# React to user input
-if prompt := st.chat_input("What is the licensing authority for GMPCS?"):
-    # Display user message in chat message container
+
+# ---------------- USER INPUT ---------------- #
+
+if prompt := st.chat_input("How does LoRA reduce trainable parameters?"):
+
     st.chat_message("user").markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": prompt
+        }
+    )
 
     with st.chat_message("assistant"):
+
         message_placeholder = st.empty()
-        message_placeholder.markdown("🔍 *Searching policy documents...*")
-        
+
+        message_placeholder.markdown(
+            "🔍 Searching research papers..."
+        )
+
         try:
-            # Call your existing RAG logic
+
             answer, docs = ask_question(prompt)
-            
-            # Display the answer
+
             message_placeholder.markdown(answer)
-            
-            # Show Sources in an Expander
-            with st.expander("📚 View Cited Sources"):
+
+            with st.expander("📚 View Retrieved Sources"):
+
                 for i, doc in enumerate(docs):
+
+                    paper = doc.metadata.get("paper", "Unknown")
+
                     page = doc.metadata.get("page", "Unknown")
-                    st.write(f"**Source {i+1} (Page {page}):**")
-                    st.caption(doc.page_content)
-            
-            # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-            
+
+                    st.write(f"### {paper} — Page {page}")
+
+                    st.caption(doc.page_content[:1500])
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": answer
+                }
+            )
+
         except Exception as e:
-            st.error(f"An error occurred: {e}")
-            message_placeholder.markdown("Sorry, I encountered an error processing your request.")
-            
+
+            st.error(f"Error: {e}")
+
+            message_placeholder.markdown(
+                "Sorry, something went wrong."
+            )
+
