@@ -1,0 +1,43 @@
+# Feature flags for ablation benchmarks (toggle in experiments/benchmark.py)
+features:
+  structure_chunking: true
+  query_expansion: true
+  hybrid_retrieval: true
+  reranking: true
+  working_memory: true
+  model_routing: false  # false = single model for all LLM calls
+
+chunking:
+  child_chunk_size: 280
+  child_overlap: 50
+  parent_min_chars: 350
+  parent_max_chars: 2000
+
+retrieval:
+  vector_k_multiplier: 3
+  parent_k: 6
+  hybrid_k: 5
+  rerank_top_n: 3
+  rerank_min_score: 0.20
+
+memory:
+  max_turns: 6
+
+models:
+  # Single-model baseline (features.model_routing: false)
+  single: gemini-2.0-flash
+  # Task-specific when model_routing is true (cheaper expansion, same answer model)
+  query_expansion: gemini-2.0-flash
+  generation: gemini-2.0-flash
+  memory_summary: gemini-2.0-flash
+  # Optional higher-quality generation when routing enabled:
+  # generation: gemma-3-27b-it
+
+# Approximate USD per 1M tokens (input, output) for cost estimates
+pricing_usd_per_1m:
+  gemini-2.0-flash:
+    input: 0.10
+    output: 0.40
+  gemma-3-27b-it:
+    input: 0.0
+    output: 0.0
