@@ -1,0 +1,228 @@
+{
+  "experiment_id": "EXP-001",
+  "config": {
+    "experiment_id": "EXP-001",
+    "chunking": {
+      "strategy": "naive_fixed_character_sliding_window",
+      "chunk_size": 1000,
+      "overlap": 200,
+      "step": 800
+    },
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "vector_db": "chroma",
+    "collection_name": "satcom_ngp_exp001_fixed_char",
+    "persist_directory": "C:\\Users\\sindh\\RAG\\chroma_db_exp001",
+    "retrieval": {
+      "method": "dense_vector_similarity",
+      "top_k": 5
+    },
+    "metrics": [
+      "Recall@5",
+      "Precision@5",
+      "MRR@5"
+    ],
+    "pdf_path": "C:\\Users\\sindh\\RAG\\data\\satcom-ngp.pdf",
+    "questions_csv": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+    "ground_truth": {
+      "path": "C:\\Users\\sindh\\RAG\\experiments\\exp001_ground_truth.json",
+      "manifest_version": "2",
+      "status": "verified"
+    }
+  },
+  "evaluation_dataset": {
+    "path": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+    "question_count": 15,
+    "question_ids": [
+      "EXP001-Q01",
+      "EXP001-Q02",
+      "EXP001-Q03",
+      "EXP001-Q04",
+      "EXP001-Q05",
+      "EXP001-Q06",
+      "EXP001-Q07",
+      "EXP001-Q08",
+      "EXP001-Q09",
+      "EXP001-Q10",
+      "EXP001-Q11",
+      "EXP001-Q12",
+      "EXP001-Q13",
+      "EXP001-Q14",
+      "EXP001-Q15"
+    ],
+    "status": "approved_15_question_set_v2"
+  },
+  "questions": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "expected_answer": "Proposals using Indian satellites are given preferential treatment over foreign satellites.",
+      "relevant_clause_ids": [
+        "ARTICLE-1"
+      ],
+      "relevant_source_pages": [
+        1
+      ]
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "expected_answer": "The INSAT capacity should be made available to the commercial sector on the basis of sound business lines, i.e. on a for-profit basis.",
+      "relevant_clause_ids": [
+        "2.3.1"
+      ],
+      "relevant_source_pages": [
+        2
+      ]
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "expected_answer": "The INSAT Coordination Committee (ICC).",
+      "relevant_clause_ids": [
+        "2.3.2"
+      ],
+      "relevant_source_pages": [
+        2
+      ]
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "expected_answer": "Telecommunications, broadcasting, education and developmental communications, and security communications.",
+      "relevant_clause_ids": [
+        "2.4.1"
+      ],
+      "relevant_source_pages": [
+        3
+      ]
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "expected_answer": "The Party which has taken the capacity on lease.",
+      "relevant_clause_ids": [
+        "2.5.6"
+      ],
+      "relevant_source_pages": [
+        3
+      ]
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "expected_answer": "A formal lease agreement signed between the Department of Space/INSAT and the Party.",
+      "relevant_clause_ids": [
+        "2.6.5"
+      ],
+      "relevant_source_pages": [
+        4
+      ]
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "expected_answer": "The satellites which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations, for the actions of which Government of India shall be internationally responsible.",
+      "relevant_clause_ids": [
+        "3.2"
+      ],
+      "relevant_source_pages": [
+        5
+      ]
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "expected_answer": "Three authorizations/licenses are required: an authorisation from the Department of Space, an authorisation by the Wireless Planning and Coordination Wing, and operating licenses for the services.",
+      "relevant_clause_ids": [
+        "3.4.1",
+        "3.4.2",
+        "3.4.3"
+      ],
+      "relevant_source_pages": [
+        5,
+        6
+      ]
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "expected_answer": "Within the territory of India.",
+      "relevant_clause_ids": [
+        "3.6.4"
+      ],
+      "relevant_source_pages": [
+        7
+      ]
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "expected_answer": "First come first served, with preference to government-owned systems; if unresolved, the Administration may file a common API and decide on the applicant.",
+      "relevant_clause_ids": [
+        "3.6.8"
+      ],
+      "relevant_source_pages": [
+        8
+      ]
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "expected_answer": "Evidence that the Applicant has current financial ability to meet the cost of construction and launch, plus a broad business plan showing intended sources of funding and estimated revenues.",
+      "relevant_clause_ids": [
+        "3.7.1.5"
+      ],
+      "relevant_source_pages": [
+        9
+      ]
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "expected_answer": "International communications include PSTN, GMPCS, Value Added Services, Programme Exchange, where one end of the link terminates in a foreign country; the Maritime Mobile Satellite Service and the Aeronautical Mobile Satellite Service may be treated as international communications.",
+      "relevant_clause_ids": [
+        "4.2"
+      ],
+      "relevant_source_pages": [
+        13
+      ]
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "expected_answer": "Broadcasting; Public Switched Telephone Network (domestic); Value Added Services (domestic); Land Mobile Satellite Services (domestic and coastal waters).",
+      "relevant_clause_ids": [
+        "4.3.1",
+        "4.3.2",
+        "4.3.3",
+        "4.3.4"
+      ],
+      "relevant_source_pages": [
+        13,
+        14
+      ]
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "expected_answer": "The services shall be authorised only on Indian satellites; if capacity or capability is lacking, operations through foreign satellites may be authorised with permission to shift to Indian satellites when capacity becomes available.",
+      "relevant_clause_ids": [
+        "4.4.3"
+      ],
+      "relevant_source_pages": [
+        14
+      ]
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "expected_answer": "The system must be internationally coordinated for frequency and orbit and security concerns must be fully addressed.",
+      "relevant_clause_ids": [
+        "4.4.6"
+      ],
+      "relevant_source_pages": [
+        15
+      ]
+    }
+  ]
+}
