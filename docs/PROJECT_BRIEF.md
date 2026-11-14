@@ -2,7 +2,8 @@
 
 Status: living document. Last updated 2026-11-14.
 Owner: engineering. Companion documents: `docs/ENGINEERING_LOG.md`,
-`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/CHUNKING_STRATEGY.md`.
+`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
+`docs/CHUNKING_STRATEGY.md`.
 
 ---
 
@@ -71,7 +72,10 @@ silently "fix". Ground-truth excerpts must match the extracted bytes exactly.
 
 ## 4. Definition of quality (acceptance criteria)
 
-The system is acceptable only when all of the following are demonstrated:
+The system is acceptable only when all of the following are demonstrated. As of
+PROD-001, retrieval parity, document integrity, answer traceability and the
+abstention smoke test are met; multi-clause completeness and answer relevance are
+**not** met (see `docs/PRODUCTION_SLICE.md` §9).
 
 ### 4.1 Retrieval
 - Evidence-level Recall@K, Precision@K and MRR@K are reported against the verified
@@ -121,9 +125,10 @@ Every chunk set must satisfy the audit in `src/rag_core/chunker.py`
 | Module | Responsibility |
 |---|---|
 | `document.py` | `Page` / `SourceDocument`; PDF extraction; global character offsets; `page_for_offset`. |
-| `chunker.py` | `StructureAwareChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
+| `chunker.py` | `StructureAwareChunker` and `FixedCharacterChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
 | `index.py` | `DenseIndex` over Chroma; `DenseIndexConfig`; `RetrievedChunk`; `chunk_to_metadata`. |
 | `evaluation.py` | `Question` / `EvidenceUnit`; verified EXP-001 manifest loading into global offsets; metric functions; coverage summary. |
+| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional unevaluated generator hook. |
 
 Design constraints:
 
@@ -146,22 +151,38 @@ experiments/
   exp001_questions.csv       # approved 15-question dataset (immutable)
   exp001_ground_truth.json   # 20 verified evidence units (immutable)
   exp002.py                  # structure-aware chunking experiment
+  production_slice.py        # accepted baseline + grounded extractive answers
+  unanswerable_questions.csv # 8 calibration + 4 held-out abstention questions
   results/
     exp001/                  # historical, invalidated original run (do not use)
     exp001_v2/               # corrected intermediate run
     exp001_v3/               # ACCEPTED fixed-character baseline
     exp002/                  # structure-aware run + comparison + failure analysis
+    production_slice/        # PROD-001 config, chunks, answers, audit, metrics
 ```
 
-### 5.3 Production application (current state)
+### 5.3 Production slice (current state)
 
-- `backend/main.py` and `frontend/` contain the legacy application shell.
-- The backend still points at legacy collections and an unvalidated advanced
-  pipeline. It is **not yet** the validated production path and must not be
-  presented as the outcome of this work.
-- The production ingestion path will call `src/rag_core`; generation, citation
-  rendering and abstention are **not yet implemented/evaluated** in the validated
-  pipeline.
+- `experiments/production_slice.py` (PROD-001) runs the accepted EXP-001
+  fixed-character strategy through the shared core: 49 chunks, 100% non-whitespace
+  coverage, dense top-5 retrieval, extractive cited answers and abstention.
+- Retrieval reproduces EXP-001 exactly: Recall@5 0.8889, Precision@5 0.2533,
+  MRR@5 0.7944.
+- The extractive answer layer is faithful by construction (verbatim statements
+  with exact global offsets) and cites only contributing chunks. It is **not** a
+  complete answer engine: 12/15 answers contain at least one evidence-supported
+  statement, statement support is 13/45 (0.2889) and citation support is 15/32
+  (0.4688). Multi-clause questions Q08 and Q13 remain incomplete.
+- Abstention was calibrated on 8 out-of-corpus questions and checked on 4
+  held-out questions; all 12 abstained. This is a small smoke test, not a
+  validated answerability classifier.
+- `backend/main.py` and `frontend/` remain the legacy application shell. They
+  still point at legacy collections and an unvalidated pipeline and are **not**
+  the validated production path.
+- The optional generator hook is not evaluated. No fluency, synthesis or LLM
+  faithfulness claim is made.
+
+See `docs/PRODUCTION_SLICE.md` for the full result and failure analysis.
 
 ---
 
@@ -199,8 +220,10 @@ A chunk is relevant only when it overlaps an **actual supporting evidence span**
 |---|---|---|---|
 | EXP-001 v3 | none (baseline) | **Accepted** | 0.8889 / 0.2533 / 0.7944 |
 | EXP-002 | chunking → structure-aware | **Rejected** as default | 0.8833 / 0.1867 / 0.6244 |
+| PROD-001 | production slice over accepted baseline | **Accepted retrieval; limited answer layer** | 0.8889 / 0.2533 / 0.7944 |
 
-Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/ENGINEERING_LOG.md`.
+Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
+`docs/ENGINEERING_LOG.md`.
 
 ---
 
@@ -213,17 +236,22 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/ENGINEERING_LOG.md`.
 - Phase 3: EXP-002 controlled structure-aware chunking experiment, including
   failure analysis and a documented **rejection** of this configuration as the
   production default.
-- Test suite: **57 passed** (`python -m pytest tests -q`), including 35 new
-  core/evaluation tests.
+- Phase 5 (partial): PROD-001 production slice on the accepted baseline —
+  shared fixed-character ingestion, strict audit, dense retrieval, extractive
+  cited answers and an abstention policy. Retrieval matches EXP-001 exactly.
+- Test suite: **78 passed** (`python -m pytest tests -q`), including core,
+  evaluation, fixed-chunker and grounded-answer tests.
 
 ### Next
-- Choose the next controlled experiment based on the observed compound-question
-  failure mode (clause-level chunks lose parent/child coverage). Candidates must
-  be justified, not assumed; parent-context/sibling expansion is the leading
-  hypothesis but has **not** been validated.
-- Build the validated production ingestion path on `src/rag_core`.
-- Add generation with citation rendering and abstention, then evaluate
-  faithfulness, answer correctness and citation validity.
+- Run a controlled answer-layer experiment on multi-clause selection, holding
+  retrieval fixed. Justification: Q10 and Q13 retrieve the required evidence but
+  the lexical selector misses it.
+- Decide from evidence whether retrieval expansion is justified for Q05 (recall
+  0.0) and Q08 (0.3333); do not add hybrid retrieval/reranking without an
+  experiment.
+- Expand the verified question/evidence set before broader quality claims.
+- Add and evaluate generation separately for faithfulness, citation validity and
+  answer correctness.
 - Fix the legacy backend defect and retire or isolate unvalidated legacy paths
   before exposing the app.
 
@@ -241,9 +269,22 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/ENGINEERING_LOG.md`.
 - **Legacy backend defect (open).** `backend/main.py` contains
   `raise HTTPException(status_status=429, ...)` (invalid keyword) and still uses
   legacy collections/pipeline. Not used by the validated experiments.
-- **Generation is not validated.** No citation-faithfulness or abstention
-  evaluation exists yet. README performance claims predate and are not produced
-  by the validated pipeline in this brief.
+- **Answer relevance is weak.** The extractive selector is lexical and sentence
+  based. All statements are verbatim source text, but only 13/45 statements across
+  the 15 questions overlap a verified evidence unit, and 3/15 answers contain no
+  supported statement. Q10/Q13 retrieve the evidence but select the wrong
+  sentences.
+- **Multi-clause completeness is not met.** Q08 and Q13 still lack required
+  child clauses; Q05 has a retrieval miss. Answer quality cannot exceed retrieval
+  recall for questions whose evidence is absent from the top-5.
+- **Abstention is a small smoke test.** Thresholds were calibrated on 8
+  out-of-corpus questions and checked on 4 held-out questions (12/12 abstained).
+  They do not detect in-corpus retrieval failures such as Q05, and no adversarial
+  or partially answerable set has been evaluated.
+- **Generation is not validated.** Only the extractive path is evaluated. No
+  faithfulness or citation-validity result exists for an LLM generator; README
+  performance claims predate and are not produced by the validated pipeline in
+  this brief.
 - **Chroma telemetry warnings.** Harmless
   `Failed to send telemetry event … capture() takes 1 positional argument`
   messages may appear; they do not affect results.
@@ -260,10 +301,14 @@ python -m pytest tests -q
 
 # Reproduce EXP-002 (writes to experiments/results/exp002/)
 python -m experiments.exp002
+
+# Reproduce PROD-001 (writes to experiments/results/production_slice/)
+python -m experiments.production_slice
 ```
 
 The accepted EXP-001 baseline is reproduced only from its frozen runner and
-artifacts; it is not re-run as part of normal development.
+artifacts; it is not re-run as part of normal development. PROD-001 verifies
+fixed-character equivalence and retrieval parity against the frozen artifacts.
 
 ---
 
@@ -275,4 +320,5 @@ artifacts; it is not re-run as part of normal development.
 | `docs/ENGINEERING_LOG.md` | Decisions, defects, experiments, rejected approaches, risks, test evidence. |
 | `docs/EXP-001.md` | Accepted fixed-character baseline. |
 | `docs/EXP-002.md` | Structure-aware chunking experiment report. |
+| `docs/PRODUCTION_SLICE.md` | PROD-001 architecture, integrity, retrieval parity, answer/citation metrics, abstention and failure analysis. |
 | `docs/CHUNKING_STRATEGY.md` | Earlier chunking design analysis (context only; EXP-002 supersedes its unvalidated assumptions). |

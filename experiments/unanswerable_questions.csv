@@ -1,0 +1,13 @@
+question_id,question,split,category
+UNANS-01,What is the capital of France?,calibration,clearly_out_of_domain
+UNANS-02,Who won the 2022 FIFA World Cup?,calibration,clearly_out_of_domain
+UNANS-03,What is the current GST rate for restaurant services?,calibration,near_domain
+UNANS-04,How do I apply for an Indian passport?,calibration,near_domain
+UNANS-05,What are the eligibility criteria for opening a bank account?,calibration,clearly_out_of_domain
+UNANS-06,What is the boiling point of water at sea level?,calibration,clearly_out_of_domain
+UNANS-07,Which company manufactures the iPhone?,calibration,clearly_out_of_domain
+UNANS-08,What is the procedure for filing income tax returns in India?,calibration,near_domain
+UNANS-09,What is the interest rate for a home loan?,heldout,clearly_out_of_domain
+UNANS-10,Which vaccine is recommended for travel to Brazil?,heldout,clearly_out_of_domain
+UNANS-11,What is the speed limit on Indian highways?,heldout,near_domain
+UNANS-12,How do I renew a commercial vehicle registration?,heldout,near_domain

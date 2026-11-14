@@ -1,0 +1,1391 @@
+{
+  "slice_id": "PROD-001",
+  "config": {
+    "slice_id": "PROD-001",
+    "pdf_path": "C:\\Users\\sindh\\RAG\\data\\satcom-ngp.pdf",
+    "questions_csv": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+    "ground_truth": "C:\\Users\\sindh\\RAG\\experiments\\exp001_ground_truth.json",
+    "unanswerable_csv": "C:\\Users\\sindh\\RAG\\experiments\\unanswerable_questions.csv",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "chunking": {
+      "strategy": "fixed_character",
+      "chunk_size": 1000,
+      "overlap": 200,
+      "step": 800,
+      "per_page": true,
+      "chunk_count": 49,
+      "reproduces": "EXP-001 v3 accepted baseline"
+    },
+    "retrieval": {
+      "method": "dense_vector_similarity",
+      "top_k": 5
+    },
+    "answering": {
+      "mode": "extractive_verbatim",
+      "max_answer_sentences": 3,
+      "max_answer_chunks": 5,
+      "max_quote_chars": 500,
+      "policy": {
+        "hard_max_distance": 1.3,
+        "soft_max_distance": 1.1,
+        "min_token_support": 0.5,
+        "strict_min_token_support": 0.7
+      }
+    },
+    "vector_db": {
+      "backend": "chroma",
+      "collection_name": "satcom_ngp_production_fixed_char",
+      "persist_directory": "C:\\Users\\sindh\\RAG\\chroma_db_production"
+    }
+  },
+  "build_stats": {
+    "chunks": 49,
+    "build_ms": 1927.89,
+    "collection_count": 49
+  },
+  "aggregate_metrics": {
+    "recall@5": 0.8889,
+    "precision@5": 0.2533,
+    "mrr@5": 0.7944
+  },
+  "baseline_aggregate_metrics": {
+    "recall@5": 0.8889,
+    "precision@5": 0.2533,
+    "mrr@5": 0.7944
+  },
+  "per_question_metrics": [
+    {
+      "question_id": "EXP001-Q01",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.25,
+      "required_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0,
+      "required_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "covered_evidence_ids": [],
+      "missing_evidence_ids": [
+        "EXP001-Q05-E01"
+      ]
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "recall@5": 0.3333,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "required_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q08-E01"
+      ],
+      "missing_evidence_ids": [
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ]
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "required_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "missing_evidence_ids": []
+    }
+  ],
+  "retrieval_results": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "relevant_clause_ids": [
+        "ARTICLE-1"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_12::chunk_0::off28001",
+          "section": "3.7.5",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28001,
+          "end_offset": 29001,
+          "distance": 0.7868784754606898,
+          "evidence_ids": [],
+          "preview": "3.7.5 TRANSFER OF FILING \n \nThe Administration with the approval of  CAISS may, on the request of the \nApplicant, allow the transfer of a filing or  registration from one Applicant/operator to \nanothe"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.8109041127345267,
+          "evidence_ids": [],
+          "preview": " to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.8368596512375134,
+          "evidence_ids": [],
+          "preview": "ly on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift "
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.8627434968948364,
+          "evidence_ids": [
+            "EXP001-Q01-E01"
+          ],
+          "preview": "The norms, guidelines and procedures for implementation of the policy frame-work \nfor satellite communications in India as  approved by Government in 2000 are as \nfollows: \n \nARTICLE-1: NORMS, GUIDELI"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.8681163787841797,
+          "evidence_ids": [],
+          "preview": "the \nGovernment states: \n \n(i) “Authorise INSAT capacity to be  leased to non-government (Indian \nand foreign) parties following certain well defined norms \n \n(ii) “Allow Indian parties to provide  se"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.25
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "relevant_clause_ids": [
+        "2.3.1"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 0.7789109349250793,
+          "evidence_ids": [
+            "EXP001-Q02-E01"
+          ],
+          "preview": "T and \nINMARSAT \n(g) The commitments made by India in the WTO forums, etc. \n \n \n2.3      THE BASIC GUIDELINES \n \n2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshou"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 0.7857189899056041,
+          "evidence_ids": [],
+          "preview": "ted. \n \n2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of \nSpace/INSAT is authorised to provide this  capacity to the non-governmental users for \nservices other than te"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 0.7867725946833687,
+          "evidence_ids": [],
+          "preview": "ngement \nat any time as required. \n \n2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad. \n \n2.6.4 When INSAT capacity is made available for opera"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+          "section": "2.4",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 4699,
+          "end_offset": 5699,
+          "distance": 0.7888223898482182,
+          "evidence_ids": [],
+          "preview": "2.4       CLASSIFICATION OF USE \n \n2.4.1 The user sectors can be broadly classified as: \n \n(a) Telecommunications \n(b) Broadcasting \n(c) Education and developmental communications \n(d) Security Commun"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_3::chunk_2::off6299",
+          "section": "2.5.5",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 6299,
+          "end_offset": 6865,
+          "distance": 0.8307586616439746,
+          "evidence_ids": [],
+          "preview": " d any use of INSAT capacity for serving \nIndia will be tailored to meet the provisions of the Broadcast Bill that may be enacted. \n \n2.5.5 In so far as telecommunications is concerned any use of INSA"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "relevant_clause_ids": [
+        "2.3.2"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 0.9928306341171265,
+          "evidence_ids": [
+            "EXP001-Q03-E01"
+          ],
+          "preview": "T and \nINMARSAT \n(g) The commitments made by India in the WTO forums, etc. \n \n \n2.3      THE BASIC GUIDELINES \n \n2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshou"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_0::off6865",
+          "section": "2.5.7",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 6865,
+          "end_offset": 7865,
+          "distance": 0.9956468262963027,
+          "evidence_ids": [],
+          "preview": "2.5.7 Operations with INSAT and providing the services in India w ill be subject to the \nParty obtaining the requisite operating and frequency/siting license from the concerned \nauthorities. \n \n2.5.8 "
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 1.0155964809856575,
+          "evidence_ids": [],
+          "preview": "ngement \nat any time as required. \n \n2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad. \n \n2.6.4 When INSAT capacity is made available for opera"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 1.0221103429794312,
+          "evidence_ids": [],
+          "preview": "Department/Ministry.  The INSAT Progr amme is managed by the INSAT Co-\nordination Committee (ICC) with the technical support of  its Technical Advisory \nGroup (TAG).  The predominant users of IN SAT c"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_4::chunk_3::off9265",
+          "section": "2.7",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 9265,
+          "end_offset": 9588,
+          "distance": 1.0474735995605238,
+          "evidence_ids": [],
+          "preview": " non-governmental users through DOT will continue. ICC may review the \narrangement at any time as required. \n \n \n2.7     ADDITIONAL CAPACITY ON INSAT \n \nDepartment of Space/INSAT may build in  capacit"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "relevant_clause_ids": [
+        "2.4.1"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+          "section": "2.4",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 4699,
+          "end_offset": 5699,
+          "distance": 0.9438762625312203,
+          "evidence_ids": [
+            "EXP001-Q04-E01"
+          ],
+          "preview": "2.4       CLASSIFICATION OF USE \n \n2.4.1 The user sectors can be broadly classified as: \n \n(a) Telecommunications \n(b) Broadcasting \n(c) Education and developmental communications \n(d) Security Commun"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 0.9697626829147339,
+          "evidence_ids": [],
+          "preview": "Department/Ministry.  The INSAT Progr amme is managed by the INSAT Co-\nordination Committee (ICC) with the technical support of  its Technical Advisory \nGroup (TAG).  The predominant users of IN SAT c"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_0::off6865",
+          "section": "2.5.7",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 6865,
+          "end_offset": 7865,
+          "distance": 1.0197770928248289,
+          "evidence_ids": [],
+          "preview": "2.5.7 Operations with INSAT and providing the services in India w ill be subject to the \nParty obtaining the requisite operating and frequency/siting license from the concerned \nauthorities. \n \n2.5.8 "
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 1.082115888595581,
+          "evidence_ids": [],
+          "preview": "T and \nINMARSAT \n(g) The commitments made by India in the WTO forums, etc. \n \n \n2.3      THE BASIC GUIDELINES \n \n2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshou"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 1.1204487274570563,
+          "evidence_ids": [],
+          "preview": "ted. \n \n2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of \nSpace/INSAT is authorised to provide this  capacity to the non-governmental users for \nservices other than te"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "relevant_clause_ids": [
+        "2.5.6"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+          "section": null,
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 29601,
+          "end_offset": 30178,
+          "distance": 0.8424245812761417,
+          "evidence_ids": [],
+          "preview": "ompetent authority, notified by the Central Government in this \nregard, on technical or security  considerations. In cases where \noperations of services with foreign satellites are licensed, the Licen"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.9031206594941568,
+          "evidence_ids": [],
+          "preview": " to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license. \n \n4.4.1 The Administrative Ministry shall consult the Department of Space,"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+          "section": "3.7.2.2",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 22860,
+          "end_offset": 23860,
+          "distance": 0.9225567196645627,
+          "evidence_ids": [],
+          "preview": "authorisation for establishing and operating the space station subjec t to successful inter-\nsystem co-ordination of the proposed system. The authorisation shall also prescribe a \nreasonable time-limi"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_12::chunk_1::off28801",
+          "section": null,
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28801,
+          "end_offset": 29801,
+          "distance": 0.9601141149272308,
+          "evidence_ids": [],
+          "preview": "untries before rules for registrations have been formulated in India, \ninternational private systems where there is a substantial Indian \nparticipation by way of equity or in kind contribution and whe"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+          "section": "3.3",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 11188,
+          "end_offset": 11948,
+          "distance": 0.9889668172797909,
+          "evidence_ids": [],
+          "preview": "lly responsible.  Indian Satellites \nare a subset of the broader concept of Indian Space Objects.  \n \n3.3 ADMINISTRATIVE MINISTRY/DEPARTMENT \n \nThe Department of Space shall be the Admi nistrative Min"
+        }
+      ],
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "relevant_clause_ids": [
+        "2.6.5"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 0.79521408415835,
+          "evidence_ids": [
+            "EXP001-Q06-E01"
+          ],
+          "preview": "ngement \nat any time as required. \n \n2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad. \n \n2.6.4 When INSAT capacity is made available for opera"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_3::off9265",
+          "section": "2.7",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 9265,
+          "end_offset": 9588,
+          "distance": 0.8143424437844502,
+          "evidence_ids": [],
+          "preview": " non-governmental users through DOT will continue. ICC may review the \narrangement at any time as required. \n \n \n2.7     ADDITIONAL CAPACITY ON INSAT \n \nDepartment of Space/INSAT may build in  capacit"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 0.8689494733668529,
+          "evidence_ids": [],
+          "preview": "ted. \n \n2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of \nSpace/INSAT is authorised to provide this  capacity to the non-governmental users for \nservices other than te"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_3::chunk_2::off6299",
+          "section": "2.5.5",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 6299,
+          "end_offset": 6865,
+          "distance": 0.9396643896871728,
+          "evidence_ids": [],
+          "preview": " d any use of INSAT capacity for serving \nIndia will be tailored to meet the provisions of the Broadcast Bill that may be enacted. \n \n2.5.5 In so far as telecommunications is concerned any use of INSA"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 0.9687787890434265,
+          "evidence_ids": [],
+          "preview": "Department/Ministry.  The INSAT Progr amme is managed by the INSAT Co-\nordination Committee (ICC) with the technical support of  its Technical Advisory \nGroup (TAG).  The predominant users of IN SAT c"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "relevant_clause_ids": [
+        "3.2"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+          "section": "3.2",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10388,
+          "end_offset": 11388,
+          "distance": 0.4030090524773789,
+          "evidence_ids": [
+            "EXP001-Q07-E01"
+          ],
+          "preview": "Government of India states: \n \n“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satell"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.509799599647522,
+          "evidence_ids": [],
+          "preview": "The norms, guidelines and procedures for implementation of the policy frame-work \nfor satellite communications in India as  approved by Government in 2000 are as \nfollows: \n \nARTICLE-1: NORMS, GUIDELI"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.5677900651966948,
+          "evidence_ids": [],
+          "preview": "ly on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift "
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_5::chunk_0::off9588",
+          "section": "3.1",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 9588,
+          "end_offset": 10588,
+          "distance": 0.5773008985869403,
+          "evidence_ids": [],
+          "preview": "adversely affecting the capacity for already projected, accepted and funded Government \nneeds. The additional capacity could be for pr oviding services in India or abroad. Such \ncapacity shall not be "
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.5933955907821655,
+          "evidence_ids": [],
+          "preview": "the \nGovernment states: \n \n(i) “Authorise INSAT capacity to be  leased to non-government (Indian \nand foreign) parties following certain well defined norms \n \n(ii) “Allow Indian parties to provide  se"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "relevant_clause_ids": [
+        "3.4.1",
+        "3.4.2",
+        "3.4.3"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.4366637115559649,
+          "evidence_ids": [],
+          "preview": " to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license. \n \n4.4.1 The Administrative Ministry shall consult the Department of Space,"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.4414274451275659,
+          "evidence_ids": [],
+          "preview": " to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+          "section": "3.3",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 11188,
+          "end_offset": 11948,
+          "distance": 0.4735851092198782,
+          "evidence_ids": [
+            "EXP001-Q08-E01"
+          ],
+          "preview": "lly responsible.  Indian Satellites \nare a subset of the broader concept of Indian Space Objects.  \n \n3.3 ADMINISTRATIVE MINISTRY/DEPARTMENT \n \nThe Department of Space shall be the Admi nistrative Min"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_12::chunk_1::off28801",
+          "section": null,
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28801,
+          "end_offset": 29801,
+          "distance": 0.4864047575159649,
+          "evidence_ids": [],
+          "preview": "untries before rules for registrations have been formulated in India, \ninternational private systems where there is a substantial Indian \nparticipation by way of equity or in kind contribution and whe"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.5274830662765975,
+          "evidence_ids": [],
+          "preview": "ly on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift "
+        }
+      ],
+      "recall@5": 0.3333,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "relevant_clause_ids": [
+        "3.6.4"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_7::chunk_2::off16530",
+          "section": "3.6.5",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 16530,
+          "end_offset": 17530,
+          "distance": 0.7345921464879942,
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "preview": " the key technica l parameters and controls the movements of the satellite \nwith the ability to partially or complete ly close down the network, should be located \nwithin the territory of the Union of"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_7::chunk_1::off15730",
+          "section": "3.6.2",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 15730,
+          "end_offset": 16730,
+          "distance": 0.8036404935738976,
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "preview": "ible for automatic  approval from RBI. The CAISS may also \nconsider authorizing the registration of systems /networks of foreign companies as Indian \nSatellite Systems/Networks in the interest of attr"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_2::off24460",
+          "section": "3.7.3",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 24460,
+          "end_offset": 25460,
+          "distance": 1.09448148668426,
+          "evidence_ids": [],
+          "preview": "7.2.6 Filing and initiation of the ITU coordination process does not guarantee \nsuccessful coordination and shall be done at th e sole risk and cost of the Applicant. \nCAISS/DOS/Administration shall n"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 1.1067980472106054,
+          "evidence_ids": [],
+          "preview": " to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_11::chunk_1::off26500",
+          "section": "3.7.4.2",
+          "start_page": 11,
+          "end_page": 11,
+          "start_offset": 26500,
+          "end_offset": 27500,
+          "distance": 1.1106886600364334,
+          "evidence_ids": [],
+          "preview": "paid by the \napplicant shall be forfeited. \n \n3.7.4.2 DOS shall have the right to ensure th at the spacecraft is designed and built to \ncarry out only the functions for which it is authorised. The mea"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "relevant_clause_ids": [
+        "3.6.8"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_7::chunk_3::off17330",
+          "section": null,
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 17330,
+          "end_offset": 17794,
+          "distance": 0.7982071100882533,
+          "evidence_ids": [],
+          "preview": "risation to operate and the or bit-spectrum notification/registration may \nbe done for all satellite communications services: \n \n(a) for new orbit-spectrum as per requirements \n(b) in the unplanned ba"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_8::chunk_1::off18596",
+          "section": "3.6.10",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 18596,
+          "end_offset": 19596,
+          "distance": 0.9012313259802882,
+          "evidence_ids": [],
+          "preview": "ular service (e.g., \nDirect Broadcast Satellite Service (DBS)), only the Licensee for the service could be \nconsidered as the Applicant. In this case a service operating license is not adequate and \nt"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_8::chunk_0::off17796",
+          "section": "3.6.8",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 17796,
+          "end_offset": 18796,
+          "distance": 1.0164874994295638,
+          "evidence_ids": [
+            "EXP001-Q10-E01"
+          ],
+          "preview": "3.6.8 For 3.6.7(a) and 3.6.7(b) other conditions  being fulfilled, authorisation and \nnotification/co-ordination/registration shall be done on a first come first served basis. In \ncase of a conflict, "
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_10::chunk_3::off25260",
+          "section": null,
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 25260,
+          "end_offset": 25700,
+          "distance": 1.0366762613777976,
+          "evidence_ids": [],
+          "preview": " orbital locations in accordance with the procedures of the Radio Regulations, \nprovided the Applicant demonstrates to the Ad ministration’s satisfaction that they have \nthe necessary competence to ca"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_10::chunk_2::off24460",
+          "section": "3.7.3",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 24460,
+          "end_offset": 25460,
+          "distance": 1.0635809000147947,
+          "evidence_ids": [],
+          "preview": "7.2.6 Filing and initiation of the ITU coordination process does not guarantee \nsuccessful coordination and shall be done at th e sole risk and cost of the Applicant. \nCAISS/DOS/Administration shall n"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "relevant_clause_ids": [
+        "3.7.1.5"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+          "section": "3.7.1",
+          "start_page": 9,
+          "end_page": 9,
+          "start_offset": 20403,
+          "end_offset": 21403,
+          "distance": 1.2656642004768794,
+          "evidence_ids": [
+            "EXP001-Q11-E01"
+          ],
+          "preview": "3.7.1 INFORMATION TO BE PROVIDED BY THE APPLICANT \n \nThe Applicant shall make an application for Operating an Indian Satellite \nSystem/Network to CAISS (addressed to the CAISS Secretariat resident at "
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_3::off14350",
+          "section": "3.6.1",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 14350,
+          "end_offset": 14930,
+          "distance": 1.3346528249237526,
+          "evidence_ids": [],
+          "preview": "orms and guidelines shall be adopted: \n \n3.6.1 Only Indian registered Companies may be allowed to establish and operate an \nIndian Satellite System. The application for notifying, registering and oper"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_8::chunk_2::off19396",
+          "section": "3.6.12",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 19396,
+          "end_offset": 20396,
+          "distance": 1.3496172635129553,
+          "evidence_ids": [],
+          "preview": "flicting demands from two or more \napplicants which could not be resolved satisfactorily by adjusting the technical \nparameters, preference shall be given to the systems that propose to use satellites"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_7::chunk_0::off14930",
+          "section": null,
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 14930,
+          "end_offset": 15930,
+          "distance": 1.351639477044138,
+          "evidence_ids": [],
+          "preview": "Applicant) shall be considered for the cap of 74 per cent and the FDI in the investing \ncompany. If any, shall not be set off against this cap pr ovided the FDI in such an \ninvesting company does not "
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_8::chunk_0::off17796",
+          "section": "3.6.8",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 17796,
+          "end_offset": 18796,
+          "distance": 1.4263105959257503,
+          "evidence_ids": [],
+          "preview": "3.6.8 For 3.6.7(a) and 3.6.7(b) other conditions  being fulfilled, authorisation and \nnotification/co-ordination/registration shall be done on a first come first served basis. In \ncase of a conflict, "
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "relevant_clause_ids": [
+        "4.2"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "section": "4.3",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30978,
+          "end_offset": 31978,
+          "distance": 0.46801317349823995,
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "preview": " intern ational agreements. The International \nCommunications Services will include PSTN, GMPCS, Value Added Services, \nProgramme Exchange etc., where one end of th e link terminates in a foreign coun"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.47774673609023144,
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "preview": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services "
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.6428928375244141,
+          "evidence_ids": [],
+          "preview": "the \nGovernment states: \n \n(i) “Authorise INSAT capacity to be  leased to non-government (Indian \nand foreign) parties following certain well defined norms \n \n(ii) “Allow Indian parties to provide  se"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+          "section": "4.3.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 32496,
+          "end_offset": 33496,
+          "distance": 0.6436807286408135,
+          "evidence_ids": [],
+          "preview": "This includes VSATs for closed user groups , Private VSAT servi ce with shared hub, \nCellular and Paging services  interconnection, Video Teleconferencing, Audio/Video \nProgramme exchange, data broadc"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.7149718403816223,
+          "evidence_ids": [],
+          "preview": "The norms, guidelines and procedures for implementation of the policy frame-work \nfor satellite communications in India as  approved by Government in 2000 are as \nfollows: \n \nARTICLE-1: NORMS, GUIDELI"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "relevant_clause_ids": [
+        "4.3.1",
+        "4.3.2",
+        "4.3.3",
+        "4.3.4"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "section": "4.3",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30978,
+          "end_offset": 31978,
+          "distance": 0.5390628434002145,
+          "evidence_ids": [
+            "EXP001-Q13-E01"
+          ],
+          "preview": " intern ational agreements. The International \nCommunications Services will include PSTN, GMPCS, Value Added Services, \nProgramme Exchange etc., where one end of th e link terminates in a foreign coun"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.5810809660475786,
+          "evidence_ids": [],
+          "preview": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services "
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+          "section": "4.3.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 32496,
+          "end_offset": 33496,
+          "distance": 0.7184899781982012,
+          "evidence_ids": [
+            "EXP001-Q13-E04"
+          ],
+          "preview": "This includes VSATs for closed user groups , Private VSAT servi ce with shared hub, \nCellular and Paging services  interconnection, Video Teleconferencing, Audio/Video \nProgramme exchange, data broadc"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "section": "4.3.2",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 31778,
+          "end_offset": 32494,
+          "distance": 0.7186364707122692,
+          "evidence_ids": [
+            "EXP001-Q13-E01",
+            "EXP001-Q13-E02",
+            "EXP001-Q13-E03"
+          ],
+          "preview": ".3.1 Broadcasting (moving images (TV) a nd associated sound; and audio (radio)) \n \n(h) Free to air satellite broadcasting – digital or analogue \n(i) Broadcasting meant for reception by subscribers \n \n"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.7406806349754333,
+          "evidence_ids": [],
+          "preview": "the \nGovernment states: \n \n(i) “Authorise INSAT capacity to be  leased to non-government (Indian \nand foreign) parties following certain well defined norms \n \n(ii) “Allow Indian parties to provide  se"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "relevant_clause_ids": [
+        "4.4.3"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.4417938770457151,
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "preview": "ly on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift "
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_5::chunk_0::off9588",
+          "section": "3.1",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 9588,
+          "end_offset": 10588,
+          "distance": 0.5432291646040703,
+          "evidence_ids": [],
+          "preview": "adversely affecting the capacity for already projected, accepted and funded Government \nneeds. The additional capacity could be for pr oviding services in India or abroad. Such \ncapacity shall not be "
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.5640254619379819,
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "preview": " to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license. \n \n4.4.1 The Administrative Ministry shall consult the Department of Space,"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.5726996677093592,
+          "evidence_ids": [],
+          "preview": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services "
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_12::chunk_0::off28001",
+          "section": "3.7.5",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28001,
+          "end_offset": 29001,
+          "distance": 0.5956639261308388,
+          "evidence_ids": [],
+          "preview": "3.7.5 TRANSFER OF FILING \n \nThe Administration with the approval of  CAISS may, on the request of the \nApplicant, allow the transfer of a filing or  registration from one Applicant/operator to \nanothe"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "relevant_clause_ids": [
+        "4.4.6"
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_15::chunk_0::off35187",
+          "section": "4.4.6",
+          "start_page": 15,
+          "end_page": 15,
+          "start_offset": 35187,
+          "end_offset": 35406,
+          "distance": 0.6167944433951558,
+          "evidence_ids": [
+            "EXP001-Q15-E01"
+          ],
+          "preview": "15\n \n4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it. It should also ensure that the security \nconcerns are fully ad"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+          "section": null,
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 29601,
+          "end_offset": 30178,
+          "distance": 0.6657431128704868,
+          "evidence_ids": [],
+          "preview": "ompetent authority, notified by the Central Government in this \nregard, on technical or security  considerations. In cases where \noperations of services with foreign satellites are licensed, the Licen"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+          "section": "3.7.2.2",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 22860,
+          "end_offset": 23860,
+          "distance": 0.669513885500405,
+          "evidence_ids": [],
+          "preview": "authorisation for establishing and operating the space station subjec t to successful inter-\nsystem co-ordination of the proposed system. The authorisation shall also prescribe a \nreasonable time-limi"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.6713091871242624,
+          "evidence_ids": [],
+          "preview": " to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license. \n \n4.4.1 The Administrative Ministry shall consult the Department of Space,"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.6971722053816097,
+          "evidence_ids": [],
+          "preview": " to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the"
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    }
+  ]
+}

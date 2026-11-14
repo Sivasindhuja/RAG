@@ -1,0 +1,16 @@
+question_id,recall@5,precision@5,mrr@5,answered,answer_supported
+EXP001-Q01,1.0,0.2,0.25,True,True
+EXP001-Q02,1.0,0.2,1.0,True,True
+EXP001-Q03,1.0,0.2,1.0,True,True
+EXP001-Q04,1.0,0.2,1.0,True,True
+EXP001-Q05,0.0,0.0,0.0,True,False
+EXP001-Q06,1.0,0.2,1.0,True,True
+EXP001-Q07,1.0,0.2,1.0,True,True
+EXP001-Q08,0.3333,0.2,0.3333,True,False
+EXP001-Q09,1.0,0.4,1.0,True,True
+EXP001-Q10,1.0,0.2,0.3333,True,False
+EXP001-Q11,1.0,0.2,1.0,True,True
+EXP001-Q12,1.0,0.4,1.0,True,True
+EXP001-Q13,1.0,0.6,1.0,True,True
+EXP001-Q14,1.0,0.4,1.0,True,True
+EXP001-Q15,1.0,0.2,1.0,True,True

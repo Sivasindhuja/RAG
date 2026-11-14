@@ -33,6 +33,7 @@ CLAUSE_RE = re.compile(r"^[ \t]*(\d+(?:\.\d+)+)[ \t]+([A-Z])")
 
 MAX_CHUNK_CHARS = 1000
 STRATEGY_NAME = "structure_aware"
+FIXED_CHARACTER_STRATEGY = "fixed_character"
 
 
 @dataclass(frozen=True)
@@ -302,14 +303,19 @@ def audit_source_coverage(
     document: SourceDocument,
     chunks: List[Chunk],
     max_chars: int = MAX_CHUNK_CHARS,
+    allow_overlap: bool = False,
 ) -> Dict[str, Any]:
     """Audit source fidelity, complete coverage, ordering and traceability.
 
     The audit is intentionally stricter than checking that every chunk is a
     slice of the source.  It also verifies that the union of chunk intervals
-    covers every non-whitespace source character exactly once, that chunks are
-    in source order, that ids are unique, that page metadata is derivable from
-    the offsets, and that no chunk exceeds the configured size.
+    covers every non-whitespace source character, that chunks are in source
+    order, that ids are unique, that page metadata is derivable from the
+    offsets, and that no chunk exceeds the configured size.
+
+    ``allow_overlap`` exists for the accepted fixed-character sliding-window
+    chunker, whose 200-character overlap is intentional.  It suppresses only the
+    overlap *issue*; overlap counts are still reported.
     """
     text = document.text
     total_chars = len(text)
@@ -426,7 +432,7 @@ def audit_source_coverage(
         issues.append("chunk offsets are outside the source bounds")
     if fidelity_errors:
         issues.append("one or more chunks are not exact source slices")
-    if overlaps:
+    if overlaps and not allow_overlap:
         issues.append("one or more chunk source ranges overlap")
     if uncovered_non_whitespace:
         issues.append("non-whitespace source characters are not covered")
@@ -546,5 +552,112 @@ class StructureAwareChunker:
                 heading.heading_text,
             )
             emit(heading.start, boundaries[index + 1], context)
+
+        return chunks
+
+
+@dataclass
+class FixedCharacterChunker:
+    """Canonical fixed-character sliding-window chunker.
+
+    Reproduces the accepted EXP-001 configuration:
+
+    - 1000-character windows with 200-character overlap (step 800);
+    - chunks never cross a PDF page boundary;
+    - each page is stripped before windowing, exactly as the frozen EXP-001
+      runner did, and offsets are mapped back to global document coordinates;
+    - empty windows are skipped without losing coverage.
+
+    This class exists so production ingestion can use the *accepted* retrieval
+    strategy without depending on the frozen experiment script.
+    """
+
+    chunk_size: int = MAX_CHUNK_CHARS
+    overlap: int = 200
+    strategy: str = FIXED_CHARACTER_STRATEGY
+
+    def __post_init__(self) -> None:
+        if self.chunk_size <= 0:
+            raise ValueError("chunk_size must be positive")
+        if self.overlap < 0:
+            raise ValueError("overlap must not be negative")
+        if self.overlap >= self.chunk_size:
+            raise ValueError("overlap must be smaller than chunk_size")
+
+    @staticmethod
+    def _metadata(
+        headings: List[Heading],
+        start: int,
+        end: int,
+    ) -> Tuple[Optional[str], Optional[str], Optional[Tuple[str, ...]], Optional[str]]:
+        inside = [heading for heading in headings if start <= heading.start < end]
+        article_heading = next((heading for heading in inside if heading.kind == "article"), None)
+        section_heading = next((heading for heading in inside if heading.kind == "section"), None)
+        if section_heading is not None:
+            return (
+                section_heading.article_id,
+                section_heading.section_id,
+                section_heading.hierarchy,
+                section_heading.heading_text or None,
+            )
+        return (
+            article_heading.article_id if article_heading else None,
+            None,
+            None,
+            article_heading.heading_text if article_heading else None,
+        )
+
+    def chunk(self, document: SourceDocument) -> List[Chunk]:
+        headings = _find_headings(document)
+        chunks: List[Chunk] = []
+        sequence = 0
+        step = self.chunk_size - self.overlap
+
+        for page in document.pages:
+            raw = page.text
+            stripped = raw.strip()
+            if not stripped:
+                continue
+            leading = len(raw) - len(raw.lstrip())
+            length = len(stripped)
+            start = 0
+            index = 0
+            while start < length:
+                end = min(start + self.chunk_size, length)
+                text = stripped[start:end]
+                if text.strip():
+                    global_start = page.start_char + leading + start
+                    global_end = page.start_char + leading + end
+                    article, section, hierarchy, heading_text = self._metadata(
+                        headings, global_start, global_end
+                    )
+                    chunks.append(
+                        Chunk(
+                            chunk_id=(
+                                f"{document.source.replace('.pdf', '')}::"
+                                f"page_{page.page_number}::chunk_{index}::off{global_start}"
+                            ),
+                            source=document.source,
+                            article=article,
+                            section=section,
+                            section_hierarchy=hierarchy,
+                            heading=heading_text,
+                            start_page=page.page_number,
+                            end_page=page.page_number,
+                            start_offset=global_start,
+                            end_offset=global_end,
+                            text=text,
+                            chunking_strategy=self.strategy,
+                            chunk_sequence=sequence,
+                            part=0,
+                            start_page_char=global_start - page.start_char,
+                            end_page_char=global_end - page.start_char,
+                        )
+                    )
+                    sequence += 1
+                if end >= length:
+                    break
+                start += step
+                index += 1
 
         return chunks

@@ -1,0 +1,193 @@
+{
+  "source": "satcom-ngp.pdf",
+  "ok": true,
+  "issues": [],
+  "total_chars": 35407,
+  "covered_chars": 42197,
+  "overlap_chars": 6800,
+  "overlaps": [
+    {
+      "start": 802,
+      "end": 1002
+    },
+    {
+      "start": 1602,
+      "end": 1802
+    },
+    {
+      "start": 3317,
+      "end": 3517
+    },
+    {
+      "start": 4117,
+      "end": 4317
+    },
+    {
+      "start": 5499,
+      "end": 5699
+    },
+    {
+      "start": 6299,
+      "end": 6499
+    },
+    {
+      "start": 7665,
+      "end": 7865
+    },
+    {
+      "start": 8465,
+      "end": 8665
+    },
+    {
+      "start": 9265,
+      "end": 9465
+    },
+    {
+      "start": 10388,
+      "end": 10588
+    },
+    {
+      "start": 11188,
+      "end": 11388
+    },
+    {
+      "start": 12750,
+      "end": 12950
+    },
+    {
+      "start": 13550,
+      "end": 13750
+    },
+    {
+      "start": 14350,
+      "end": 14550
+    },
+    {
+      "start": 15730,
+      "end": 15930
+    },
+    {
+      "start": 16530,
+      "end": 16730
+    },
+    {
+      "start": 17330,
+      "end": 17530
+    },
+    {
+      "start": 18596,
+      "end": 18796
+    },
+    {
+      "start": 19396,
+      "end": 19596
+    },
+    {
+      "start": 20196,
+      "end": 20396
+    },
+    {
+      "start": 21203,
+      "end": 21403
+    },
+    {
+      "start": 22003,
+      "end": 22203
+    },
+    {
+      "start": 23660,
+      "end": 23860
+    },
+    {
+      "start": 24460,
+      "end": 24660
+    },
+    {
+      "start": 25260,
+      "end": 25460
+    },
+    {
+      "start": 26500,
+      "end": 26700
+    },
+    {
+      "start": 27300,
+      "end": 27500
+    },
+    {
+      "start": 28801,
+      "end": 29001
+    },
+    {
+      "start": 29601,
+      "end": 29801
+    },
+    {
+      "start": 30978,
+      "end": 31178
+    },
+    {
+      "start": 31778,
+      "end": 31978
+    },
+    {
+      "start": 33296,
+      "end": 33496
+    },
+    {
+      "start": 34096,
+      "end": 34296
+    },
+    {
+      "start": 34896,
+      "end": 35096
+    }
+  ],
+  "within_bounds": true,
+  "bound_errors": [],
+  "fidelity_errors": [],
+  "duplicate_ids": [],
+  "sequence_order_ok": true,
+  "source_order_ok": true,
+  "page_mapping_errors": [],
+  "empty_chunks": [],
+  "oversized_chunks": [],
+  "uncovered_regions": [
+    {
+      "start": 0,
+      "end": 2,
+      "text": " \n"
+    },
+    {
+      "start": 11948,
+      "end": 11950,
+      "text": " \n"
+    },
+    {
+      "start": 17794,
+      "end": 17796,
+      "text": " \n"
+    },
+    {
+      "start": 32494,
+      "end": 32496,
+      "text": " \n"
+    },
+    {
+      "start": 35186,
+      "end": 35187,
+      "text": " "
+    },
+    {
+      "start": 35406,
+      "end": 35407,
+      "text": " "
+    }
+  ],
+  "uncovered_non_whitespace_regions": [],
+  "uncovered_non_whitespace_chars": 0,
+  "uncovered_whitespace_chars": 10,
+  "total_non_whitespace_chars": 29250,
+  "covered_non_whitespace_chars": 29250,
+  "coverage_percent": 100.0
+}

@@ -164,6 +164,70 @@ remain byte-for-byte reproducible.
 - Regression coverage: `test_dense_index_build_search_and_rebuild`,
   `test_chunk_metadata_is_scalar_and_preserves_traceability`.
 
+### DR-007 — Productionise the accepted strategy, do not invent a new one
+
+**Context.** EXP-002 was rejected. Production therefore needs the accepted
+fixed-character 1000/200 strategy without importing the frozen EXP-001 runner.
+Its intentional overlap also conflicted with the strict "no overlaps" audit rule.
+
+**Decision.** Add `FixedCharacterChunker` to the shared `src/rag_core/chunker.py`
+and add `allow_overlap` to `audit_source_coverage`. `allow_overlap` suppresses
+only the overlap *issue*; overlap counts are still reported and complete
+non-whitespace coverage, fidelity, ordering, ID uniqueness and page mapping
+remain mandatory.
+
+**Consequences.**
+- PROD-001 reproduces all 49 accepted EXP-001 v3 chunk texts and page assignments
+  exactly.
+- Retrieval parity is exact: 0.8889 / 0.2533 / 0.7944.
+- Regression coverage: `tests/test_fixed_chunker.py` (6 tests), including
+  chunk-by-chunk equivalence with the frozen accepted chunks.
+
+### DR-008 — Extractive answers first; citations only for contributing chunks
+
+**Context.** A generation path was not justified yet, and the project requires
+traceable claims. A naive implementation cited every retrieved chunk, which
+implied support from chunks that contributed nothing to the answer.
+
+**Decision.** The default answer mode is deterministic extractive assembly:
+
+1. consider at most 5 retrieved chunks;
+2. split them into sentences and score candidate sentences with IDF-weighted
+   question-token overlap, a clause/list bonus, and a penalty for ALL-CAPS
+   headings;
+3. select at most 3 distinct sentences;
+4. assign markers only to chunks that actually contributed a selected sentence;
+5. record each statement's global source offsets.
+
+**Consequences.**
+- Every extractive statement is a verbatim source slice; faithfulness is
+  guaranteed by construction.
+- Retrieved-but-unused chunks are not cited (BUG-009).
+- Relevance is not guaranteed. The lexical selector misses relevant sentences in
+  Q10/Q13 and cannot recover evidence absent from the top-5 (Q05/Q08).
+- Regression coverage: `tests/test_pipeline.py`, including
+  `test_citations_omit_retrieved_chunks_that_do_not_contribute` and
+  `test_all_caps_heading_is_deprioritised_below_body_text`.
+
+### DR-009 — Abstention is a small, model-specific heuristic
+
+**Context.** The application must not answer from parametric memory. A general
+answerability classifier was not available or justified.
+
+**Decision.** Use a configurable retrieval-confidence policy with decision order:
+empty question → no hits → hard distance limit → minimum lexical support →
+soft distance plus strict lexical support. Defaults:
+`hard=1.30`, `soft=1.10`, `min_support=0.50`, `strict_support=0.70`.
+
+**Consequences.**
+- 12/12 out-of-corpus smoke questions abstained (8 calibration, 4 held-out).
+- All 15 in-corpus questions were answered, so no false abstention was observed
+  on that set.
+- The policy does not detect in-corpus retrieval failure (Q05): retrieved text
+  shares vocabulary and passes the thresholds.
+- Thresholds must be recalibrated for any embedding or index change.
+- Regression coverage: abstention branches in `tests/test_pipeline.py`.
+
 ---
 
 ## C. Defect log
@@ -181,6 +245,7 @@ this work. "Test" refers to an executed regression test in `tests/`.
 | BUG-006 | High | Audit passed despite dropped content, overlaps, duplicate IDs or wrong page metadata | Audit only checked source slices | Full strict audit + experiment gate (DR-005) | `test_real_pdf_integrity_audit_passes_every_check`, `test_audit_detects_uncovered_non_whitespace_content`, `test_audit_detects_chunk_text_mutation` | Fixed |
 | BUG-007 | High | Malformed/unrecognised headings could lose body text | Body text after an unrecognised heading had no owner | Emit unsectioned body chunks; only structurally valid clause regex creates headings; content preserved | `test_headingless_document_yields_single_body_chunk_without_loss`, `test_lowercase_after_clause_number_does_not_lose_content`, `test_unexpected_numeric_heading_format_is_not_treated_as_clause`, `test_ocr_corrupted_clause_heading_is_still_detected` | Fixed |
 | BUG-008 | Medium | Experiments and production could drift into separate chunking/retrieval implementations | Duplicated logic and legacy paths | Shared `src/rag_core` index/evaluation; EXP-001 frozen as the documented exception (DR-006) | `test_dense_index_build_search_and_rebuild`, `test_chunk_metadata_is_scalar_and_preserves_traceability` | Fixed |
+| BUG-009 | Medium | Citation list included retrieved-but-unused chunks, overstating support | Initial assembly cited all top-K hits before sentence selection | Select statements first; cite only contributing chunks with renumbered markers (DR-008) | `test_citations_omit_retrieved_chunks_that_do_not_contribute` | Fixed |
 
 ### Open known issue (not part of BUG-001…008)
 
@@ -295,6 +360,67 @@ retained as a metadata-rich baseline and a foundation for a justified
 parent-context/sibling-expansion experiment. See `docs/EXP-002.md` and
 `experiments/results/exp002/`.
 
+### PROD-001 — Production slice over the accepted baseline
+
+**Role.** Productionise the accepted EXP-001 strategy in the shared core and
+evaluate the grounded answer layer. This is not a retrieval experiment.
+
+**Configuration.**
+
+| Parameter | Value |
+|---|---|
+| Chunking | `fixed_character`, 1000 / 200 / step 800, per page |
+| Chunks | 49 |
+| Embedding | `sentence-transformers/all-MiniLM-L6-v2` |
+| Retrieval | dense-only, top-5 |
+| Answer mode | extractive verbatim, max 3 sentences from 5 chunks |
+| Abstention | hard 1.30 / soft 1.10 / min support 0.50 / strict 0.70 |
+
+**Document integrity.**
+
+- 49 chunks; 100% non-whitespace coverage (29,250 / 29,250 chars).
+- 6,800 intentional overlap characters across 34 adjacent windows.
+- 0 fidelity/bounds/duplicate-ID/page-mapping errors; 0 empty/oversized chunks.
+- Audit passes with `allow_overlap=True`.
+
+**Retrieval.** Exact parity with EXP-001 v3: Recall@5 0.8889, Precision@5 0.2533,
+MRR@5 0.7944 (delta 0.0000 on all three).
+
+**Answer layer (15 in-corpus questions).**
+
+| Measure | Value |
+|---|---:|
+| Answered | 15 / 15 |
+| Answers with ≥1 evidence-supported statement | 12 / 15 |
+| Statements supported | 13 / 45 (0.2889) |
+| Citations supported | 15 / 32 (0.4688) |
+| Mean statements / citations per answer | 3.00 / 2.13 |
+
+**Abstention smoke test.** 8/8 calibration and 4/4 held-out out-of-corpus
+questions abstained (12/12). All 15 in-corpus questions were answered.
+
+**Observed failures.**
+
+- Q05: Recall@5 0.0. The required `2.5.6` evidence is absent, so the extractive
+  answer is unsupported. The abstention policy does not catch it.
+- Q08: Recall@5 0.3333. Only one of the three required `3.4.1`–`3.4.3` clauses is
+  retrieved.
+- Q10: Recall@5 1.0 but 0/3 supported statements; the selector chooses a long
+  list block and later clauses instead of the conflict procedure.
+- Q13: Recall@5 1.0 but 1/3 supported statements; sibling categories
+  `4.3.2`/`4.3.3` are retrieved but not selected.
+
+**Decision.** Accept the slice as the **validated retrieval-and-provenance
+foundation**. Do not present it as a complete answer engine. Answer relevance and
+multi-clause completeness are open defects, not hidden by the exact retrieval
+parity. See `docs/PRODUCTION_SLICE.md` and
+`experiments/results/production_slice/`.
+
+**Reproduction.** `python -m experiments.production_slice` writes config, chunks,
+integrity audit, retrieval results, answers, abstention results,
+per-question metrics and summary. Observed latency in the recorded run: index
+build 1,927.89 ms; pipeline mean 32.44 ms, median 32.50 ms, max 34.67 ms.
+
 ---
 
 ## E. Rejected approaches
@@ -308,6 +434,7 @@ parent-context/sibling-expansion experiment. See `docs/EXP-002.md` and
 | RA-005 | Use heading-only spans as ground truth | Invalid: headings do not support the answer. Used only by the invalid original EXP-001 run. |
 | RA-006 | Adjust questions/ground truth to raise metrics | Prohibited. Ground truth may only be corrected with explicit, verified evidence and a recorded rationale. |
 | RA-007 | Treat the legacy `backend/` pipeline as validated production | Unvalidated advanced components and an open keyword bug (KNOWN-001). Not accepted. |
+| RA-008 | Tune the lexical answer selector further, or add a reranker/cross-encoder, on the 15-question set | Exploratory sweeps (sentence count, heading penalty, length normalisation, relative score floors) did not remove the Q10/Q13 selection failures and risk overfitting a small set. Deferred to a controlled answer-layer experiment with explicit acceptance criteria. |
 
 ---
 
@@ -317,12 +444,14 @@ parent-context/sibling-expansion experiment. See `docs/EXP-002.md` and
 
 Command: `python -m pytest tests -q`
 
-Result (executed 2026-11-14): **57 passed, 25 warnings** in ~28 s.
+Result (executed 2026-11-14, after PROD-001): **78 passed, 25 warnings** in
+~28.7 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
+tests.
 
 Warnings are non-fatal Pydantic deprecation notices raised by Chroma
 (`Accessing the 'model_fields' attribute on the instance is deprecated`).
 
-Coverage added in this work:
+Coverage added across this work:
 
 - `tests/test_rag_core.py` — 25 tests: document offsets, page-boundary mapping,
   real-PDF fidelity/order/bounds, all four articles, footer fusion regressions,
@@ -334,6 +463,12 @@ Coverage added in this work:
   exactly to global offsets, 15-question set preserved, metric definitions
   (single/multi evidence, missing unit, no hits, empty evidence), scalar
   traceable metadata, dense index build/search/rebuild, empty-query rejection.
+- `tests/test_fixed_chunker.py` — 6 tests: chunk-by-chunk equivalence with the
+  frozen 49 accepted EXP-001 v3 chunks, overlap/page boundaries, audit behaviour,
+  unique/stable IDs, empty pages, invalid configuration.
+- `tests/test_pipeline.py` — 15 tests: extractive verbatim answers, sentence
+  provenance, citation-only-contributors, heading deprioritisation, abstention
+  branches, generator hook, token support, limit/dedupe, fallback.
 
 ### F.2 Real-document integrity (EXP-002 chunk set)
 
@@ -343,6 +478,16 @@ Coverage added in this work:
 - 0 overlaps; 0 fidelity errors; 0 bounds errors; 0 duplicate IDs;
   0 page-mapping errors; 0 empty/oversized chunks.
 - 7 multi-page chunks; 5 clauses split into multiple parts.
+
+### F.2b Real-document integrity (PROD-001 fixed-character chunk set)
+
+- 49 chunks across 15 pages; 35,407 extracted characters.
+- 100% non-whitespace coverage (29,250 / 29,250); 6,800 intentional overlap
+  characters across 34 adjacent windows.
+- 0 overlaps treated as errors (`allow_overlap=True`), 0 fidelity errors,
+  0 bounds errors, 0 duplicate IDs, 0 page-mapping errors, 0 empty/oversized
+  chunks.
+- Chunk texts and page assignments match the accepted EXP-001 v3 set exactly.
 
 ### F.3 Ground-truth verification
 
@@ -362,6 +507,12 @@ Coverage added in this work:
   misleading deltas at a different K).
 - Retrieval latency (observed): mean 35.63 ms, median 34.94 ms, p90 40.61 ms.
   Index build: 2,714.7 ms for 107 chunks.
+- PROD-001 writes `config.json`, `chunks.json`, `integrity_audit.json`,
+  `retrieval_results.json`, `answers.json`, `abstention_results.json`,
+  `per_question_metrics.csv` and `summary.md` under
+  `experiments/results/production_slice/`.
+- PROD-001 observed latency: pipeline mean 32.44 ms, median 32.50 ms, max
+  34.67 ms; index build 1,927.89 ms for 49 chunks.
 
 ---
 
@@ -373,10 +524,13 @@ Coverage added in this work:
 | R-002 | Compound questions lose child-clause coverage under clause-level chunking | Wrong/incomplete answers for Q08/Q13-type questions | Next controlled experiment: sibling/parent-context expansion, measured on the same fixed set |
 | R-003 | Very small chunks (<100 chars) weaken embeddings | Poor ranking / MRR | Consider minimum-size merge rules inside the structure-aware strategy, as a controlled change |
 | R-004 | Legacy backend has `status_status` bug and unvalidated pipeline (KNOWN-001) | App path may fail or bypass validation | Fix keyword; isolate legacy advanced components; build validated ingestion on `src/rag_core` |
-| R-005 | Generation, citation rendering and abstention are not validated | Cannot yet claim grounded answers end-to-end | Build on validated retrieval; add citation-validity + faithfulness + abstention evaluation |
+| R-005 | Generation and LLM faithfulness are not validated | Cannot claim generative answer quality | Extractive citations/abstention now have a baseline; evaluate any generator separately for faithfulness and citation validity |
 | R-006 | README performance claims (faithfulness 1.00, context recall 0.60) are not from this pipeline | Misleading project status | Treat as legacy; supersede with validated experiment reports |
 | R-007 | Chroma telemetry warnings | Noise in logs | Ignore; does not affect correctness |
 | R-008 | Environment drift (Python/Chroma/sentence-transformers versions) | Non-reproducible numbers | Record versions; pin before final release |
+| R-009 | Lexical sentence selection misses evidence that retrieval already found (Q10, Q13) | Incomplete/irrelevant answers despite perfect recall | Controlled answer-layer experiment; do not add a reranker without measurement |
+| R-010 | Multi-clause completeness not met; Q05 retrieval recall is 0.0 | Q08/Q13 answers lack required child clauses; Q05 has no evidence in top-5 | Treat as open acceptance failure; decide retrieval vs answer-layer fix by experiment |
+| R-011 | Abstention policy does not detect in-corpus retrieval failure | Q05 is answered without supporting evidence | Add answerability/relevance checks only with a labelled evaluation set; do not tune on the 15 questions |
 
 ---
 
@@ -397,22 +551,31 @@ Coverage added in this work:
 7. Wrote `docs/PROJECT_BRIEF.md`, `docs/ENGINEERING_LOG.md`, `docs/EXP-002.md`.
 8. Cleaned EXP-002 runner: dynamic `top_k` metric keys/CSV headers; guarded
    baseline comparison when K differs; added `chroma_db_exp002/` to `.gitignore`.
+9. Added `FixedCharacterChunker` and overlap-aware strict audit; verified exact
+   reproduction of the 49 accepted EXP-001 v3 chunks and retrieval parity.
+10. Built `GroundedPipeline`: extractive verbatim answers, statement-level global
+    offsets, contributing-chunk citations, heading-aware sentence scoring and a
+    configurable abstention policy (DR-007…DR-009).
+11. Ran PROD-001 over 15 in-corpus and 12 out-of-corpus questions; recorded
+    integrity, retrieval, answer/citation support and abstention results; fixed
+    BUG-009; documented the answer-layer failures rather than hiding them.
+12. Wrote `docs/PRODUCTION_SLICE.md`; updated brief and this log; full suite now
+    78 passed.
 
 ### H.2 Next actions (ordered)
 
-1. **Decide the next experiment from evidence, not preference.** Leading
-   candidate: structure-aware refinement that preserves clause metadata but
-   expands retrieval context to siblings/parent for compound questions. Must hold
-   PDF, questions, ground truth, embedding, dense retrieval, top-K and metrics
-   constant; record config and failure analysis.
-2. Alternatively, if retrieval is good enough for the first end-to-end slice:
-   build validated production ingestion on `src/rag_core`, then generation with
-   chunk-ID citations and explicit abstention.
+1. **Run a controlled answer-layer experiment, retrieval fixed.** Observed
+   justification: Q10 and Q13 have the required evidence in the top-5 but the
+   lexical selector misses it. Test one change at a time (for example sibling
+   clause expansion or sentence reranking) on the same questions/evidence.
+2. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
+   are genuine retrieval misses. Any expansion/reranking must be a separate
+   controlled experiment and must not silently replace the accepted baseline.
 3. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
    before exposing the application.
-4. Expand the verified evaluation set before making large quality claims.
+4. Expand the verified evaluation set before making broader quality claims.
 5. Add generation-phase evaluation (faithfulness, answer correctness, citation
-   validity, abstention) once the generation path exists.
+   validity, abstention) only when a generation path is deliberately introduced.
 
 ### H.3 Phase status
 
@@ -422,5 +585,5 @@ Coverage added in this work:
 | 2 | Document-processing foundation + strict integrity | Done |
 | 3 | EXP-002 structure-aware chunking experiment | Done (rejected as default) |
 | 4 | Justified chunking refinement (if pursued) | Not started |
-| 5 | Validated production ingestion | Not started |
-| 6 | Application: generation, citations, abstention | Not started |
+| 5 | Validated production ingestion | Done for accepted baseline (PROD-001) |
+| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention validated; generation not started |
