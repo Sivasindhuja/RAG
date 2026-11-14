@@ -4,9 +4,9 @@ Status: living document. Last updated 2026-11-14.
 Scope: decisions, defects, experiments, rejected approaches, verification evidence,
 risks and next actions for the SATCOM NGP RAG project.
 
-Companion documents: `docs/PROJECT_BRIEF.md`, `docs/EXP-001.md`,
-`docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`, `docs/EXP-005.md`,
-`docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
+Companion documents: `docs/PROJECT_BRIEF.md`, `docs/BACKLOG.md`,
+`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
+`docs/EXP-005.md`, `docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 Convention: entries are append-only in spirit. Do not rewrite history to make a
 later decision look inevitable; record what was known at the time.
@@ -392,6 +392,69 @@ evidence coverage for Q14 remained present.
   non-grouping tests.
 
 See `docs/EXP-005.md` and `experiments/results/exp005/`.
+
+### DR-013 — Authoritative project objective, fixed constraints and milestone roadmap
+
+**Date.** 2026-11-14.
+
+**Context.** After EXP-001–EXP-005, the repository had a validated extractive
+retrieval/selection slice but no bounded path to a complete, deployable,
+evaluated product. Continued technique-by-technique experimentation risked drift
+without delivering the required application.
+
+**Problem.** Define a fixed destination, fixed constraints, and a measured
+roadmap so experiments and engineering decisions serve completion rather than
+indefinite exploration.
+
+**Options considered.**
+- Continue opportunistic experiments from the observed backlog (Q10/Q04/Q12/Q05/Q08)
+  before defining end-state requirements: rejected as likely to optimize local
+  metrics without reaching a deployable, grounded Gemini application.
+- Treat the current extractive baseline as sufficient and skip generation/eval/deployment:
+  rejected; contradicts the ultimate objective.
+- Adopt the full RAG technique stack (BM25, reranking, query expansion, etc.)
+  upfront: rejected; violates evidence-first engineering philosophy.
+- **Selected:** define an authoritative objective with three phases (functional
+  app, production-quality RAG, evaluation/QA) plus observability, fixed
+  constraints, milestone roadmap, and a maintained backlog.
+
+**Decision.**
+- **Objective:** build a production-grade, domain-specific RAG application for
+  `data/satcom-ngp.pdf` (ISRO SATCOM NGP) with grounded Gemini answers,
+  verifiable PDF-linked citations, abstention, functional UI, evaluation, CI
+  quality gates, observability, and Vercel Hobby deployment.
+- **Fixed constraints:** single corpus (`data/satcom-ngp.pdf`), LLM Google Gemini
+  API (model selected/documented by quality/availability/cost/latency), Vercel
+  Hobby deployment target, free/free-tier preference with tracked costs and
+  documented trade-offs, clean frontend/backend separation (React + Python/FastAPI
+  RAG core where appropriate).
+- **Technique policy:** hybrid retrieval, reranking, query expansion, etc. are
+  potential solutions only; introduce only when a specific observed problem is
+  diagnosed, hypothesized, experimentally tested, and justified by measured results.
+- **Roadmap:** M0 direction/backlog (this step), M1 validated Gemini answer path,
+  M2 end-to-end integration, M3 Vercel Hobby deployment readiness, M4 golden
+  dataset (~50–200) + offline evaluation, M5 quality gates + observability, M6
+  targeted evidence-driven improvements.
+- **Issue management:** maintain `docs/BACKLOG.md`; document/assess/backlog
+  important out-of-milestone problems; do not derail milestones, do not silently
+  discard issues; rejected experiments remain documented.
+
+**Evidence/reconciliation (2026-11-14, repo/Git inspected):** EXP-001–EXP-005
+history preserved; extractive EXP-003 path accepted for selection baseline;
+Gemini not integrated/validated; no golden dataset/eval harness/CI gates/
+observability/deployment; legacy backend remains defective/unvalidated
+(KNOWN-001, legacy collection/model); unrelated working-tree changes preserved.
+
+**Trade-offs.** Defers immediate Q10/Q05/Q08/Q04/Q12 technique work until it is
+scheduled against milestones, but prevents unbounded local optimization. Vercel
+Hobby and free-tier constraints may force storage/architecture trade-offs that
+must be measured and documented (BL-009/BL-015).
+
+**Impact.** `docs/PROJECT_BRIEF.md` is authoritative for objective/constraints/
+roadmap/status; `docs/BACKLOG.md` tracks known issues and deferred improvements;
+future experiments/changes must cite the milestone/problem they serve.
+
+**Status.** Accepted.
 
 ---
 
@@ -902,36 +965,41 @@ Coverage added across this work:
     `experiments/exp005.py`, `docs/EXP-005.md` and `experiments/results/exp005/`.
     Full suite now 91 passed.
 
-### H.2 Next actions (ordered, evidence-based)
+17. Established authoritative project direction (DR-013): updated
+    `docs/PROJECT_BRIEF.md`, created `docs/BACKLOG.md`, reconciled implementation
+    against repo/Git history, and replaced ad-hoc next actions with milestone
+    roadmap M0–M6. No new RAG experiment or technique implemented.
 
-1. **Q10 selection/ranking (retrieval fixed, controlled).** EXP-005 shows
-   segmentation is necessary but insufficient: the 3.6.8 clause-body unit exists
-   but is outranked by the 3.6.7(a)/(b) list and 3.6.10, which lexically match
-   "new/unplanned bands" while 3.6.8 references "3.6.7(a) and 3.6.7(b)". A
-   follow-up experiment should test a controlled ranking/selection rule that uses
-   clause-reference context (e.g. include referenced clause text when scoring or
-   prefer clauses that explicitly answer "For 3.6.7(a) and 3.6.7(b)") without
-   changing retrieval, ground truth or caps.
-2. **Fix Q04/Q12 answer units.** The selected evidence is a heading; the answer
-   needs the following list or definition. This is an answer-unit/sentence
-   segmentation problem, not generation.
-3. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
-   are genuine retrieval misses. Any expansion/reranking must be a separate
-   controlled experiment and must not silently replace the accepted baseline.
-4. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
-   before exposing the application.
-5. Expand the verified evaluation set before making broader quality claims; the
-   EXP-003/004/005 results are on a small, reused 15-question set.
-6. Revisit generation only after upstream coverage improves, with an independent
-   audit and a grounding metric that is not satisfied by wrong evidence.
+### H.2 Milestone roadmap (authoritative, evidence-bounded)
 
-### H.3 Phase status
+Roadmap defined by DR-013. Each milestone requires pre-defined exit evidence; do
+not declare complete without it. Detailed issue tracking: `docs/BACKLOG.md`.
+
+| Milestone | Objective | Key outputs | Exit evidence | Status |
+|---|---|---|---|---|
+| **M0** | Direction & backlog | Authoritative brief/log, backlog, reconciled status | Documented; no new RAG technique added | **Done (this step)** |
+| **M1** | Validated Gemini answer path (local/integration) | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, PDF-linked citations, citation/abstention enforcement, faithfulness checks | Controlled evaluation on current set shows grounded inspectable citations; failures recorded; no silent regression vs extractive traceability | Not started |
+| **M2** | End-to-end application integration | Clean API contract, React UI evidence/citation display, local reproducible run, KNOWN-001/legacy path handled per plan | User can ask and inspect exact evidence/citations locally; API/integration tests pass | Not started |
+| **M3** | Deployment-ready (Vercel Hobby) | Hobby-compatible storage/index strategy, serverless-safe packaging, env/secret handling, cold-start/latency/cost measurements, runbook | Publicly accessible app or documented blocking constraint with approved alternative; measured limits recorded | Not started |
+| **M4** | Golden dataset & offline evaluation | ~50–200 verified Q/A with evidence/citations/abstention labels, retrieval/answer/faithfulness/completeness/citation/abstention metrics, baseline report | Reproducible evaluation with thresholds derived from baseline evidence (not invented) | Not started |
+| **M5** | Quality gates & observability | CI quality checks, tracing, prompt/response/token/cost/latency/citation/failure instrumentation, monitoring/investigation path | CI blocks important regressions per defined thresholds; traces explain request outcomes | Not started |
+| **M6** | Targeted quality improvements | Only justified fixes/experiments for observed gaps (e.g. BL-001..BL-007) | Each change accepted/rejected by controlled evidence; backlog updated | Backlog-driven, not started |
+
+**Recommended immediate next milestone:** **M1 — Validated Gemini answer path**.
+It is the critical dependency for Phase 1, satisfies the fixed LLM constraint, and
+creates the measurable basis for citation enforcement, abstention, integration,
+and later evaluation. Existing answer-quality issues (Q05/Q08/Q10/Q04/Q12) are
+tracked in `docs/BACKLOG.md` and should be addressed in M1 only where they block
+grounded Gemini answers/citation validity, or scheduled as controlled M6
+experiments with evidence.
+
+### H.3 Historical phase status (pre-DR-013)
 
 | Phase | Description | Status |
 |---|---|---|
 | 1 | Independent audit | Done |
 | 2 | Document-processing foundation + strict integrity | Done |
 | 3 | EXP-002 structure-aware chunking experiment | Done (rejected as default) |
-| 4 | Justified chunking refinement (if pursued) | Not started |
-| 5 | Validated production ingestion | Done for accepted baseline (PROD-001) |
-| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; constrained generation evaluated and rejected (EXP-004); Q10 clause-body segmentation evaluated and rejected (EXP-005) |
+| 4 | Justified chunking refinement (if pursued) | Superseded by milestone roadmap/backlog (evidence-gated) |
+| 5 | Validated production ingestion | Done for accepted extractive baseline (PROD-001, EXP-003) |
+| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention validated; local generator rejected (EXP-004); Gemini path, enforcement, UI, eval, deployment pending (M1–M5) |

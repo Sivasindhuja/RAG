@@ -1,377 +1,312 @@
-# SATCOM NGP RAG — Project Brief
+# SATCOM NGP RAG — Project Brief (Authoritative)
 
-Status: living document. Last updated 2026-11-14.
-Owner: engineering. Companion documents: `docs/ENGINEERING_LOG.md`,
+**Status:** living, authoritative project direction. Last updated 2026-11-14.  
+**Owner:** engineering.  
+**Companion documents:** `docs/ENGINEERING_LOG.md`, `docs/BACKLOG.md`,
 `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
 `docs/EXP-005.md`, `docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
----
-
-## 1. Purpose
-
-Build a production-quality, evidence-grounded Retrieval-Augmented Generation
-(RAG) application over the ISRO **Satellite Communications Norm, Guidelines and
-Procedures (SATCOM NGP)** policy PDF.
-
-The application must:
-
-- answer questions **only** from the policy document;
-- attach **traceable citations** (chunk → exact source offsets → PDF page);
-- **abstain** when the retrieved evidence does not support an answer;
-- correctly handle **multi-clause** questions that require several evidence
-  units, not just one passage;
-- be **measurably** better than, or at least not silently worse than, the
-  accepted baseline;
-- be **reproducible** from committed code, configuration and recorded results;
-- be covered by **executed** tests and honest engineering documentation.
-
-This is an engineering project, not a demo. A favourable-looking answer without
-source evidence is a defect, not a success.
+This document defines the fixed destination for the project. Experiments and
+engineering decisions must help us reach it. We do not add complexity without a
+measurable reason, and we do not experiment indefinitely.
 
 ---
 
-## 2. Source of truth
+## 1. Ultimate objective
 
-| Item | Location | Rule |
+Build a **production-grade, domain-specific RAG application for the ISRO SATCOM
+NGP policy document**.
+
+The objective is not a chatbot demo and not a collection of fashionable RAG
+techniques. The system must retrieve relevant policy evidence, generate accurate
+answers grounded in that evidence, provide verifiable citations, and know when it
+cannot answer.
+
+The project has three major phases.
+
+### Phase 1 — Functional RAG application
+
+Deliver a working end-to-end application with:
+
+- PDF ingestion and document processing.
+- Appropriate chunking.
+- Embedding generation.
+- Vector database and indexing.
+- Retrieval pipeline.
+- Answer generation using **Gemini**.
+- Accurate citations linked to the original PDF.
+- Citation enforcement and abstention when evidence is insufficient.
+- A functional user interface.
+
+A user must be able to ask a question and inspect the exact policy evidence used
+to answer it.
+
+### Phase 2 — Production-quality RAG
+
+Improve the system based on observed limitations.
+
+Potential techniques include hybrid retrieval (BM25 + dense), cross-encoder
+reranking, better context construction, citation enforcement, improved
+abstention, and versioned prompts/configurations.
+
+**These are potential solutions, not mandatory components.** Do not implement
+BM25, reranking, query expansion or other techniques because they are popular.
+First identify an actual problem, form a hypothesis, design a controlled
+experiment, measure the outcome, and introduce the technique only if results
+justify it.
+
+### Phase 3 — Evaluation and quality assurance
+
+Build a manually verified golden evaluation dataset of approximately **50–200**
+question–answer pairs.
+
+Implement offline evaluation for retrieval quality, answer correctness,
+faithfulness, completeness, citation correctness, citation coverage, and
+abstention quality.
+
+Integrate evaluation into CI so important quality regressions can prevent changes
+from being accepted.
+
+Define thresholds using actual baseline results and evaluation evidence. **Do not
+invent arbitrary thresholds.**
+
+### Observability and monitoring
+
+Implement an appropriate observability layer. Track:
+
+- Individual request traces.
+- Retrieved chunks, ranking and selection decisions.
+- Prompts and model responses (with appropriate secret/data handling).
+- Token usage and cost per request.
+- P50 and P95 latency.
+- Citation coverage.
+- Failure rates and quality degradation.
+
+Provide useful monitoring and a way to investigate why a request failed.
+
+---
+
+## 2. Fixed project constraints
+
+These are project-level decisions (recorded as DR-013 in `docs/ENGINEERING_LOG.md`).
+
+| Constraint | Decision |
+|---|---|
+| **Corpus** | Exactly one source document for the initial application: `data/satcom-ngp.pdf` (ISRO SATCOM NGP policy). Do not expand to multiple PDFs or arbitrary user uploads. |
+| **LLM** | **Google Gemini** via the Gemini API. Select an appropriate model based on answer quality, availability, cost and latency; document the selected model and configuration. The local Qwen/Ollama generator is experimental only and must not become the production default (EXP-004 rejected). |
+| **Deployment** | **Vercel Hobby plan**. Target a publicly accessible application within Hobby limitations. Account for serverless execution limits, cold starts, function bundle size, and no persistent local filesystem/vector DB across invocations. Investigate a suitable free-tier/Hobby-compatible storage solution. Do not introduce paid infrastructure without explicitly documenting the need and obtaining approval. |
+| **Cost** | Prefer free or free-tier services. Track actual usage and costs. Do not compromise correctness merely to remain within a free tier; document constraints and trade-offs. |
+| **Application** | Retain a clean frontend/backend separation. Use the existing React frontend and Python/FastAPI RAG core where appropriate. Replace legacy implementation details if a cleaner architecture is justified. |
+
+---
+
+## 3. Engineering philosophy
+
+We build a production-quality system by identifying real problems and solving them
+with measurable engineering improvements.
+
+- Exact terminology missed → investigate sparse retrieval/BM25.
+- Semantically relevant evidence missed → investigate embedding/dense retrieval.
+- Irrelevant chunks rank too highly → investigate reranking.
+- Correct evidence retrieved but omitted → investigate evidence selection/context.
+- Unsupported claims → investigate generation constraints/citation enforcement.
+- Quality degrades silently → implement evaluation gates and monitoring.
+- Failures hard to diagnose → improve tracing/observability.
+
+These are examples of problem-to-solution reasoning, not a mandatory sequence.
+Every additional component must have a clear justification.
+
+### 3.1 Source-of-truth and integrity rules
+
+1. **No fabricated policy.** Never invent clauses, answers, clause IDs, pages or citations.
+2. **No silent correction.** Never rewrite source text or ground truth to improve metrics.
+3. **One shared core.** Experiments and production must use the same canonical document/chunking/retrieval/metrics/answering code (`src/rag_core/`). `experiments/exp001.py` is the single frozen historical exception.
+4. **Controlled experiments.** Change one variable at a time; hold PDF, questions, ground truth, embedding, retrieval, top-K and metrics constant unless the experiment is about that variable. Pre-register success criteria.
+5. **Honest reporting.** Do not claim a test passed unless executed. Do not hide failed/unfavourable results. Rejected experiments remain documented.
+6. **Preserve user work.** Do not rewrite commits or discard unrelated changes.
+
+### 3.2 Experimentation rules
+
+For every experiment: establish baseline; identify observed problem; form
+hypothesis; define success criteria before running; identify fixed/changed
+variables; run; inspect aggregate and per-question results; analyse regressions;
+accept/reject/defer/inconclusive; document decision. Never modify an approved
+evaluation dataset merely to improve metrics. Preserve historical experiment
+results.
+
+---
+
+## 4. Definition of project completion
+
+The project is complete when:
+
+1. The SATCOM NGP PDF is ingested reproducibly.
+2. The RAG pipeline works end to end.
+3. Answers are grounded in retrieved policy evidence.
+4. Citations are accurate and inspectable.
+5. Unsupported questions are handled through appropriate abstention.
+6. Retrieval and generation quality are evaluated.
+7. A manually verified golden dataset of approximately 50–200 questions exists.
+8. CI runs quality evaluations and detects important regressions.
+9. The application is deployed on Vercel Hobby.
+10. Observability captures the important pipeline stages.
+11. Latency, cost, citation coverage and failure rates are measured.
+12. The architecture is clean and understandable.
+13. Engineering decisions, bugs, experiments and fixes are documented.
+
+A running chatbot alone does not satisfy the definition of done.
+
+---
+
+## 5. Current implementation status (reconciled 2026-11-14)
+
+Reconciled against the repository and Git history (not prior agent reports).
+Unrelated existing working-tree changes are preserved and not treated as project
+progress: deleted `.github/workflows/rag_eval.yml`, `experiments/rag.py`,
+`experiments/results/eval_report.json`, `src/memory/working.py`,
+`src/metrics/citation.py`, `src/restart.py`, `tests/eval_pipeline.py`,
+`todo.txt`; modified `backend/main.py`.
+
+### 5.1 Completed / validated
+
+| Area | Status | Evidence |
 |---|---|---|
-| Policy PDF | `data/satcom-ngp.pdf` | Immutable input. Never edit policy text. |
-| Extracted corpus | `src/rag_core/document.py` | 15 pages, 35,407 extracted characters. Stored as-is. |
-| Approved questions | `experiments/exp001_questions.csv` | 15 questions (`EXP001-Q01`…`EXP001-Q15`). Do not modify. |
-| Verified ground truth | `experiments/exp001_ground_truth.json` | 20 evidence units with exact excerpts + offsets. Do not modify. |
-| Accepted baseline run | `experiments/results/exp001_v3/` | Frozen historical baseline. Do not regenerate or overwrite. |
-| Frozen baseline code | `experiments/exp001.py` | Historical implementation, kept for reproducibility. Do not refactor. |
+| Source of truth | Fixed | `data/satcom-ngp.pdf` (15 pages, 35,407 chars). Approved 15 questions / 20 evidence units frozen. |
+| Canonical core | **Done** | `src/rag_core/`: `document.py`, `chunker.py`, `index.py`, `evaluation.py`, `pipeline.py`, `generation.py` (experimental). Shared by experiments; production slice uses it. |
+| Document integrity | **Done** | Page-aware heading scan, conservative clause-ID normalization, strict coverage audit (100% non-whitespace, fidelity/bounds/page checks). |
+| Chunking baseline | **Accepted** | EXP-001 v3 fixed-character 1000/200/800, 49 chunks. Reproduced by `FixedCharacterChunker`. |
+| Retrieval baseline | **Accepted** | Dense MiniLM `all-MiniLM-L6-v2`, top-5. Recall@5 0.8889, Precision@5 0.2533, MRR@5 0.7944 (frozen). |
+| Answer selection | **Accepted (extractive)** | EXP-003 sibling-clause selection (ratio 0.5). Statement support 15/45 (0.3333), citation support 16/31 (0.5161), 12/15 answers contain ≥1 supported statement. Q13 3/3. |
+| Citations/provenance | **Done (extractive)** | Verbatim statements with exact global offsets; citations only from contributing chunks; page/section/source traceability. |
+| Abstention | **Smoke-tested** | 12/12 out-of-corpus abstained (8 calibration + 4 held-out). Not a validated answerability classifier; does not catch in-corpus retrieval failure (Q05). |
+| Experiments | **Recorded** | EXP-001 accepted; EXP-002 rejected (structure-aware default); EXP-003 accepted; EXP-004 rejected (constrained local generator, not production); EXP-005 rejected (depth≥3 clause-body units insufficient for Q10). |
+| Tests | **Executed** | `91 passed, 25 warnings` (`python -m pytest tests -q`, 2026-11-14). Warnings are existing Chroma/Pydantic deprecation notices. |
+| Engineering history | **Maintained** | `docs/PROJECT_BRIEF.md`, `docs/ENGINEERING_LOG.md`, `docs/BACKLOG.md`, EXP reports, PROD-001 report. |
 
-Any apparent typo or oddity in the PDF (for example `Satellites�`,
-`Normatves`, `procedurs`) is **source text**, not something the system may
-silently "fix". Ground-truth excerpts must match the extracted bytes exactly.
+### 5.2 Partial / legacy / not production-ready
 
----
+| Area | Status | Notes |
+|---|---|---|
+| End-to-end app | **Not complete** | No validated UI→API→validated RAG→Gemini→cited answer flow. `experiments/production_slice.py` demonstrates the extractive slice, not a deployed service. |
+| Gemini generation | **Not integrated** | `src/generation/models.py` and `src/config` reference Gemini (settings default `gemini-2.0-flash`, prompts exist), but no Gemini answer path is validated for faithfulness/citations. Legacy `backend/main.py` uses `gemini-1.5-pro` and is not on the validated path. |
+| Citation enforcement (LLM) | **Not done** | Extractive path is grounded by construction; LLM citation validity/enforcement is unimplemented/unvalidated. |
+| Frontend | **Legacy/unverified** | React/Vite app exists under `frontend/` but is not verified against the validated pipeline or current API contract. |
+| Backend API | **Legacy, defective** | `backend/main.py` has KNOWN-001 (`raise HTTPException(status_status=429, ...)`), uses legacy collection `satcom_ngp_clauses`, `gemini-1.5-pro`, and unvalidated/modified code paths. Not the validated production path. |
+| Vector DB for production | **Not selected for Vercel** | Validated experiments use local persistent Chroma collections. No Hobby-compatible persistent store chosen/integrated. |
+| Golden dataset (50–200) | **Not started** | Only 15 approved questions / 20 evidence units + 12 out-of-corpus abstention questions exist. |
+| Offline evaluation (Phase 3) | **Not started** | Retrieval metrics exist for the small set; answer correctness/faithfulness/completeness/citation correctness/coverage/abstention quality for LLM answers are not implemented. |
+| CI quality gates | **Not present** | No quality-evaluation CI workflow preventing regressions. (Unrelated deleted workflow exists in working tree; not project progress.) |
+| Observability/monitoring | **Not started** | No request tracing, prompt/response logging with safeguards, token/cost tracking, latency percentiles, citation/failure dashboards, or investigation workflow. |
+| Deployment | **Not started** | No Vercel configuration, no deployed app, no Hobby feasibility validation. |
 
-## 3. Non-negotiable rules
+### 5.3 Known unresolved answer-quality problems
 
-1. **No fabricated policy.** Never invent clauses, answers, clause IDs, page
-   numbers or citations.
-2. **No silent correction.** Never rewrite source text or ground truth to make a
-   metric look better. Corrections are explicit, recorded and re-verified.
-3. **One shared core.** Experiments and production must use the same canonical
-   document/chunking/retrieval/metrics code. Duplicate implementations are not
-   allowed (`experiments/exp001.py` is the single frozen exception, retained as a
-   historical baseline).
-4. **Controlled experiments.** Change one variable at a time. Hold the PDF,
-   questions, ground truth, embedding model, retrieval algorithm, top-K and
-   metric definitions constant unless the experiment is explicitly about that
-   variable.
-5. **Evidence before complexity.** Do not add hybrid retrieval, query expansion,
-   reranking, parent–child retrieval, semantic chunking or generation changes
-   without an observed failure and a controlled experiment that justifies it.
-6. **Honest reporting.** Do not claim a test passed unless it was executed. Do
-   not hide failed or unfavourable results.
-7. **Preserve user work.** Do not rewrite commits or discard unrelated changes.
+| ID | Problem | Type | Evidence |
+|---|---|---|---|
+| Q05 / BL-001 | Evidence not retrieved | Retrieval miss | Recall@5 0.0 (`2.5.6`); answered without support. |
+| Q08 / BL-002 | Required child clauses incomplete | Retrieval miss | Recall@5 0.3333 (1/3 clauses). |
+| Q10 / BL-003 | Evidence retrieved but not selected | Selection/ranking | Recall@5 1.0, 0/3 supported; EXP-003 did not apply, EXP-005 formed 3.6.8 unit but lexical/context ranking still preferred 3.6.7(a)/(b) list and 3.6.10. |
+| Q04 / BL-004 | Heading-only selected evidence | Answer unit | Selector returns heading, not following list. |
+| Q12 / BL-005 | Heading-only selected evidence | Answer unit | Selector returns classification heading, not definition. |
+| Q14 / note | Two statements overlapped one evidence unit | Answer completeness | Known from EXP-003/PROD-001; EXP-005 changed granularity but did not solve completeness. |
+| BL-006 | LLM generator faithfulness/citations | Generation | EXP-004 rejected constrained local synthesis; Gemini path unvalidated. |
+| BL-007 | Abstention misses in-corpus retrieval failure | Abstention | Q05 answered despite missing evidence. |
 
----
-
-## 4. Definition of quality (acceptance criteria)
-
-The system is acceptable only when all of the following are demonstrated. As of
-PROD-001, EXP-003 and EXP-004, retrieval parity, document integrity, extractive
-answer traceability and the abstention smoke test are met; Q13 multi-clause
-coverage is met. Q08 multi-clause completeness, overall answer relevance and
-generation faithfulness are **not** met (see `docs/PRODUCTION_SLICE.md` §9 and
-`docs/EXP-004.md`).
-
-### 4.1 Retrieval
-- Evidence-level Recall@K, Precision@K and MRR@K are reported against the verified
-  20-unit ground truth.
-- No regression against the accepted baseline without a recorded, justified
-  trade-off.
-
-### 4.2 Grounding and citation
-- Every substantive answer claim can be traced to a retrieved chunk, and the
-  chunk can be traced to an exact character range and page in
-  `data/satcom-ngp.pdf`.
-- Citations are derived from metadata, not guessed from model output.
-
-### 4.3 Abstention
-- When no retrieved evidence supports the question, the system says so and does
-  **not** answer from parametric memory.
-
-### 4.4 Multi-clause handling
-- Questions whose answer spans several clauses (e.g. `EXP001-Q08`: 3.4.1–3.4.3;
-  `EXP001-Q13`: 4.3.1–4.3.4) are answered with all required evidence, and missing
-  units are visible in evaluation.
-
-### 4.5 Document integrity
-Every chunk set must satisfy the audit in `src/rag_core/chunker.py`
-(`audit_source_coverage`):
-
-- each chunk is an exact slice of the extracted source;
-- offsets are within bounds;
-- chunk ranges do not overlap;
-- **100% of non-whitespace source characters are covered**;
-- chunk IDs are unique and stable across runs;
-- `chunk_sequence` is contiguous and in source order;
-- page metadata is derivable from offsets;
-- no empty chunks and no chunks larger than the configured maximum.
-
-### 4.6 Reproducibility
-- Configuration, chunks, evidence mapping, retrieval results, metrics and
-  comparison are written to `experiments/results/<experiment>/`.
-- The full test suite passes from a clean checkout of the committed tree.
+Details and prioritization: `docs/BACKLOG.md`.
 
 ---
 
-## 5. Architecture
+## 6. Milestone-based roadmap
 
-### 5.1 Canonical core — `src/rag_core/`
+Roadmap is ordered by dependency and by the fixed destination. Each milestone
+must define success criteria and measured evidence before closure.
+
+| Milestone | Objective | Key outputs | Exit evidence |
+|---|---|---|---|
+| **M0 — Direction & backlog (this step)** | Fix authoritative objective, constraints, roadmap, backlog | Updated brief/log, `docs/BACKLOG.md` | Documented and reconciled; no new RAG technique added |
+| **M1 — Validated Gemini answer path (local/integration)** | Replace/augment extractive-only user answers with Gemini grounded answers on the validated core | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, citation format linked to PDF evidence, abstention/citation enforcement rules, faithfulness checks | Controlled evaluation on current set shows grounded, inspectable citations; failures recorded; no silent regression vs extractive evidence traceability |
+| **M2 — End-to-end application integration** | Connect React UI + FastAPI API + validated RAG/Gemini pipeline | Clean API contract, UI evidence/citation display, local reproducible run, KNOWN-001/legacy path isolated or fixed as planned | User can ask and inspect exact evidence/citations locally; API/integration tests pass |
+| **M3 — Deployment-ready architecture (Vercel Hobby)** | Make system deployable within Hobby constraints | Storage/index strategy (free-tier/Hobby-compatible), serverless-safe packaging, env/config/secret handling, cold-start/latency/cost measurements, deployment runbook | Publicly accessible app or documented blocking constraint with approved alternative; measured limits recorded |
+| **M4 — Golden dataset & offline evaluation** | Build ~50–200 verified Q/A set and evaluation harness | Dataset with evidence/citations/abstention labels, retrieval/answer/faithfulness/completeness/citation/abstention metrics, baseline report | Reproducible evaluation run with documented thresholds derived from baseline evidence |
+| **M5 — Quality gates & observability** | Prevent regressions and make failures diagnosable | CI quality checks, tracing, prompt/response/token/cost/latency/citation/failure instrumentation, monitoring/investigation path | CI blocks important regressions per defined thresholds; traces explain request outcomes |
+| **M6 — Targeted quality improvements** | Address highest-impact observed gaps | Only justified experiments/fixes (e.g. Q05/Q08 retrieval, Q10 reference-aware selection, Q04/Q12 units, abstention, reranking if evidenced) | Each change accepted/rejected by controlled evidence; backlog updated |
+
+Milestones may overlap in planning but must not be declared complete without
+evidence. M6 items are backlog-driven, not a license for indefinite tuning.
+
+---
+
+## 7. Known issues and deferred improvements
+
+Maintained in `docs/BACKLOG.md`. Rules:
+
+1. Document newly discovered important problems.
+2. Assess impact and urgency.
+3. Add to backlog with owner/status/target milestone.
+4. Decide when to address; do not derail current milestone for every issue.
+5. Do not silently discard problems. Rejected experiments remain documented.
+
+---
+
+## 8. Validated core and metrics (reference)
+
+### 8.1 Canonical core — `src/rag_core/`
 
 | Module | Responsibility |
 |---|---|
-| `document.py` | `Page` / `SourceDocument`; PDF extraction; global character offsets; `page_for_offset`. |
-| `chunker.py` | `StructureAwareChunker` and `FixedCharacterChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
-| `index.py` | `DenseIndex` over Chroma; `DenseIndexConfig`; `RetrievedChunk`; `chunk_to_metadata`. |
-| `evaluation.py` | `Question` / `EvidenceUnit`; verified EXP-001 manifest loading into global offsets; metric functions; coverage summary. |
-| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional experimental `clause_body_units` mode (EXP-005, not default); optional generator hook (not the production default). |
-| `generation.py` | Experimental selected-evidence JSON generator used by EXP-004; source-ID mapping and citation attachment. Not wired into the production answer path. |
+| `document.py` | PDF extraction, pages, global character offsets, `page_for_offset`. |
+| `chunker.py` | `StructureAwareChunker`, `FixedCharacterChunker`, heading detection, clause-ID normalization, unique IDs, `audit_source_coverage`. |
+| `index.py` | Dense Chroma index, config, retrieved chunks, metadata. |
+| `evaluation.py` | Verified evidence loading, retrieval metrics, answer-support evaluation. |
+| `pipeline.py` | `GroundedPipeline`: extractive answers, EXP-003 sibling selection, provenance, contributing-chunk citations, abstention policy; experimental `clause_body_units` (off by default); optional unevaluated generator hook. |
+| `generation.py` | Experimental selected-evidence generator (EXP-004), not wired into production. |
 
-Design constraints:
+### 8.2 Retrieval metrics (frozen definitions)
 
-- Extraction is conservative: no stripping or normalisation is stored as source
-  text.
-- Offsets are half-open (`start <= offset < end`) in global document
-  coordinates.
-- Heading blocks are scanned **per page** so a page footer cannot fuse with the
-  next page's first clause (`2` + `2.4` must not become `22.4`).
-- Clause-ID normalisation is conservative and article-aware; it never strips a
-  legitimate ID such as `12.4.1` inside `ARTICLE-12`.
-- Unrecognised or malformed headings never cause content loss; unlabelled body
-  text becomes an unsectioned chunk.
+- **Recall@K** = distinct required evidence units overlapped by top-K / total required.
+- **Precision@K** = relevant top-K chunks / K.
+- **MRR@K** = reciprocal rank of first relevant chunk (0 if none).
 
-### 5.2 Experiments
+Relevance requires overlap with an actual supporting evidence span (character-level).
 
-```
-experiments/
-  exp001.py                  # frozen accepted fixed-character baseline
-  exp001_questions.csv       # approved 15-question dataset (immutable)
-  exp001_ground_truth.json   # 20 verified evidence units (immutable)
-  exp002.py                  # structure-aware chunking experiment
-  exp003.py                  # answer-layer sibling-clause selection experiment
-  exp004.py                  # constrained local-generator evaluation (rejected)
-  exp004_audit.py            # validates the EXP-004 manual audit
-  exp005.py                  # clause-body answer-unit selection for Q10 (rejected)
-  production_slice.py        # accepted baseline + grounded extractive answers
-  unanswerable_questions.csv # 8 calibration + 4 held-out abstention questions
-  results/
-    exp001/                  # historical, invalidated original run (do not use)
-    exp001_v2/               # corrected intermediate run
-    exp001_v3/               # ACCEPTED fixed-character baseline
-    exp002/                  # structure-aware run + comparison + failure analysis
-    exp003/                  # ACCEPTED sibling-clause answer-selection comparison
-    exp004/                  # rejected constrained-generator run + manual audit
-    exp005/                  # rejected clause-body answer-unit run
-    production_slice/        # PROD-001 config, chunks, answers, audit, metrics
-```
+### 8.3 Experiment registry
 
-### 5.3 Production slice (current state)
-
-- `experiments/production_slice.py` (PROD-001) runs the accepted EXP-001
-  fixed-character strategy through the shared core: 49 chunks, 100% non-whitespace
-  coverage, dense top-5 retrieval, extractive cited answers and abstention.
-- Retrieval reproduces EXP-001 exactly: Recall@5 0.8889, Precision@5 0.2533,
-  MRR@5 0.7944.
-- The extractive answer layer is faithful by construction (verbatim statements
-  with exact global offsets) and cites only contributing chunks. It is **not** a
-  complete answer engine: 12/15 answers contain at least one evidence-supported
-  statement, statement support is 15/45 (0.3333) and citation support is 16/31
-  (0.5161).
-- EXP-003 accepted sibling-clause answer selection: Q13 now covers `3/3` evidence
-  units (was `1/3`) with no supported-answer regression. Q08 remains incomplete
-  because only one of its three clauses is retrieved.
-- Abstention was calibrated on 8 out-of-corpus questions and checked on 4
-  held-out questions; all 12 abstained. This is a small smoke test, not a
-  validated answerability classifier.
-- `backend/main.py` and `frontend/` remain the legacy application shell. They
-  still point at legacy collections and an unvalidated pipeline and are **not**
-  the validated production path.
-- EXP-004 evaluated a constrained local generator over the selected evidence and
-  rejected it for the production default. The extractive path remains the only
-  production answer path; no fluency, synthesis or LLM-faithfulness claim is made.
-  Full-context generation was piloted but not run as a complete experiment.
-
-See `docs/PRODUCTION_SLICE.md` for the full result and failure analysis.
-
----
-
-## 6. Metrics (must remain identical across experiments)
-
-Given a question with a set of required verified evidence units:
-
-- **Recall@K** = distinct required evidence units overlapped by the top-K
-  retrieved chunks / total required units.
-- **Precision@K** = retrieved chunks in the top-K that overlap at least one
-  required evidence unit / K.
-- **MRR@K** = reciprocal rank of the first retrieved chunk overlapping any
-  required evidence unit; 0 if none.
-
-A chunk is relevant only when it overlaps an **actual supporting evidence span**
-(character-level, same source). Headings are never ground truth.
-
----
-
-## 7. Experiment protocol
-
-1. State a hypothesis and the single changed variable.
-2. Hold everything else constant (see §3.4 and the experiment's `config.json`).
-3. Run integrity checks **before** measuring retrieval.
-4. Record per-question and aggregate metrics.
-5. Manually inspect failures and regressions; aggregate numbers alone are not
-   sufficient on a 15-question dataset.
-6. Record outcome as **accepted**, **rejected** or **inconclusive**, with the
-   reasoning, in `docs/ENGINEERING_LOG.md`.
-7. Keep outputs isolated per experiment.
-
-### Experiment registry
-
-| ID | Variable changed | Status | Aggregate Recall@5 / Precision@5 / MRR@5 |
+| ID | Variable | Status | Key result |
 |---|---|---|---|
-| EXP-001 v3 | none (baseline) | **Accepted** | 0.8889 / 0.2533 / 0.7944 |
-| EXP-002 | chunking → structure-aware | **Rejected** as default | 0.8833 / 0.1867 / 0.6244 |
-| PROD-001 | production slice over accepted baseline | **Accepted retrieval; limited answer layer** | 0.8889 / 0.2533 / 0.7944 |
-| EXP-003 | answer selection → sibling clauses | **Accepted** | retrieval unchanged; statement support 0.2889 → 0.3333 |
-| EXP-004 | answer synthesis → local generator over selected evidence | **Rejected** for production default | retrieval unchanged; 14/16 claims grounded (0.875 < 0.90 gate); manual correctness 5/6/4 |
-| EXP-005 | answer units → depth>=3 clause-body grouping (Q10) | **Rejected** | retrieval unchanged; Q10 0/3 unchanged, statement support 0.3333 → 0.3111, Q14 statement count -1 |
-
-Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
-`docs/EXP-004.md`, `docs/EXP-005.md`, `docs/PRODUCTION_SLICE.md`,
-`docs/ENGINEERING_LOG.md`.
+| EXP-001 v3 | baseline | **Accepted** | Recall@5 0.8889, Precision@5 0.2533, MRR@5 0.7944 |
+| EXP-002 | chunking → structure-aware | **Rejected** default | 0.8833 / 0.1867 / 0.6244 |
+| PROD-001 | production extractive slice | **Accepted retrieval, limited answers** | retrieval parity; statement 15/45, citation 16/31, 12/15 supported |
+| EXP-003 | answer selection → sibling clauses | **Accepted** | Q13 1/3→3/3; statement 0.2889→0.3333 |
+| EXP-004 | selected-evidence local generator | **Rejected** production | gate 0.875<0.90; manual audit 5/6/4, 4 incorrect same as extractive |
+| EXP-005 | depth≥3 clause-body units (Q10) | **Rejected** | Q10 0/3; 3.6.8 unit formed but outranked; Q14 statement -1 |
 
 ---
 
-## 8. Current status and roadmap
-
-### Done
-- Independent repository audit and identification of document-integrity defects.
-- Phase 2: canonical document model, structure-aware chunker, strict integrity
-  audit, shared dense index, shared evidence/metrics core.
-- Phase 3: EXP-002 controlled structure-aware chunking experiment, including
-  failure analysis and a documented **rejection** of this configuration as the
-  production default.
-- Phase 5 (accepted baseline): PROD-001 production slice — shared
-  fixed-character ingestion, strict audit, dense retrieval, extractive cited
-  answers and an abstention policy. Retrieval matches EXP-001 exactly.
-- Phase 6 (partial): EXP-003 controlled answer-layer experiment — sibling-clause
-  selection accepted. Statement support improved from 13/45 (0.2889) to 15/45
-  (0.3333); Q13 evidence coverage improved from 1/3 to 3/3.
-- Phase 6 (generation): EXP-004 constrained local-generator evaluation —
-  rejected. Mechanical gate failed on grounding rate (0.875 < 0.90); manual audit
-  found 5 correct / 6 partial / 4 incorrect, no ungrounded claim and one partial
-  grounding. Production remains extractive.
-- Phase 6 (answer units): EXP-005 clause-body answer-unit segmentation for Q10 —
-  rejected. The 3.6.8 procedure unit was formed but not selected (lexical/context
-  ranking favored the 3.6.7(a)/(b) list and 3.6.10); Q14 supported-statement
-  count regressed 2→1. Production remains EXP-003 selection.
-- Test suite: **91 passed** (`python -m pytest tests -q`), including core,
-  evaluation, fixed-chunker, grounded-answer, generation-contract and
-  clause-body segmentation tests.
-
-### Next
-- **Q10 (controlled, retrieval fixed):** EXP-005 showed clause-body segmentation
-  is necessary but insufficient; the 3.6.8 unit was outranked because the question
-  states "new/unplanned bands" while 3.6.8 refers to "3.6.7(a)/(b)". Test a
-  reference-aware/ranking selection rule (e.g. use referenced clause context when
-  scoring) without changing retrieval, ground truth or caps.
-- **Q04/Q12:** fix heading/list-definition answer units (answer-unit problem, not
-  generation).
-- **Q05/Q08:** decide retrieval work from evidence (Recall@5 0.0/0.3333); keep it
-  as a separate controlled experiment.
-- Expand the verified evaluation set before broader quality claims.
-- Revisit generation only after upstream coverage improves, with an independent
-  audit and a grounding metric that is not satisfied by wrong evidence.
-- Fix KNOWN-001 and isolate/retire unvalidated legacy paths before exposing the
-  app.
-
----
-
-## 9. Known limitations and risks
-
-- **Small evaluation set.** 15 questions / 20 evidence units. Treat small metric
-  differences as noisy; require manual failure inspection.
-- **Clause granularity trade-off.** Clause-level chunks help pinpoint answers but
-  can lose the broader context needed for compound questions (observed in
-  EXP-002: Q08 and Q13).
-- **Very small chunks.** EXP-002 produced 16 chunks under 100 characters, which
-  can carry weak embedding signal.
-- **Legacy backend defect (open).** `backend/main.py` contains
-  `raise HTTPException(status_status=429, ...)` (invalid keyword) and still uses
-  legacy collections/pipeline. Not used by the validated experiments.
-- **Answer relevance is weak.** The extractive selector is lexical and sentence
-  based. All statements are verbatim source text, but only 15/45 statements across
-  the 15 questions overlap a verified evidence unit, and 3/15 answers contain no
-  supported statement. Q10 retrieves the 3.6.8 evidence but selects the wrong
-  sentences; EXP-005 formed the correct clause-body unit but lexical/context
-  ranking still did not select it.
-- **Multi-clause completeness is partial.** Q13 is now covered by EXP-003, but
-  Q08 still lacks required child clauses because only one of three is retrieved;
-  Q05 has a retrieval miss. Answer quality cannot exceed retrieval recall for
-  questions whose evidence is absent from the top-5.
-- **Abstention is a small smoke test.** Thresholds were calibrated on 8
-  out-of-corpus questions and checked on 4 held-out questions (12/12 abstained).
-  They do not detect in-corpus retrieval failures such as Q05, and no adversarial
-  or partially answerable set has been evaluated.
-- **Generation is not production-validated.** EXP-004 evaluated constrained
-  synthesis over selected evidence and rejected it: the mechanical grounding gate
-  failed, four answers remained incorrect, and the generator inherited upstream
-  retrieval/selection failures. Full-context generation was piloted but not run
-  as a complete experiment. README performance claims predate and are not
-  produced by the validated pipeline in this brief.
-- **Chroma telemetry warnings.** Harmless
-  `Failed to send telemetry event … capture() takes 1 positional argument`
-  messages may appear; they do not affect results.
-- **Environment.** Python 3.11, Chroma 0.5.23, sentence-transformers 3.0.1,
-  `sentence-transformers/all-MiniLM-L6-v2`.
-
----
-
-## 10. Commands
+## 9. Commands
 
 ```bash
 # Full test suite
 python -m pytest tests -q
 
-# Reproduce EXP-002 (writes to experiments/results/exp002/)
-python -m experiments.exp002
-
-# Reproduce PROD-001 (writes to experiments/results/production_slice/)
+# Reproduce accepted baseline / experiments
 python -m experiments.production_slice
-
-# Reproduce EXP-003 (writes to experiments/results/exp003/)
 python -m experiments.exp003
-
-# Reproduce EXP-004 (requires local Ollama + qwen2.5:1.5b)
-python -m experiments.exp004
-
-# Validate the EXP-004 manual audit and write its summary
+python -m experiments.exp004   # requires local Ollama + qwen2.5:1.5b
 python -m experiments.exp004_audit
-
-# Reproduce EXP-005 (reuses production index, retrieval fixed)
 python -m experiments.exp005
 ```
 
-The accepted EXP-001 baseline is reproduced only from its frozen runner and
-artifacts; it is not re-run as part of normal development. PROD-001 verifies
-fixed-character equivalence and retrieval parity against the frozen artifacts.
+EXP-001 v3 is reproduced only from its frozen runner/artifacts.
 
 ---
 
-## 11. Documentation index
+## 10. Documentation index
 
 | Document | Purpose |
 |---|---|
-| `docs/PROJECT_BRIEF.md` | This specification and acceptance criteria. |
-| `docs/ENGINEERING_LOG.md` | Decisions, defects, experiments, rejected approaches, risks, test evidence. |
-| `docs/EXP-001.md` | Accepted fixed-character baseline. |
-| `docs/EXP-002.md` | Structure-aware chunking experiment report. |
-| `docs/EXP-003.md` | Sibling-clause answer-selection experiment, decision rule and results. |
-| `docs/EXP-004.md` | Constrained local-generator evaluation, mechanical gate, manual audit and rejection. |
-| `docs/EXP-005.md` | Clause-body answer-unit segmentation for Q10, root cause, scoring analysis and rejection. |
-| `docs/PRODUCTION_SLICE.md` | PROD-001 architecture, integrity, retrieval parity, answer/citation metrics, abstention and failure analysis. |
-| `docs/CHUNKING_STRATEGY.md` | Earlier chunking design analysis (context only; EXP-002 supersedes its unvalidated assumptions). |
+| `docs/PROJECT_BRIEF.md` | Authoritative objective, constraints, roadmap, status. |
+| `docs/ENGINEERING_LOG.md` | Decisions, defects, experiments, verification, risks, history. |
+| `docs/BACKLOG.md` | Known issues and deferred improvements. |
+| `docs/EXP-001.md` … `docs/EXP-005.md` | Experiment reports. |
+| `docs/PRODUCTION_SLICE.md` | Validated extractive slice. |
+| `docs/CHUNKING_STRATEGY.md` | Historical design analysis (context only). |
