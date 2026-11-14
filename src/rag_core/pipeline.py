@@ -229,6 +229,46 @@ def _sentence_spans(text: str) -> List[tuple[str, int, int]]:
     return spans
 
 
+def _answer_unit_spans(text: str, clause_body_units: bool = False) -> List[tuple[str, int, int]]:
+    """Return answer-unit spans used for extractive selection.
+
+    The default unit is a sentence span.  When ``clause_body_units`` is enabled,
+    a numbered subclause start (depth >= 3, e.g. ``3.6.8``) is grouped with
+    contiguous body sentences until the next numbered clause start in the same
+    chunk.  Grouping preserves clause identity and procedural steps that appear in
+    the body of a clause (EXP-005), while keeping each unit as an exact, verbatim
+    source substring.  Level-1/2 headings are left as sentence units to avoid
+    swallowing child clauses or broad section introductions.
+    """
+    spans = _sentence_spans(text)
+    if not clause_body_units:
+        return spans
+
+    units: List[tuple[str, int, int]] = []
+    index = 0
+    while index < len(spans):
+        sentence, start, end = spans[index]
+        match = _CLAUSE_START_RE.match(sentence)
+        if match and len(match.group(1).split(".")) >= 3:
+            block_start = start
+            block_end = end
+            index += 1
+            while index < len(spans) and not _CLAUSE_START_RE.match(spans[index][0]):
+                block_end = spans[index][2]
+                index += 1
+            raw = text[block_start:block_end]
+            unit = raw.strip()
+            if unit:
+                left = len(raw) - len(raw.lstrip())
+                right = len(raw) - len(raw.rstrip())
+                units.append((unit, block_start + left, block_end - right))
+            continue
+
+        units.append((sentence, start, end))
+        index += 1
+    return units
+
+
 def _idf_weights(hits: Sequence[RetrievedChunk]) -> dict[str, float]:
     """Token weights from the retrieved set, so specific terms outrank generic ones."""
     documents = [set(content_tokens(hit.text)) for hit in hits]
@@ -312,6 +352,7 @@ class GroundedPipeline:
         max_quote_chars: int = 500,
         generator: Optional[Generator] = None,
         sibling_score_ratio: Optional[float] = DEFAULT_SIBLING_SCORE_RATIO,
+        clause_body_units: bool = False,
     ) -> None:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
@@ -329,6 +370,7 @@ class GroundedPipeline:
         self.max_quote_chars = max_quote_chars
         self.generator = generator
         self.sibling_score_ratio = sibling_score_ratio
+        self.clause_body_units = clause_body_units
 
     def answer(self, question: str) -> GroundedAnswer:
         question = question.strip()
@@ -436,7 +478,9 @@ class GroundedPipeline:
         candidates = []
         seen: set[str] = set()
         for position, hit in enumerate(considered):
-            for sentence_index, (sentence, local_start, local_end) in enumerate(_sentence_spans(hit.text)):
+            for sentence_index, (sentence, local_start, local_end) in enumerate(
+                _answer_unit_spans(hit.text, self.clause_body_units)
+            ):
                 normalized = " ".join(sentence.lower().split())
                 if not normalized or normalized in seen:
                     continue

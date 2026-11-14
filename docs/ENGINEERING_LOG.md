@@ -5,7 +5,7 @@ Scope: decisions, defects, experiments, rejected approaches, verification eviden
 risks and next actions for the SATCOM NGP RAG project.
 
 Companion documents: `docs/PROJECT_BRIEF.md`, `docs/EXP-001.md`,
-`docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
+`docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`, `docs/EXP-005.md`,
 `docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 Convention: entries are append-only in spirit. Do not rewrite history to make a
@@ -326,6 +326,73 @@ not fix retrieval or selection failures because it never saw unselected chunks.
 
 See `docs/EXP-004.md` and `experiments/results/exp004/`.
 
+### DR-012 — Clause-body-aware answer units investigated and rejected (EXP-005)
+
+**Context.** Q10 retrieved the required 3.6.8 evidence (`Recall@5 = 1.0`) but the
+accepted extractive selector returned 0/3 supported statements. The evidence is
+the complete 3.6.8 procedure for 3.6.7(a)/(b): first come, first served,
+government-owned priority in conflict, discussions with applicants, common API,
+and decision at AP S4 filing or later.
+
+**Root cause (recorded before implementation).**
+1. Sentence segmentation fragmented 3.6.8 into four answer units; only the first
+   carried clause ID `3.6.8`, so the three body procedure sentences had no clause
+   identity.
+2. Lexical scoring favored the 3.6.7(a)-(e) list (`(a) new orbit-spectrum`,
+   `(b) unplanned bands`) and 3.6.10 because the question names "new or unplanned
+   bands", while 3.6.8 refers to them as "3.6.7(a) and 3.6.7(b)".
+3. The 3-sentence cap could not assemble the complete four-step procedure even if
+   body sentences were partially ranked.
+4. Sibling-clause selection did not apply to the selected top units.
+
+**Options considered.**
+- Keep sentence units (EXP-003 baseline): known to miss Q10.
+- Group every numbered clause start with its body: rejected during inspection
+  because depth-2 headings (e.g. `4.3`, `4.4`) can swallow child clauses or broad
+  introductions and changed Q13 selection badly in a quick check.
+- Group only depth>=3 subclauses with contiguous body sentences until the next
+  numbered clause start in the same chunk: smallest clause-body-aware change that
+  preserves 3.6.8 as one verbatim unit while leaving depth-2 headings as sentence
+  units.
+
+**Decision.** Run EXP-005 with depth>=3 clause-body grouping as the candidate
+against the accepted EXP-003 selector. **Reject** the candidate as the
+production default.
+
+**Experiment.** Retrieval, chunks, embeddings, questions, evidence, citations,
+abstention and answer caps were held fixed; both arms received identical
+precomputed hits from the production index (`sibling_score_ratio=0.5`).
+
+**Results.**
+
+| Measure | Baseline (EXP-003) | Candidate (clause-body units) | Delta |
+|---|---:|---:|---:|
+| Supported answers | 12/15 | 12/15 | 0 |
+| Supported statements | 15/45 (0.3333) | 14/45 (0.3111) | -1 (-0.0222) |
+| Supported citations | 16/31 (0.5161) | 16/32 (0.5000) | 0 (-0.0161) |
+| Q10 evidence covered / supported statements | no / 0/3 | no / 0/3 | 0 |
+| Abstention | 12/12 | 12/12 | 0 |
+
+Q10 remained unanswered by evidence (0/3 supported, 3.6.8 chunk not cited, no key
+procedure phrase present). The grouped 3.6.8 unit scored 4.914 but ranked behind
+the 3.6.7(a)-(e) list (11.323), the grouped 3.6.10 unit (9.176) and a 3.6.9-tail
+sentence (5.801). Q14 regressed in supported-statement count (2/3 -> 1/3)
+because 4.4.4 became a selected clause-body unit while the 4.4.3+body merge still
+covered `EXP001-Q14-E01` but no longer produced a second supported statement;
+evidence coverage for Q14 remained present.
+
+**Consequences.**
+- Production selection remains EXP-003 sentence units + sibling promotion.
+- Clause-body segmentation alone is **not sufficient** for Q10: the needed unit is
+  created, but lexical/context ranking still does not select it.
+- Future Q10 work must address answer-unit ranking/context (e.g. reference-aware
+  selection, clause-reference resolution, or a different controlled selection
+  rule), not only segmentation granularity.
+- Regression coverage: `tests/test_pipeline.py` adds depth-3 grouping and depth-2
+  non-grouping tests.
+
+See `docs/EXP-005.md` and `experiments/results/exp005/`.
+
 ---
 
 ## C. Defect log
@@ -592,6 +659,55 @@ wired into production. Q04/Q12 headings, Q05/Q08 retrieval misses and Q10
 selection remain upstream problems. See `docs/EXP-004.md` and
 `experiments/results/exp004/`.
 
+### EXP-005 — Clause-body-aware answer-unit selection (rejected)
+
+**Role.** Controlled answer-layer experiment targeting Q10, whose required 3.6.8
+evidence is retrieved but not selected by the accepted EXP-003 extractive path.
+
+**Root cause (before implementation).** 3.6.8 was fragmented into four sentence
+units; body sentences lacked clause identity. Lexical selection favored the
+3.6.7(a)-(e) definitional list and 3.6.10 over the 3.6.8 procedure body because
+the question states "new or unplanned bands" while 3.6.8 references "3.6.7(a)
+and 3.6.7(b)". The 3-sentence cap and sibling rule could not assemble the full
+procedure.
+
+**Hypothesis.** Grouping a depth>=3 clause start with contiguous body sentences
+(until the next numbered clause start in the same chunk) preserves clause
+identity and complete procedure as one verbatim answer unit.
+
+**Controlled variable.** Answer-unit segmentation only: EXP-003 sentence units
+vs depth>=3 clause-body units. Retrieval, chunks, embeddings, questions,
+evidence, citations, abstention, answer caps and sibling ratio (0.5) held fixed;
+identical precomputed hits.
+
+**Pre-registered acceptance.** Q10 covers `EXP001-Q10-E01`, cites
+`satcom-ngp::page_8::chunk_0::off17796`, and contains all key procedure phrases
+(first come first served, government-owned priority, discussions with applicants,
+common API/Advanced Publication of Information, AP S4 filing/later decision);
+no non-Q10 regression in supported statements/citations/answer support; supported
+answers not lower; statement support not lower; citation support delta >= -0.02;
+abstention 12/12 unchanged.
+
+**Results.**
+
+| Measure | Baseline (EXP-003) | Candidate | Delta |
+|---|---:|---:|---:|
+| Supported answers | 12/15 | 12/15 | 0 |
+| Supported statements | 15/45 (0.3333) | 14/45 (0.3111) | -1 |
+| Supported citations | 16/31 (0.5161) | 16/32 (0.5000) | 0 |
+| Q10 supported statements / evidence | 0/3 / no | 0/3 / no | 0 |
+| Abstention | 12/12 | 12/12 | 0 |
+
+Q10 failed all Q10 checks. The grouped 3.6.8 unit scored 4.914 but ranked below
+the 3.6.7(a)-(e) list (11.323), grouped 3.6.10 (9.176) and a 3.6.9-tail sentence
+(5.801), so it was not selected. Q14 regressed in supported-statement count
+(2 -> 1) after 4.4.4 became a selected clause-body unit; `EXP001-Q14-E01`
+remained covered by a merged 4.4.3+body statement.
+
+**Decision.** Reject (DR-012). Clause-body segmentation alone is insufficient:
+it creates the required unit but lexical/context ranking still does not select it.
+Production remains EXP-003. See `docs/EXP-005.md` and `experiments/results/exp005/`.
+
 ---
 
 ## E. Rejected approaches
@@ -608,6 +724,7 @@ selection remain upstream problems. See `docs/EXP-004.md` and
 | RA-008 | Tune the lexical answer selector without a controlled protocol on the 15-question set | Exploratory sweeps (sentence count, heading penalty, length normalisation, relative score floors) risk overfitting a small set. Deferred to EXP-003, which tested one pre-registered selection rule and accepted it only after all decision checks passed. |
 | RA-009 | Adopt cross-encoder sentence reranking after an informal check | `cross-encoder/ms-marco-MiniLM-L-6-v2` raised statement support to 17/45 at three sentences but regressed Q13 to 0/3 and cost ~456 ms per query on CPU. Not adopted without a full controlled experiment and because it did not fix the main observed failure. |
 | RA-010 | Adopt a local LLM generator over selected evidence | EXP-004's `qwen2.5:1.5b` synthesis passed the citation/uncited-claim checks but failed the pre-registered grounding rate (0.875 < 0.90). The manual audit found 4/15 answers still incorrect (same as extractive), 1/15 partially grounded, and no evidence it fixes upstream retrieval/selection failures. Rejected for the production default; revisit only after upstream coverage improves. |
+| RA-011 | Replace sentence units with depth>=3 clause-body units as the default selector input | EXP-005 showed this creates the needed 3.6.8 procedure unit but does not fix Q10 (0/3 supported; 3.6.8 not selected due lexical/context ranking) and regresses Q14 supported-statement count (2 -> 1) and aggregate statement/citation support. Rejected; Q10 needs a controlled ranking/reference-aware selection change, not segmentation alone. |
 
 ---
 
@@ -617,9 +734,10 @@ selection remain upstream problems. See `docs/EXP-004.md` and
 
 Command: `python -m pytest tests -q`
 
-Result (executed 2026-11-14, after EXP-004): **89 passed, 25 warnings** in
-~29.4 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
-tests, EXP-003 added 4, and EXP-004 added 7 generation-contract tests.
+Result (executed 2026-11-14, after EXP-005): **91 passed, 25 warnings** in
+~10.7 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
+tests, EXP-003 added 4, EXP-004 added 7 generation-contract tests, and EXP-005
+added 2 pipeline segmentation tests.
 
 Warnings are non-fatal Pydantic deprecation notices raised by Chroma
 (`Accessing the 'model_fields' attribute on the instance is deprecated`).
@@ -639,10 +757,11 @@ Coverage added across this work:
 - `tests/test_fixed_chunker.py` — 6 tests: chunk-by-chunk equivalence with the
   frozen 49 accepted EXP-001 v3 chunks, overlap/page boundaries, audit behaviour,
   unique/stable IDs, empty pages, invalid configuration.
-- `tests/test_pipeline.py` — 19 tests: extractive verbatim answers, sentence
+- `tests/test_pipeline.py` — 21 tests: extractive verbatim answers, sentence
   provenance, citation-only-contributors, heading deprioritisation, sibling-clause
   selection and threshold behaviour, `answer_from_hits` reuse, abstention branches,
-  generator hook, token support, limit/dedupe, fallback.
+  generator hook, token support, limit/dedupe, fallback, and depth-aware
+  clause-body answer-unit grouping (EXP-005).
 - `tests/test_generation.py` — 7 tests: selected-evidence prompt construction,
   source-ID → original-marker mapping, invalid-source recording, empty-model
   abstention, malformed JSON, duplicate-key detection and missing-field
@@ -703,6 +822,12 @@ Coverage added across this work:
   and `decision.md` under `experiments/results/exp004/`. The generator run used
   an isolated `chroma_db_exp004/` collection. Observed generator latency:
   mean 3,757.21 ms, median 3,256.99 ms, max 7,818.54 ms for 15 answered questions.
+- EXP-005 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
+  `answers_baseline.json`, `answers_candidate.json`, `abstention_results.json`,
+  `comparison.json`, `per_question_metrics.csv`, `latency.json` and `summary.md`
+  under `experiments/results/exp005/`. It reused the production index with
+  identical precomputed retrieval hits. Observed selection latency:
+  baseline 2.00 ms mean, candidate 1.86 ms mean (negligible; varies by run).
 
 ---
 
@@ -711,18 +836,19 @@ Coverage added across this work:
 | ID | Risk / open item | Impact | Mitigation / next step |
 |---|---|---|---|
 | R-001 | Evaluation set is small (15 Q / 20 units) | Metric deltas are noisy; overfitting to the set is easy | Require manual failure inspection; prefer clear directional results; expand dataset with verified units before large claims |
-| R-002 | Compound questions can lose child-clause coverage | Wrong/incomplete answers for Q08/Q10-type questions | Q13 is fixed by EXP-003 sibling-clause selection; Q08 remains a retrieval miss and Q10 needs clause-body handling. Continue with controlled experiments. |
+| R-002 | Compound questions can lose child-clause coverage | Wrong/incomplete answers for Q08/Q10-type questions | Q13 is fixed by EXP-003 sibling-clause selection; Q08 remains a retrieval miss. EXP-005 showed clause-body segmentation alone does not fix Q10 (ranking/context still selects 3.6.7(a)/(b)/3.6.10). |
 | R-003 | Very small chunks (<100 chars) weaken embeddings | Poor ranking / MRR | Consider minimum-size merge rules inside the structure-aware strategy, as a controlled change |
 | R-004 | Legacy backend has `status_status` bug and unvalidated pipeline (KNOWN-001) | App path may fail or bypass validation | Fix keyword; isolate legacy advanced components; build validated ingestion on `src/rag_core` |
 | R-005 | Generation quality is not established | Cannot claim generative answer quality | EXP-004 evaluated constrained synthesis and rejected it; full-context generation remains unevaluated. Keep extractive default until a generator beats it under a controlled protocol. |
 | R-006 | README performance claims (faithfulness 1.00, context recall 0.60) are not from this pipeline | Misleading project status | Treat as legacy; supersede with validated experiment reports |
 | R-007 | Chroma telemetry warnings | Noise in logs | Ignore; does not affect correctness |
 | R-008 | Environment drift (Python/Chroma/sentence-transformers versions) | Non-reproducible numbers | Record versions; pin before final release |
-| R-009 | Lexical sentence selection still misses evidence that retrieval already found (Q10) | Incomplete/irrelevant answers despite perfect recall | EXP-003 fixed Q13; Q10 needs clause-body-aware answer units. Do not add a reranker without a controlled experiment. |
+| R-009 | Lexical/context selection still misses evidence that retrieval already found (Q10) | Incomplete/irrelevant answers despite perfect recall | EXP-005 tested depth>=3 clause-body answer units and was rejected: the 3.6.8 unit was formed but ranked below the 3.6.7(a)/(b) list and 3.6.10. Next controlled candidate is reference-aware/ranking selection, not segmentation alone. |
 | R-010 | Multi-clause completeness partial; Q05 retrieval recall is 0.0 | Q08 answer lacks required child clauses; Q05 has no evidence in top-5 | Treat as open acceptance failure; decide retrieval vs answer-layer fix by experiment |
 | R-011 | Abstention policy does not detect in-corpus retrieval failure | Q05 is answered without supporting evidence | Add answerability/relevance checks only with a labelled evaluation set; do not tune on the 15 questions |
 | R-012 | EXP-003's 0.5 sibling threshold and +0.044 improvement come from a small, reused 15-question set | Improvement may not generalise | Keep the rule but validate on an expanded/independent set before treating the delta as a general quality claim |
 | R-013 | EXP-004's generator conclusion rests on a selected-evidence design, one small local model, one reviewer and a lexical grounding proxy | The result may not generalise to full-context or larger models | State the scope explicitly; do not claim "generation is worse" in general. Re-evaluate with independent labels and an upstream-fixed selector before revisiting. |
+| R-014 | EXP-005 shows clause-body grouping can change statement granularity/counts (Q14 2->1 supported statements) while preserving evidence coverage | Statement-count metrics can move without evidence loss; a naive "no regression" gate may reject coherent merges | Inspect per-question evidence coverage and answer content, not only counts; define acceptance to distinguish evidence loss from granularity changes. |
 
 ---
 
@@ -766,22 +892,36 @@ Coverage added across this work:
     partially grounded completion. Rejected for production (DR-011, RA-010).
     Added `src/rag_core/generation.py`, `tests/test_generation.py`,
     `docs/EXP-004.md` and the EXP-004 audit artifacts. Full suite now 89 passed.
+16. Ran EXP-005: depth>=3 clause-body-aware answer-unit segmentation for Q10 with
+    retrieval/selection inputs fixed. Root cause: 3.6.8 was fragmented and its
+    body lacked clause identity while question terms matched the 3.6.7(a)/(b)
+    list. The candidate formed the 3.6.8 unit but did not select it (scores:
+    list 11.323, 3.6.10 9.176, 3.6.9-tail 5.801, 3.6.8 4.914), left Q10 at 0/3,
+    and regressed Q14 supported-statement count (2 -> 1). Rejected (DR-012,
+    RA-011). Added `clause_body_units` support/tests in the pipeline,
+    `experiments/exp005.py`, `docs/EXP-005.md` and `experiments/results/exp005/`.
+    Full suite now 91 passed.
 
-### H.2 Next actions (ordered)
+### H.2 Next actions (ordered, evidence-based)
 
-1. **Run a controlled answer-layer experiment for Q10, retrieval fixed.** Its
-   evidence is inside a `3.6.8` clause body, not at a clause start, so the
-   sibling rule cannot find it. Candidate: clause-body-aware answer units.
-2. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
+1. **Q10 selection/ranking (retrieval fixed, controlled).** EXP-005 shows
+   segmentation is necessary but insufficient: the 3.6.8 clause-body unit exists
+   but is outranked by the 3.6.7(a)/(b) list and 3.6.10, which lexically match
+   "new/unplanned bands" while 3.6.8 references "3.6.7(a) and 3.6.7(b)". A
+   follow-up experiment should test a controlled ranking/selection rule that uses
+   clause-reference context (e.g. include referenced clause text when scoring or
+   prefer clauses that explicitly answer "For 3.6.7(a) and 3.6.7(b)") without
+   changing retrieval, ground truth or caps.
+2. **Fix Q04/Q12 answer units.** The selected evidence is a heading; the answer
+   needs the following list or definition. This is an answer-unit/sentence
+   segmentation problem, not generation.
+3. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
    are genuine retrieval misses. Any expansion/reranking must be a separate
    controlled experiment and must not silently replace the accepted baseline.
-3. **Fix Q04/Q12 answer units.** The selected evidence is a heading; the answer
-   needs the following list or definition. This is a sentence-unit problem, not
-   a generation problem.
 4. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
    before exposing the application.
 5. Expand the verified evaluation set before making broader quality claims; the
-   EXP-003 threshold and EXP-004 labels are not independently validated.
+   EXP-003/004/005 results are on a small, reused 15-question set.
 6. Revisit generation only after upstream coverage improves, with an independent
    audit and a grounding metric that is not satisfied by wrong evidence.
 
@@ -794,4 +934,4 @@ Coverage added across this work:
 | 3 | EXP-002 structure-aware chunking experiment | Done (rejected as default) |
 | 4 | Justified chunking refinement (if pursued) | Not started |
 | 5 | Validated production ingestion | Done for accepted baseline (PROD-001) |
-| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; constrained generation evaluated and rejected (EXP-004) |
+| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; constrained generation evaluated and rejected (EXP-004); Q10 clause-body segmentation evaluated and rejected (EXP-005) |

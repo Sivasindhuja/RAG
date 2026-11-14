@@ -1,0 +1,858 @@
+{
+  "experiment_id": "EXP-005",
+  "build_stats": {
+    "chunks": 49
+  },
+  "retrieval_results": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_12::chunk_0::off28001",
+          "section": "3.7.5",
+          "start_offset": 28001,
+          "end_offset": 29001,
+          "distance": 0.7868784754606898,
+          "evidence_ids": []
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.8109041127345267,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.8368596512375134,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.8627434968948364,
+          "evidence_ids": [
+            "EXP001-Q01-E01"
+          ]
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.8681163787841797,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.25
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 0.7789109349250793,
+          "evidence_ids": [
+            "EXP001-Q02-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 0.7857189899056041,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 0.7867725946833687,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+          "section": "2.4",
+          "start_offset": 4699,
+          "end_offset": 5699,
+          "distance": 0.7888224124908447,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_3::chunk_2::off6299",
+          "section": "2.5.5",
+          "start_offset": 6299,
+          "end_offset": 6865,
+          "distance": 0.8307586616439746,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 0.9928306341171265,
+          "evidence_ids": [
+            "EXP001-Q03-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_0::off6865",
+          "section": "2.5.7",
+          "start_offset": 6865,
+          "end_offset": 7865,
+          "distance": 0.9956468262963027,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 1.0155964809856575,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 1.0221103429794312,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_4::chunk_3::off9265",
+          "section": "2.7",
+          "start_offset": 9265,
+          "end_offset": 9588,
+          "distance": 1.0474735995605238,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+          "section": "2.4",
+          "start_offset": 4699,
+          "end_offset": 5699,
+          "distance": 0.9438762068748474,
+          "evidence_ids": [
+            "EXP001-Q04-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 0.9697626829147339,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_0::off6865",
+          "section": "2.5.7",
+          "start_offset": 6865,
+          "end_offset": 7865,
+          "distance": 1.0197770928248289,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "section": "2.3",
+          "start_offset": 4117,
+          "end_offset": 4699,
+          "distance": 1.082115888595581,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 1.1204487274570563,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+          "section": null,
+          "start_offset": 29601,
+          "end_offset": 30178,
+          "distance": 0.8424245812761417,
+          "evidence_ids": []
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.9031206594941568,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+          "section": "3.7.2.2",
+          "start_offset": 22860,
+          "end_offset": 23860,
+          "distance": 0.9225567196645627,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_12::chunk_1::off28801",
+          "section": null,
+          "start_offset": 28801,
+          "end_offset": 29801,
+          "distance": 0.9601141149272308,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+          "section": "3.3",
+          "start_offset": 11188,
+          "end_offset": 11948,
+          "distance": 0.9889668172797909,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "section": "2.6.3",
+          "start_offset": 8465,
+          "end_offset": 9465,
+          "distance": 0.79521408415835,
+          "evidence_ids": [
+            "EXP001-Q06-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_4::chunk_3::off9265",
+          "section": "2.7",
+          "start_offset": 9265,
+          "end_offset": 9588,
+          "distance": 0.8143424437844502,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+          "section": "2.6.2",
+          "start_offset": 7665,
+          "end_offset": 8665,
+          "distance": 0.8689494733668529,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_3::chunk_2::off6299",
+          "section": "2.5.5",
+          "start_offset": 6299,
+          "end_offset": 6865,
+          "distance": 0.9396643896871728,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_2::chunk_0::off2517",
+          "section": null,
+          "start_offset": 2517,
+          "end_offset": 3517,
+          "distance": 0.9687787890434265,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+          "section": "3.2",
+          "start_offset": 10388,
+          "end_offset": 11388,
+          "distance": 0.4030090524773789,
+          "evidence_ids": [
+            "EXP001-Q07-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.509799599647522,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.5677900651966948,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_5::chunk_0::off9588",
+          "section": "3.1",
+          "start_offset": 9588,
+          "end_offset": 10588,
+          "distance": 0.5773008985869403,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.5933955907821655,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.4366637115559649,
+          "evidence_ids": []
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.4414274451275659,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+          "section": "3.3",
+          "start_offset": 11188,
+          "end_offset": 11948,
+          "distance": 0.4735851092198782,
+          "evidence_ids": [
+            "EXP001-Q08-E01"
+          ]
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_12::chunk_1::off28801",
+          "section": null,
+          "start_offset": 28801,
+          "end_offset": 29801,
+          "distance": 0.4864047575159649,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.5274830662765975,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 0.3333,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_7::chunk_2::off16530",
+          "section": "3.6.5",
+          "start_offset": 16530,
+          "end_offset": 17530,
+          "distance": 0.7345921464879942,
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_7::chunk_1::off15730",
+          "section": "3.6.2",
+          "start_offset": 15730,
+          "end_offset": 16730,
+          "distance": 0.8036404935738976,
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ]
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_2::off24460",
+          "section": "3.7.3",
+          "start_offset": 24460,
+          "end_offset": 25460,
+          "distance": 1.09448148668426,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 1.1067980472106054,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_11::chunk_1::off26500",
+          "section": "3.7.4.2",
+          "start_offset": 26500,
+          "end_offset": 27500,
+          "distance": 1.1106886600364334,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_7::chunk_3::off17330",
+          "section": null,
+          "start_offset": 17330,
+          "end_offset": 17794,
+          "distance": 0.7982071100882533,
+          "evidence_ids": []
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_8::chunk_1::off18596",
+          "section": "3.6.10",
+          "start_offset": 18596,
+          "end_offset": 19596,
+          "distance": 0.9012313259802882,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_8::chunk_0::off17796",
+          "section": "3.6.8",
+          "start_offset": 17796,
+          "end_offset": 18796,
+          "distance": 1.0164874994295638,
+          "evidence_ids": [
+            "EXP001-Q10-E01"
+          ]
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_10::chunk_3::off25260",
+          "section": null,
+          "start_offset": 25260,
+          "end_offset": 25700,
+          "distance": 1.0366762613777976,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_10::chunk_2::off24460",
+          "section": "3.7.3",
+          "start_offset": 24460,
+          "end_offset": 25460,
+          "distance": 1.0635809000147947,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+          "section": "3.7.1",
+          "start_offset": 20403,
+          "end_offset": 21403,
+          "distance": 1.2656642004768794,
+          "evidence_ids": [
+            "EXP001-Q11-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_6::chunk_3::off14350",
+          "section": "3.6.1",
+          "start_offset": 14350,
+          "end_offset": 14930,
+          "distance": 1.3346528249237526,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_8::chunk_2::off19396",
+          "section": "3.6.12",
+          "start_offset": 19396,
+          "end_offset": 20396,
+          "distance": 1.3496172635129553,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_7::chunk_0::off14930",
+          "section": null,
+          "start_offset": 14930,
+          "end_offset": 15930,
+          "distance": 1.351639477044138,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_8::chunk_0::off17796",
+          "section": "3.6.8",
+          "start_offset": 17796,
+          "end_offset": 18796,
+          "distance": 1.4263105959257503,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "section": "4.3",
+          "start_offset": 30978,
+          "end_offset": 31978,
+          "distance": 0.46801317349823995,
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.47774673609023144,
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ]
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.6428928375244141,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+          "section": "4.3.4",
+          "start_offset": 32496,
+          "end_offset": 33496,
+          "distance": 0.6436807286408135,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "section": null,
+          "start_offset": 2,
+          "end_offset": 1002,
+          "distance": 0.7149718403816223,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "section": "4.3",
+          "start_offset": 30978,
+          "end_offset": 31978,
+          "distance": 0.5390628434002145,
+          "evidence_ids": [
+            "EXP001-Q13-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.5810809660475786,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+          "section": "4.3.4",
+          "start_offset": 32496,
+          "end_offset": 33496,
+          "distance": 0.7184899781982012,
+          "evidence_ids": [
+            "EXP001-Q13-E04"
+          ]
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "section": "4.3.2",
+          "start_offset": 31778,
+          "end_offset": 32494,
+          "distance": 0.7186364707122692,
+          "evidence_ids": [
+            "EXP001-Q13-E01",
+            "EXP001-Q13-E02",
+            "EXP001-Q13-E03"
+          ]
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_1::chunk_2::off1602",
+          "section": "2.2",
+          "start_offset": 1602,
+          "end_offset": 2517,
+          "distance": 0.7406806349754333,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "section": "4.4.4",
+          "start_offset": 34096,
+          "end_offset": 35096,
+          "distance": 0.4417938770457151,
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_5::chunk_0::off9588",
+          "section": "3.1",
+          "start_offset": 9588,
+          "end_offset": 10588,
+          "distance": 0.5432291646040703,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.5640254619379819,
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ]
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "section": "4.1",
+          "start_offset": 30178,
+          "end_offset": 31178,
+          "distance": 0.5726996677093592,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_12::chunk_0::off28001",
+          "section": "3.7.5",
+          "start_offset": 28001,
+          "end_offset": 29001,
+          "distance": 0.5956639261308388,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_15::chunk_0::off35187",
+          "section": "4.4.6",
+          "start_offset": 35187,
+          "end_offset": 35406,
+          "distance": 0.6167944433951558,
+          "evidence_ids": [
+            "EXP001-Q15-E01"
+          ]
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+          "section": null,
+          "start_offset": 29601,
+          "end_offset": 30178,
+          "distance": 0.6657431128704868,
+          "evidence_ids": []
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+          "section": "3.7.2.2",
+          "start_offset": 22860,
+          "end_offset": 23860,
+          "distance": 0.669513885500405,
+          "evidence_ids": []
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "section": "4.4.1",
+          "start_offset": 33296,
+          "end_offset": 34296,
+          "distance": 0.6713091871242624,
+          "evidence_ids": []
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+          "section": "3.6",
+          "start_offset": 13550,
+          "end_offset": 14550,
+          "distance": 0.6971722053816097,
+          "evidence_ids": []
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0
+    }
+  ]
+}

@@ -300,3 +300,58 @@ def test_content_tokens_and_token_support():
     hits = [_hit("c1", "satellite licensing authority")]
     assert token_support("satellite licensing rules", hits) == pytest.approx(2 / 3)
     assert token_support("xyzabc", hits) == 0.0
+
+
+def test_clause_body_units_group_depth3_clause_with_following_body_sentences():
+    text = (
+        "3.6.8 For 3.6.7(a) and 3.6.7(b) authorisation shall be on a first come first served basis. "
+        "In case of a conflict, Government owned system shall have priority. "
+        "In case such a solution is not possible, the Administration may file a common API. \n\n"
+        "3.6.9 For 3.6.7(c) and 3.6.7(d) only the Licensee may be considered."
+    )
+    hit = _hit("c1", text, section="3.6.8", start_offset=1000)
+
+    baseline = GroundedPipeline(_FakeIndex([hit]), clause_body_units=False).answer(
+        "procedure same orbit spectrum first come first served conflict priority common API"
+    )
+    grouped = GroundedPipeline(_FakeIndex([hit]), clause_body_units=True).answer(
+        "procedure same orbit spectrum first come first served conflict priority common API"
+    )
+
+    assert baseline.status == ANSWERED
+    assert grouped.status == ANSWERED
+    assert len(baseline.statements) >= 2
+    assert len(grouped.statements) == 1
+    statement = grouped.statements[0]
+    assert statement.text.startswith("3.6.8 For 3.6.7(a)")
+    assert "Government owned system shall have priority." in statement.text
+    assert "common API." in statement.text
+    assert "3.6.9" not in statement.text
+    assert (
+        text[statement.start_offset - hit.start_offset : statement.end_offset - hit.start_offset]
+        == statement.text
+    )
+
+
+def test_clause_body_units_do_not_group_depth2_headings():
+    text = (
+        "4.3 DOMESTIC COMMUNICATION SERVICES CLASSIFICATION \n\n"
+        "In so far as Domestic Satellite Communications Services are concerned, convergence applies. \n\n"
+        "4.3.1 Broadcasting services include television."
+    )
+    hit = _hit("c1", text, section="4.3", start_offset=500)
+
+    pipeline = GroundedPipeline(_FakeIndex([hit]), clause_body_units=True)
+    answer = pipeline.answer("domestic communication services classification")
+
+    assert answer.status == ANSWERED
+    assert answer.statements
+    assert answer.statements[0].text.startswith("4.3 DOMESTIC COMMUNICATION SERVICES CLASSIFICATION")
+    assert "4.3.1" not in answer.statements[0].text
+    assert (
+        text[
+            answer.statements[0].start_offset - hit.start_offset : answer.statements[0].end_offset
+            - hit.start_offset
+        ]
+        == answer.statements[0].text
+    )

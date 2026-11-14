@@ -1,0 +1,13 @@
+{
+  "experiment_id": "EXP-005",
+  "baseline": {
+    "mean_ms": 2.0,
+    "median_ms": 1.94,
+    "max_ms": 2.53
+  },
+  "candidate": {
+    "mean_ms": 1.86,
+    "median_ms": 1.82,
+    "max_ms": 2.36
+  }
+}

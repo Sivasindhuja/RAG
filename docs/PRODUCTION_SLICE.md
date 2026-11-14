@@ -277,7 +277,7 @@ production path.
 # Grounded answer + abstention tests
 python -m pytest tests/test_pipeline.py tests/test_fixed_chunker.py -q
 
-# Full suite (last executed: 89 passed, 25 Chroma/Pydantic warnings)
+# Full suite (last executed: 91 passed, 25 Chroma/Pydantic warnings)
 python -m pytest tests -q
 
 # Rebuild the production index and write all artifacts
@@ -291,6 +291,9 @@ python -m experiments.exp004
 
 # Validate the EXP-004 manual audit
 python -m experiments.exp004_audit
+
+# Controlled clause-body answer-unit experiment (reuses production index)
+python -m experiments.exp005
 ```
 
 Outputs under `experiments/results/production_slice/`:
@@ -322,7 +325,7 @@ and do not affect results.
 | Citations only from contributing chunks | Met |
 | Abstention on out-of-corpus questions | Smoke met (12/12, small set) |
 | Multi-clause completeness | **Partial**: Q13 met (3/3, EXP-003); Q08 not met (retrieval miss) |
-| Answer relevance / correctness | **Not met** as a quality bar |
+| Answer relevance / correctness | **Not met** as a quality bar: Q10 remains 0/3 after EXP-005 (clause-body segmentation rejected; ranking/context issue) |
 | Generation faithfulness | **Not met / rejected for production**: EXP-004 mechanical gate failed (0.875 grounding vs 0.90) and manual audit found 4/15 incorrect |
 
 The slice is suitable as the validated retrieval-and-provenance foundation. It is
@@ -332,13 +335,14 @@ not yet a user-facing answer system.
 
 ## 10. Next work
 
-1. A controlled answer-layer experiment for Q10: its evidence is inside a clause
-   body, not at a clause start. Candidate directions are clause-aware answer
-   units or explicit clause-block segmentation, holding retrieval fixed.
-2. Decide whether retrieval expansion is justified for Q05/Q08, with the same
-   PDF, questions, ground truth, embedding, top-K and metrics held constant.
-3. Fix Q04/Q12 answer units: the selected evidence is a heading; the following
-   list or definition is needed.
+1. **Q10 (retrieval fixed):** EXP-005 tested depth>=3 clause-body segmentation
+   and was rejected. The 3.6.8 procedure unit was formed but outranked by the
+   3.6.7(a)/(b) list and 3.6.10 because the question states "new/unplanned bands"
+   while 3.6.8 references "3.6.7(a)/(b)". Next candidate: a controlled
+   reference-aware/ranking selection rule.
+2. **Q04/Q12:** fix heading/list-definition answer units.
+3. **Q05/Q08:** decide retrieval work from evidence (Recall@5 0.0/0.3333) in a
+   separate controlled experiment.
 4. Expand the verified question/evidence set before making broader quality claims.
 5. Revisit generation only after upstream coverage improves, with an independent
    audit and a grounding metric that is not satisfied by wrong evidence.

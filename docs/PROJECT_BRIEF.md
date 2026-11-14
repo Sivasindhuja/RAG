@@ -3,7 +3,7 @@
 Status: living document. Last updated 2026-11-14.
 Owner: engineering. Companion documents: `docs/ENGINEERING_LOG.md`,
 `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
-`docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
+`docs/EXP-005.md`, `docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 ---
 
@@ -130,7 +130,7 @@ Every chunk set must satisfy the audit in `src/rag_core/chunker.py`
 | `chunker.py` | `StructureAwareChunker` and `FixedCharacterChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
 | `index.py` | `DenseIndex` over Chroma; `DenseIndexConfig`; `RetrievedChunk`; `chunk_to_metadata`. |
 | `evaluation.py` | `Question` / `EvidenceUnit`; verified EXP-001 manifest loading into global offsets; metric functions; coverage summary. |
-| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional generator hook (not the production default). |
+| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional experimental `clause_body_units` mode (EXP-005, not default); optional generator hook (not the production default). |
 | `generation.py` | Experimental selected-evidence JSON generator used by EXP-004; source-ID mapping and citation attachment. Not wired into the production answer path. |
 
 Design constraints:
@@ -157,6 +157,7 @@ experiments/
   exp003.py                  # answer-layer sibling-clause selection experiment
   exp004.py                  # constrained local-generator evaluation (rejected)
   exp004_audit.py            # validates the EXP-004 manual audit
+  exp005.py                  # clause-body answer-unit selection for Q10 (rejected)
   production_slice.py        # accepted baseline + grounded extractive answers
   unanswerable_questions.csv # 8 calibration + 4 held-out abstention questions
   results/
@@ -166,6 +167,7 @@ experiments/
     exp002/                  # structure-aware run + comparison + failure analysis
     exp003/                  # ACCEPTED sibling-clause answer-selection comparison
     exp004/                  # rejected constrained-generator run + manual audit
+    exp005/                  # rejected clause-body answer-unit run
     production_slice/        # PROD-001 config, chunks, answers, audit, metrics
 ```
 
@@ -236,9 +238,11 @@ A chunk is relevant only when it overlaps an **actual supporting evidence span**
 | PROD-001 | production slice over accepted baseline | **Accepted retrieval; limited answer layer** | 0.8889 / 0.2533 / 0.7944 |
 | EXP-003 | answer selection → sibling clauses | **Accepted** | retrieval unchanged; statement support 0.2889 → 0.3333 |
 | EXP-004 | answer synthesis → local generator over selected evidence | **Rejected** for production default | retrieval unchanged; 14/16 claims grounded (0.875 < 0.90 gate); manual correctness 5/6/4 |
+| EXP-005 | answer units → depth>=3 clause-body grouping (Q10) | **Rejected** | retrieval unchanged; Q10 0/3 unchanged, statement support 0.3333 → 0.3111, Q14 statement count -1 |
 
 Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
-`docs/EXP-004.md`, `docs/PRODUCTION_SLICE.md`, `docs/ENGINEERING_LOG.md`.
+`docs/EXP-004.md`, `docs/EXP-005.md`, `docs/PRODUCTION_SLICE.md`,
+`docs/ENGINEERING_LOG.md`.
 
 ---
 
@@ -261,25 +265,29 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
   rejected. Mechanical gate failed on grounding rate (0.875 < 0.90); manual audit
   found 5 correct / 6 partial / 4 incorrect, no ungrounded claim and one partial
   grounding. Production remains extractive.
-- Test suite: **89 passed** (`python -m pytest tests -q`), including core,
-  evaluation, fixed-chunker, grounded-answer and generation-contract tests.
+- Phase 6 (answer units): EXP-005 clause-body answer-unit segmentation for Q10 —
+  rejected. The 3.6.8 procedure unit was formed but not selected (lexical/context
+  ranking favored the 3.6.7(a)/(b) list and 3.6.10); Q14 supported-statement
+  count regressed 2→1. Production remains EXP-003 selection.
+- Test suite: **91 passed** (`python -m pytest tests -q`), including core,
+  evaluation, fixed-chunker, grounded-answer, generation-contract and
+  clause-body segmentation tests.
 
 ### Next
-- Run a controlled answer-layer experiment for Q10, whose evidence sits inside a
-  clause body rather than at a clause start. Candidate: clause-aware answer units,
-  holding retrieval fixed.
-- Decide from evidence whether retrieval expansion is justified for Q05 (recall
-  0.0) and Q08 (0.3333); do not add hybrid retrieval/reranking without an
-  experiment.
-- Fix Q04/Q12 answer units: the selected evidence is a heading; the following
-  list or definition is needed. This is a sentence-unit problem, not a generator
-  problem.
-- Expand the verified question/evidence set before broader quality claims.
-- Revisit generation only after upstream Q05/Q08/Q10/Q04/Q12 coverage improves,
-  with an independent audit and a grounding metric that is not satisfied by
-  relevant-looking wrong evidence.
-- Fix the legacy backend defect and retire or isolate unvalidated legacy paths
-  before exposing the app.
+- **Q10 (controlled, retrieval fixed):** EXP-005 showed clause-body segmentation
+  is necessary but insufficient; the 3.6.8 unit was outranked because the question
+  states "new/unplanned bands" while 3.6.8 refers to "3.6.7(a)/(b)". Test a
+  reference-aware/ranking selection rule (e.g. use referenced clause context when
+  scoring) without changing retrieval, ground truth or caps.
+- **Q04/Q12:** fix heading/list-definition answer units (answer-unit problem, not
+  generation).
+- **Q05/Q08:** decide retrieval work from evidence (Recall@5 0.0/0.3333); keep it
+  as a separate controlled experiment.
+- Expand the verified evaluation set before broader quality claims.
+- Revisit generation only after upstream coverage improves, with an independent
+  audit and a grounding metric that is not satisfied by wrong evidence.
+- Fix KNOWN-001 and isolate/retire unvalidated legacy paths before exposing the
+  app.
 
 ---
 
@@ -298,8 +306,9 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
 - **Answer relevance is weak.** The extractive selector is lexical and sentence
   based. All statements are verbatim source text, but only 15/45 statements across
   the 15 questions overlap a verified evidence unit, and 3/15 answers contain no
-  supported statement. Q10 retrieves the evidence but selects the wrong
-  sentences.
+  supported statement. Q10 retrieves the 3.6.8 evidence but selects the wrong
+  sentences; EXP-005 formed the correct clause-body unit but lexical/context
+  ranking still did not select it.
 - **Multi-clause completeness is partial.** Q13 is now covered by EXP-003, but
   Q08 still lacks required child clauses because only one of three is retrieved;
   Q05 has a retrieval miss. Answer quality cannot exceed retrieval recall for
@@ -342,6 +351,9 @@ python -m experiments.exp004
 
 # Validate the EXP-004 manual audit and write its summary
 python -m experiments.exp004_audit
+
+# Reproduce EXP-005 (reuses production index, retrieval fixed)
+python -m experiments.exp005
 ```
 
 The accepted EXP-001 baseline is reproduced only from its frozen runner and
@@ -360,5 +372,6 @@ fixed-character equivalence and retrieval parity against the frozen artifacts.
 | `docs/EXP-002.md` | Structure-aware chunking experiment report. |
 | `docs/EXP-003.md` | Sibling-clause answer-selection experiment, decision rule and results. |
 | `docs/EXP-004.md` | Constrained local-generator evaluation, mechanical gate, manual audit and rejection. |
+| `docs/EXP-005.md` | Clause-body answer-unit segmentation for Q10, root cause, scoring analysis and rejection. |
 | `docs/PRODUCTION_SLICE.md` | PROD-001 architecture, integrity, retrieval parity, answer/citation metrics, abstention and failure analysis. |
 | `docs/CHUNKING_STRATEGY.md` | Earlier chunking design analysis (context only; EXP-002 supersedes its unvalidated assumptions). |
