@@ -1,18 +1,18 @@
-"""Constrained generation over already-selected evidence.
+"""Constrained, evidence-grounded generation over selected evidence.
 
-This module does **not** retrieve or select evidence.  It takes the verbatim
-sentences chosen by :class:`~src.rag_core.pipeline.GroundedPipeline` and asks a
-local model to rewrite them into a concise answer under a strict JSON contract:
+This module does **not** retrieve or select evidence.  It takes verbatim
+evidence units selected by :class:`~src.rag_core.pipeline.GroundedPipeline` and
+asks a model to answer under a strict JSON contract:
 
-- every generated claim must name one or more selected evidence sentences;
-- source IDs are validated against the supplied evidence;
-- the caller attaches the original citation markers, so a generated claim can
-  never cite a chunk that the extractive selector did not already select.
+- every generated claim must name one or more supplied evidence IDs;
+- source IDs are validated by the application against the supplied evidence;
+- citation markers/metadata are resolved by the application from the selected
+  evidence (the model must not emit or be trusted for section/page/source refs);
+- if evidence is insufficient, the result is abstention (not a guess).
 
-The contract is deliberately narrow.  The purpose is to evaluate synthesis
-quality separately from retrieval and selection, not to let a generator invent
-policy facts.  A generated answer is still not guaranteed to be faithful; its
-claims must be checked against the evidence.
+Generators: :class:`OllamaGenerator` (EXP-004, local/experimental, rejected for
+production) and :class:`GeminiGenerator` (M1 validated Gemini path). Faithfulness
+is not guaranteed by generation; claims must be evaluated against evidence.
 """
 
 from __future__ import annotations
@@ -30,7 +30,13 @@ MODEL_ABSTAINED = "model_abstained"
 GENERATION_ERROR = "generation_error"
 
 INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+EVIDENCE_INSUFFICIENT = "evidence_insufficient"
 DEFAULT_GENERATOR_MODEL = "qwen2.5:1.5b"
+
+GEMINI_PROMPT_VERSION = "m1-v1"
+DEFAULT_GEMINI_MODEL = "gemini-2.0-flash"
+DEFAULT_GEMINI_TEMPERATURE = 0.0
+DEFAULT_GEMINI_MAX_OUTPUT_TOKENS = 512
 DEFAULT_GENERATOR_OPTIONS: Dict[str, Any] = {
     "temperature": 0,
     "top_p": 0.9,
@@ -107,7 +113,11 @@ class GeneratedAnswer:
 
 
 def build_selected_evidence_prompt(question: str, statements: Sequence[AnswerStatement]) -> str:
-    """Build the JSON-contract prompt for the selected evidence sentences."""
+    """Build the JSON-contract prompt for the selected evidence sentences.
+
+    Kept for backward compatibility (EXP-004). New Gemini path uses
+    :func:`build_gemini_evidence_prompt`.
+    """
     if not statements:
         raise ValueError("at least one selected evidence statement is required")
     evidence = "\n".join(f"[{index}] {statement.text}" for index, statement in enumerate(statements, 1))
@@ -125,6 +135,45 @@ Rules:
 - Do not repeat a sentence or claim. Use at most 3 sentences.
 - If the evidence does not answer the question, return {{"sentences": []}}.
 - Do not change the policy meaning.
+
+Evidence:
+{evidence}
+
+Question: {question}
+"""
+
+
+def build_gemini_evidence_prompt(
+    question: str,
+    statements: Sequence[AnswerStatement],
+    prompt_version: str = GEMINI_PROMPT_VERSION,
+) -> str:
+    """Build the versioned Gemini prompt for supplied-evidence-only answering.
+
+    Evidence is identified only by opaque numeric IDs [1..N]. The application
+    validates cited IDs and resolves them to actual source metadata; the model
+    must not emit or rely on page/section/source references.
+    """
+    if not statements:
+        raise ValueError("at least one selected evidence statement is required")
+    evidence = "\n".join(f"[{index}] {statement.text}" for index, statement in enumerate(statements, 1))
+    maximum = len(statements)
+    return f"""You are a careful policy analyst for the ISRO SATCOM NGP document.
+Prompt version: {prompt_version}
+
+Task: answer the question using ONLY the evidence items below. Do not use outside knowledge, general world knowledge, or assumptions about policy not stated in the evidence.
+
+Return valid JSON only with exactly this shape:
+{{"sentences": [{{"text": "...", "sources": [1]}}]}}
+
+Rules:
+- Use only evidence IDs from 1 to {maximum}. Do not invent IDs.
+- Every sentence must be a factual claim supported by the cited evidence ID(s). Cite every evidence ID that supports the sentence.
+- Do not include page numbers, section numbers, clause labels, chunk IDs, or source metadata in your text.
+- Do not include background, interpretation, or facts not explicitly present in the cited evidence.
+- Do not repeat claims. Use at most 3 sentences.
+- If the evidence is insufficient or does not answer the question, return {{"sentences": []}}.
+- Preserve the policy meaning; do not paraphrase into a different claim.
 
 Evidence:
 {evidence}
@@ -312,11 +361,10 @@ def assemble_generated_answer(
 
 
 class OllamaGenerator:
-    """Small local-model client for the selected-evidence contract.
+    """Small local-model client for the selected-evidence contract (EXP-004).
 
     Importing this module does not require Ollama.  The dependency is imported
-    only when a generation is actually requested, so the extractive core and its
-    tests remain independent of the local runtime.
+    only when a generation is actually requested.
     """
 
     def __init__(
@@ -377,3 +425,128 @@ class OllamaGenerator:
             latency_ms=latency_ms,
             metadata=metadata,
         )
+
+
+class GeminiGenerator:
+    """Gemini client for the supplied-evidence-only JSON claim contract (M1).
+
+    The application, not the model, validates source IDs and resolves citations
+    to actual source metadata from selected evidence. The model must not emit
+    page/section/source references; any such text is ignored by parsing.
+
+    Requires `GOOGLE_API_KEY` or `GEMINI_API_KEY` in the environment unless an
+    already-configured `google.generativeai` client is usable.
+    """
+
+    def __init__(
+        self,
+        model: str = DEFAULT_GEMINI_MODEL,
+        temperature: float = DEFAULT_GEMINI_TEMPERATURE,
+        max_output_tokens: int = DEFAULT_GEMINI_MAX_OUTPUT_TOKENS,
+        prompt_version: str = GEMINI_PROMPT_VERSION,
+        api_key: Optional[str] = None,
+    ) -> None:
+        self.model = model
+        self.temperature = temperature
+        self.max_output_tokens = max_output_tokens
+        self.prompt_version = prompt_version
+        self.api_key = api_key
+
+    def _configure(self) -> None:
+        import os
+
+        import google.generativeai as genai
+
+        key = self.api_key or os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if key:
+            genai.configure(api_key=key)
+
+    def generate(
+        self,
+        question: str,
+        statements: Sequence[AnswerStatement],
+        citations: Sequence[Citation],
+        *,
+        evidence_sufficient: bool = True,
+        insufficiency_reason: Optional[str] = None,
+    ) -> GeneratedAnswer:
+        if not statements:
+            return GeneratedAnswer(
+                status=MODEL_ABSTAINED,
+                question=question,
+                text=INSUFFICIENT_EVIDENCE,
+                claims=[],
+                citations=[],
+                evidence_statements=[],
+                raw_response="",
+                model=self.model,
+                latency_ms=0.0,
+                errors=[],
+                metadata={"reason": insufficiency_reason or "no_selected_evidence", "prompt_version": self.prompt_version},
+            )
+        if not evidence_sufficient:
+            return GeneratedAnswer(
+                status=MODEL_ABSTAINED,
+                question=question,
+                text=INSUFFICIENT_EVIDENCE,
+                claims=[],
+                citations=[],
+                evidence_statements=list(statements),
+                raw_response="",
+                model=self.model,
+                latency_ms=0.0,
+                errors=[],
+                metadata={"reason": insufficiency_reason or EVIDENCE_INSUFFICIENT, "prompt_version": self.prompt_version},
+            )
+
+        prompt = build_gemini_evidence_prompt(question, statements, prompt_version=self.prompt_version)
+        started = time.perf_counter()
+        try:
+            self._configure()
+            import google.generativeai as genai
+
+            api_model = self.model if self.model.startswith("models/") else f"models/{self.model}"
+            model = genai.GenerativeModel(
+                api_model,
+                generation_config={
+                    "temperature": self.temperature,
+                    "max_output_tokens": self.max_output_tokens,
+                    "response_mime_type": "application/json",
+                },
+            )
+            response = model.generate_content(prompt)
+            raw = (getattr(response, "text", None) or "").strip()
+            latency_ms = (time.perf_counter() - started) * 1000.0
+            metadata = {
+                "prompt_version": self.prompt_version,
+                "temperature": self.temperature,
+                "max_output_tokens": self.max_output_tokens,
+            }
+            usage = getattr(response, "usage_metadata", None)
+            if usage is not None:
+                metadata["prompt_token_count"] = getattr(usage, "prompt_token_count", None)
+                metadata["candidates_token_count"] = getattr(usage, "candidates_token_count", None)
+                metadata["total_token_count"] = getattr(usage, "total_token_count", None)
+            return assemble_generated_answer(
+                question,
+                statements,
+                citations,
+                raw,
+                model=self.model,
+                latency_ms=latency_ms,
+                metadata=metadata,
+            )
+        except Exception as exc:  # noqa: BLE001 - recorded as an experiment failure
+            return GeneratedAnswer(
+                status=GENERATION_ERROR,
+                question=question,
+                text="",
+                claims=[],
+                citations=[],
+                evidence_statements=list(statements),
+                raw_response="",
+                model=self.model,
+                latency_ms=(time.perf_counter() - started) * 1000.0,
+                errors=[f"{type(exc).__name__}: {exc}"],
+                metadata={"prompt_version": self.prompt_version},
+            )

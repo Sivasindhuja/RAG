@@ -456,6 +456,82 @@ future experiments/changes must cite the milestone/problem they serve.
 
 **Status.** Accepted.
 
+### DR-014 — M1 validated Gemini answer path (implemented, live validation blocked)
+
+**Date.** 2026-11-14.
+
+**Context.** M1 requires a Gemini-based, evidence-grounded answer path over the
+accepted retrieval/selection baseline (EXP-001/EXP-003) with verifiable
+citations, abstention, and evaluation on the 15-question set. No chunking or
+retrieval changes are permitted in M1.
+
+**Problem.** Provide a trustworthy Gemini generation contract and evaluation
+harness: versioned prompt, supplied-evidence-only claims, app-validated citation
+IDs resolved to actual source metadata, abstention for out-of-corpus and
+in-corpus insufficient-evidence cases, and mechanical/manual evaluation.
+
+**Options considered.**
+- Reuse legacy `backend/main.py` Gemini path (`gemini-1.5-pro`, unvalidated
+  collection/pipeline): rejected (KNOWN-001, not on validated core, no claim/citation contract).
+- Let model emit section/page citations: rejected; model-generated metadata is
+  untrusted. **Selected:** opaque evidence IDs in prompt, app validates IDs and
+  resolves markers/citations from selected evidence objects (actual chunk_id,
+  section, page, offsets).
+- Rely only on pipeline distance/token-support abstention: rejected as
+  insufficient for trustworthiness because Q05 (retrieval miss, Recall@5 0.0)
+  was answered with unsupported evidence. **Selected:** add M1 selected-evidence
+  sufficiency gate before generation (abstain if pipeline abstained, no selected
+  statements, or lexical support of question against selected statements < 0.5);
+  record as heuristic, not a general answerability classifier.
+- Block M1 entirely until API credentials available: rejected; implement and
+  test the path/contract/harness so live validation can run immediately when
+  credentials are provided.
+
+**Decision/implementation.**
+- Added `GeminiGenerator`, `GEMINI_PROMPT_VERSION='m1-v1'`,
+  `build_gemini_evidence_prompt`, and sufficiency-gate handling in
+  `src/rag_core/generation.py`; exports in `src/rag_core/__init__.py`.
+- Prompt/contract: JSON `{"sentences":[{"text":"...","sources":[1]}]}` over
+  selected evidence only; no outside knowledge; no page/section/metadata in model
+  text; empty list on insufficient evidence. Citation IDs validated and mapped to
+  app-owned markers/citations by `assemble_generated_answer`.
+- Added `experiments/m1_gemini_eval.py` and artifacts in
+  `experiments/results/m1_gemini/` (config, integrity audit, retrieval, extractive
+  answers, Gemini answers, abstention, manual audit template, per-question
+  comparison, summary). Fixed/changed: retrieval/selection none; generation
+  backend Gemini (blocked in run).
+- Model selection procedure implemented (actual availability required): list
+  `generateContent` models, preference
+  `gemini-2.0-flash` → `gemini-2.0-flash-lite` → `gemini-1.5-flash*` → flash
+  fallback, then probe for availability/latency/token metadata. Final model not
+  selected.
+
+**Results (2026-11-14, no API key).**
+- Tests: `python -m pytest tests -q` → **97 passed, 27 warnings** (added 6 Gemini
+  generation-contract tests; warnings include existing Chroma/Pydantic notices
+  and google/grpc deprecation warnings).
+- Extractive baseline unchanged: 15/15 answered, 12/15 supported answers,
+  15/45 statements (0.3333), 16/31 citations (0.5161).
+- Gemini live run **blocked** (`missing_api_key`, no `GOOGLE_API_KEY`/
+  `GEMINI_API_KEY`): 0 answered, 0 model-abstained, 1 insufficient-evidence
+  abstained (Q05, selected support 0.3333 < 0.5), 15 blocked, 0 generation
+  errors. Out-of-corpus abstention 12/12 in both arms.
+- Per-question M1 sufficiency: Q01–Q04,Q06–Q15 sufficient; **Q05 insufficient**
+  (in-corpus retrieval failure, correctly abstained by M1 gate). Q04/Q08/Q10/Q12
+  remain quality failures in extractive/selection evidence (see backlog) but were
+  sufficient for generation attempt under lexical gate; live Gemini
+  correctness/faithfulness/completeness/citation quality not yet evaluated.
+
+**Trade-offs/limits.** Sufficiency gate is lexical/heuristic (catches Q05-like
+irrelevant selected evidence, not semantically wrong-but-lexically-related cases
+like Q10). No live Gemini availability/cost/latency/quality data yet; cannot
+claim M1 validation complete or production readiness. Small 15-question set.
+
+**Status.** **Partially complete / blocked on credentials.** Architecture and
+contract implemented and tested; live model selection, Gemini generation run, and
+manual+mechanical faithfulness/correctness/completeness/citation audit remain
+required.
+
 ---
 
 ## C. Defect log
@@ -969,6 +1045,17 @@ Coverage added across this work:
     `docs/PROJECT_BRIEF.md`, created `docs/BACKLOG.md`, reconciled implementation
     against repo/Git history, and replaced ad-hoc next actions with milestone
     roadmap M0–M6. No new RAG experiment or technique implemented.
+18. Started M1 Gemini answer path (DR-014): added `GeminiGenerator` and
+    `m1-v1` evidence-only JSON claim contract with app-validated citation-ID
+    resolution, selected-evidence sufficiency gate, `experiments/m1_gemini_eval.py`,
+    and 6 generation-contract tests. `python -m pytest tests -q` → 97 passed.
+    Ran M1 eval on 15-question set with retrieval/selection fixed; extractive
+    baseline unchanged (12/15 supported, 15/45, 16/31). **Live Gemini run
+    blocked** by missing `GOOGLE_API_KEY`/`GEMINI_API_KEY`: model availability/
+    quality/cost/latency selection and generation not executed. Q05 correctly
+    abstained by sufficiency gate (0.3333 < 0.5); 14 sufficient questions blocked
+    pending credentials; out-of-corpus 12/12 abstained. Artifacts in
+    `experiments/results/m1_gemini/`.
 
 ### H.2 Milestone roadmap (authoritative, evidence-bounded)
 
@@ -977,21 +1064,22 @@ not declare complete without it. Detailed issue tracking: `docs/BACKLOG.md`.
 
 | Milestone | Objective | Key outputs | Exit evidence | Status |
 |---|---|---|---|---|
-| **M0** | Direction & backlog | Authoritative brief/log, backlog, reconciled status | Documented; no new RAG technique added | **Done (this step)** |
-| **M1** | Validated Gemini answer path (local/integration) | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, PDF-linked citations, citation/abstention enforcement, faithfulness checks | Controlled evaluation on current set shows grounded inspectable citations; failures recorded; no silent regression vs extractive traceability | Not started |
+| **M0** | Direction & backlog | Authoritative brief/log, backlog, reconciled status | Documented; no new RAG technique added | **Done** |
+| **M1** | Validated Gemini answer path (local/integration) | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, PDF-linked citations, citation/abstention enforcement, faithfulness checks | Controlled evaluation on current set shows grounded inspectable citations; failures recorded; no silent regression vs extractive traceability | **Partially complete / blocked** (path+contract+tests+harness done; live model selection/generation/manual audit blocked by missing API credentials) |
 | **M2** | End-to-end application integration | Clean API contract, React UI evidence/citation display, local reproducible run, KNOWN-001/legacy path handled per plan | User can ask and inspect exact evidence/citations locally; API/integration tests pass | Not started |
 | **M3** | Deployment-ready (Vercel Hobby) | Hobby-compatible storage/index strategy, serverless-safe packaging, env/secret handling, cold-start/latency/cost measurements, runbook | Publicly accessible app or documented blocking constraint with approved alternative; measured limits recorded | Not started |
 | **M4** | Golden dataset & offline evaluation | ~50–200 verified Q/A with evidence/citations/abstention labels, retrieval/answer/faithfulness/completeness/citation/abstention metrics, baseline report | Reproducible evaluation with thresholds derived from baseline evidence (not invented) | Not started |
 | **M5** | Quality gates & observability | CI quality checks, tracing, prompt/response/token/cost/latency/citation/failure instrumentation, monitoring/investigation path | CI blocks important regressions per defined thresholds; traces explain request outcomes | Not started |
 | **M6** | Targeted quality improvements | Only justified fixes/experiments for observed gaps (e.g. BL-001..BL-007) | Each change accepted/rejected by controlled evidence; backlog updated | Backlog-driven, not started |
 
-**Recommended immediate next milestone:** **M1 — Validated Gemini answer path**.
-It is the critical dependency for Phase 1, satisfies the fixed LLM constraint, and
-creates the measurable basis for citation enforcement, abstention, integration,
-and later evaluation. Existing answer-quality issues (Q05/Q08/Q10/Q04/Q12) are
-tracked in `docs/BACKLOG.md` and should be addressed in M1 only where they block
-grounded Gemini answers/citation validity, or scheduled as controlled M6
-experiments with evidence.
+**Recommended immediate next step:** unblock and complete **M1 live validation** by
+providing Gemini API credentials (`GOOGLE_API_KEY`/`GEMINI_API_KEY`), then rerun
+`python -m experiments.m1_gemini_eval` to execute availability-based model
+selection/probe, generate answers for sufficient-evidence questions, record
+latency/token/cost, perform manual correctness/completeness/faithfulness/citation
+audit (using `manual_audit_template.csv`), and compare against EXP-004. Record
+Q05/Q08/Q10/Q04/Q12 outcomes and decide any M1-blocking fixes vs M6. Do not
+start M2 or add chunking/retrieval techniques until M1 evidence is collected.
 
 ### H.3 Historical phase status (pre-DR-013)
 
