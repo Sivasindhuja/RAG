@@ -241,6 +241,62 @@ def compute_retrieval_metrics(
     }
 
 
+def evaluate_answer_support(answer: Any, evidence: Sequence[EvidenceUnit]) -> Dict[str, Any]:
+    """Measure statement/citation spans against verified evidence units.
+
+    Shared by the production slice and answer-layer experiments so both arms are
+    scored by exactly the same rule.  ``answer`` is a ``GroundedAnswer``-like
+    object with ``statements``, ``citations``, ``status``, ``reason``, ``text``,
+    ``token_support`` and ``best_distance`` attributes.
+    """
+
+    def overlapping(start: int, end: int) -> List[str]:
+        return [unit.evidence_id for unit in evidence if unit.start_offset < end and start < unit.end_offset]
+
+    statement_rows = []
+    supported_statements = 0
+    for statement in answer.statements:
+        evidence_ids = overlapping(statement.start_offset, statement.end_offset)
+        if evidence_ids:
+            supported_statements += 1
+        statement_rows.append(
+            {
+                **statement.to_dict(),
+                "evidence_ids": evidence_ids,
+                "supported": bool(evidence_ids),
+            }
+        )
+
+    citation_rows = []
+    supported_citations = 0
+    for citation in answer.citations:
+        evidence_ids = overlapping(citation.start_offset, citation.end_offset)
+        if evidence_ids:
+            supported_citations += 1
+        citation_rows.append(
+            {
+                **citation.to_dict(),
+                "evidence_ids": evidence_ids,
+                "supported": bool(evidence_ids),
+            }
+        )
+
+    return {
+        "status": answer.status,
+        "reason": answer.reason,
+        "text": answer.text,
+        "token_support": round(answer.token_support, 4),
+        "best_distance": answer.best_distance,
+        "statements": statement_rows,
+        "citations": citation_rows,
+        "statement_count": len(statement_rows),
+        "supported_statement_count": supported_statements,
+        "citation_count": len(citation_rows),
+        "supported_citation_count": supported_citations,
+        "answer_supported": supported_statements > 0,
+    }
+
+
 def aggregate_metrics(per_question: Sequence[Dict[str, Any]], k: int = 5) -> Dict[str, float]:
     if not per_question:
         return {f"recall@{k}": 0.0, f"precision@{k}": 0.0, f"mrr@{k}": 0.0}

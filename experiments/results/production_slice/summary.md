@@ -4,6 +4,7 @@
 - Embedding: `sentence-transformers/all-MiniLM-L6-v2`
 - Retrieval: dense-only, top-5
 - Answer mode: extractive_verbatim
+- Selection: sibling_clause (sibling ratio 0.5)
 - Abstention policy: `{"hard_max_distance": 1.3, "soft_max_distance": 1.1, "min_token_support": 0.5, "strict_min_token_support": 0.7}`
 
 ## Retrieval (must match the accepted baseline)
@@ -29,10 +30,10 @@
 | Answered | 15 / 15 |
 | Abstained | 0 / 15 |
 | Answers with >=1 evidence-supported statement | 12 |
-| Statement support rate | 0.2889 |
-| Citation support rate | 0.4688 |
+| Statement support rate | 0.3333 |
+| Citation support rate | 0.5161 |
 | Mean statements per answered question | 3.00 |
-| Mean citations per answered question | 2.13 |
+| Mean citations per answered question | 2.07 |
 
 ## Abstention smoke test
 

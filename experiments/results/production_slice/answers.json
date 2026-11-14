@@ -6,13 +6,13 @@
     "abstained": 0,
     "supported_answers": 12,
     "statement_count": 45,
-    "supported_statement_count": 13,
-    "statement_support_rate": 0.28888888888888886,
-    "citation_count": 32,
-    "supported_citation_count": 15,
-    "citation_support_rate": 0.46875,
+    "supported_statement_count": 15,
+    "statement_support_rate": 0.3333333333333333,
+    "citation_count": 31,
+    "supported_citation_count": 16,
+    "citation_support_rate": 0.5161290322580645,
     "mean_statements": 3.0,
-    "mean_citations": 2.1333333333333333
+    "mean_citations": 2.066666666666667
   },
   "answers": [
     {
@@ -297,7 +297,7 @@
       "reason": null,
       "text": "2.4.1 The user sectors can be broadly classified as: [1] The financial arra ngements for INSAT system also may be different in the \ncase of these sectors. [1] 2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors. [2]",
       "token_support": 0.6,
-      "best_distance": 0.9438762625312203,
+      "best_distance": 0.9438762068748474,
       "statements": [
         {
           "text": "2.4.1 The user sectors can be broadly classified as:",
@@ -342,7 +342,7 @@
           "start_offset": 4699,
           "end_offset": 5699,
           "quote": "2.4       CLASSIFICATION OF USE \n \n2.4.1 The user sectors can be broadly classified as: \n \n(a) Telecommunications \n(b) Broadcasting \n(c) Education and developmental communications \n(d) Security Communications for Defence Ministry/Services \n \n2.4.2 Education has been separately identified since the future use by this sector is \nexpected to be considerable. Also Secu rity Communications is an area where the \ndemands are expected to grow rather rapidl y. In both these cases the normal licensing \npr …",
-          "distance": 0.9438762625312203,
+          "distance": 0.9438762068748474,
           "evidence_ids": [
             "EXP001-Q04-E01"
           ],
@@ -1041,31 +1041,13 @@
       ],
       "status": "answered",
       "reason": null,
-      "text": "The Satellite Communication Services could be broadly classified as [1] Domestic communication services [1] 4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters): [2]",
+      "text": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters): [1] 4.3.2 Public Switched Telephone Network (domestic) [2] 4.3.3 Value Added Services (domestic) \n 13 [2]",
       "token_support": 0.8,
       "best_distance": 0.5390628434002145,
       "statements": [
         {
-          "text": "The Satellite Communication Services could be broadly classified as",
-          "marker": "[1]",
-          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
-          "start_offset": 30208,
-          "end_offset": 30275,
-          "evidence_ids": [],
-          "supported": false
-        },
-        {
-          "text": "Domestic communication services",
-          "marker": "[1]",
-          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
-          "start_offset": 30346,
-          "end_offset": 30377,
-          "evidence_ids": [],
-          "supported": false
-        },
-        {
           "text": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):",
-          "marker": "[2]",
+          "marker": "[1]",
           "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
           "start_offset": 32783,
           "end_offset": 32850,
@@ -1073,27 +1055,33 @@
             "EXP001-Q13-E04"
           ],
           "supported": true
+        },
+        {
+          "text": "4.3.2 Public Switched Telephone Network (domestic)",
+          "marker": "[2]",
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "start_offset": 32168,
+          "end_offset": 32218,
+          "evidence_ids": [
+            "EXP001-Q13-E02"
+          ],
+          "supported": true
+        },
+        {
+          "text": "4.3.3 Value Added Services (domestic) \n 13",
+          "marker": "[2]",
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "start_offset": 32452,
+          "end_offset": 32494,
+          "evidence_ids": [
+            "EXP001-Q13-E03"
+          ],
+          "supported": true
         }
       ],
       "citations": [
         {
           "marker": "[1]",
-          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
-          "source": "satcom-ngp.pdf",
-          "article": "ARTICLE-4",
-          "section": "4.1",
-          "heading": "4.1 SERVICE CLASSIFICATION",
-          "start_page": 13,
-          "end_page": 13,
-          "start_offset": 30178,
-          "end_offset": 31178,
-          "quote": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services \n \n4.2 INTERNATIONAL COMMUNICATION SERVICES \n \nIn so far as International communication is concerned the existing practice of \nusing International Inter-Governmental Systems shall continue.  Private sector off-shoots, \nwhich retain their international character and include Indian equity will also be …",
-          "distance": 0.5810809660475786,
-          "evidence_ids": [],
-          "supported": false
-        },
-        {
-          "marker": "[2]",
           "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
           "source": "satcom-ngp.pdf",
           "article": "ARTICLE-4",
@@ -1109,12 +1097,32 @@
             "EXP001-Q13-E04"
           ],
           "supported": true
+        },
+        {
+          "marker": "[2]",
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "source": "satcom-ngp.pdf",
+          "article": "ARTICLE-4",
+          "section": "4.3.2",
+          "heading": "4.3.2 Public Switched Telephone Network (domestic)",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 31778,
+          "end_offset": 32494,
+          "quote": ".3.1 Broadcasting (moving images (TV) a nd associated sound; and audio (radio)) \n \n(h) Free to air satellite broadcasting – digital or analogue \n(i) Broadcasting meant for reception by subscribers \n \nThe receivers may be fixed, portable or mobile as the case may be. Audio-video \nteleconferncing, data transfer (one way or duplex) and computer networking are not part \nof this category. \n \n4.3.2 Public Switched Telephone Network (domestic) \n \nThis will have two sub-divisions namely, the network pro …",
+          "distance": 0.7186364707122692,
+          "evidence_ids": [
+            "EXP001-Q13-E01",
+            "EXP001-Q13-E02",
+            "EXP001-Q13-E03"
+          ],
+          "supported": true
         }
       ],
       "statement_count": 3,
-      "supported_statement_count": 1,
+      "supported_statement_count": 3,
       "citation_count": 2,
-      "supported_citation_count": 1,
+      "supported_citation_count": 2,
       "answer_supported": true
     },
     {
@@ -1231,7 +1239,7 @@
       ],
       "status": "answered",
       "reason": null,
-      "text": "4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it. [1] 3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for \nestablishing and operating an Indian Satellite System. [2] 4.4.1 The Administrative Ministry shall consult the Department of Space, which is the \nAdministrative Department for dealing with  the subject on “Establishment, procurement \nand use of space based systems”, before authorising any operations with foreign \nsatellites. [3]",
+      "text": "4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it. [1] 3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for \nestablishing and operating an Indian Satellite System. [2] 3.7.2.3 Issue of the above Space Station Oper ating License does not imply granting of \nservice Operating License or Frequency/Siting clearances for ground stations. [2]",
       "token_support": 0.875,
       "best_distance": 0.6167944433951558,
       "statements": [
@@ -1256,11 +1264,11 @@
           "supported": false
         },
         {
-          "text": "4.4.1 The Administrative Ministry shall consult the Department of Space, which is the \nAdministrative Department for dealing with  the subject on “Establishment, procurement \nand use of space based systems”, before authorising any operations with foreign \nsatellites.",
-          "marker": "[3]",
-          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
-          "start_offset": 33424,
-          "end_offset": 33691,
+          "text": "3.7.2.3 Issue of the above Space Station Oper ating License does not imply granting of \nservice Operating License or Frequency/Siting clearances for ground stations.",
+          "marker": "[2]",
+          "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+          "start_offset": 23487,
+          "end_offset": 23652,
           "evidence_ids": [],
           "supported": false
         }
@@ -1299,27 +1307,11 @@
           "distance": 0.669513885500405,
           "evidence_ids": [],
           "supported": false
-        },
-        {
-          "marker": "[3]",
-          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
-          "source": "satcom-ngp.pdf",
-          "article": "ARTICLE-4",
-          "section": "4.4.1",
-          "heading": "4.4.1 The Administrative Ministry shall consult the Department of Space, which is the",
-          "start_page": 14,
-          "end_page": 14,
-          "start_offset": 33296,
-          "end_offset": 34296,
-          "quote": " to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license. \n \n4.4.1 The Administrative Ministry shall consult the Department of Space, which is the \nAdministrative Department for dealing with  the subject on “Establishment, procurement \nand use of space based systems”, before authorising any operations with foreign \nsatellites. \n \n4.4.2 For services listed under item 4.4.1 a bove, the procedure prescribed in the \nBroadcast Bill sh …",
-          "distance": 0.6713091871242624,
-          "evidence_ids": [],
-          "supported": false
         }
       ],
       "statement_count": 3,
       "supported_statement_count": 1,
-      "citation_count": 3,
+      "citation_count": 2,
       "supported_citation_count": 1,
       "answer_supported": true
     }

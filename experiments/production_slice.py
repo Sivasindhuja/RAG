@@ -35,6 +35,7 @@ from src.rag_core import (
     GroundedPipeline,
     audit_source_coverage,
     compute_retrieval_metrics,
+    evaluate_answer_support,
     evidence_for_question,
     extract_source_document,
     load_exp001_evidence,
@@ -80,42 +81,7 @@ def _overlapping_evidence(start: int, end: int, units: Sequence[Any]) -> List[st
 
 
 def _evaluate_answer(answer, units) -> Dict[str, Any]:
-    statement_rows = []
-    supported_statements = 0
-    for statement in answer.statements:
-        evidence_ids = _overlapping_evidence(statement.start_offset, statement.end_offset, units)
-        if evidence_ids:
-            supported_statements += 1
-        statement_rows.append(
-            {
-                **statement.to_dict(),
-                "evidence_ids": evidence_ids,
-                "supported": bool(evidence_ids),
-            }
-        )
-
-    citation_rows = []
-    supported_citations = 0
-    for citation in answer.citations:
-        evidence_ids = _overlapping_evidence(citation.start_offset, citation.end_offset, units)
-        if evidence_ids:
-            supported_citations += 1
-        citation_rows.append({**citation.to_dict(), "evidence_ids": evidence_ids, "supported": bool(evidence_ids)})
-
-    return {
-        "status": answer.status,
-        "reason": answer.reason,
-        "text": answer.text,
-        "token_support": round(answer.token_support, 4),
-        "best_distance": answer.best_distance,
-        "statements": statement_rows,
-        "citations": citation_rows,
-        "statement_count": len(statement_rows),
-        "supported_statement_count": supported_statements,
-        "citation_count": len(citation_rows),
-        "supported_citation_count": supported_citations,
-        "answer_supported": supported_statements > 0,
-    }
+    return evaluate_answer_support(answer, units)
 
 
 def _baseline_aggregate() -> Dict[str, float]:
@@ -142,6 +108,8 @@ def _summary(
         f"- Embedding: `{config['embedding_model']}`",
         f"- Retrieval: dense-only, top-{top_k}",
         f"- Answer mode: {config['answering']['mode']}",
+        f"- Selection: {config['answering']['selection']} "
+        f"(sibling ratio {config['answering']['sibling_score_ratio']})",
         f"- Abstention policy: `{json.dumps(config['answering']['policy'])}`",
         "",
         "## Retrieval (must match the accepted baseline)",
@@ -393,6 +361,12 @@ def run(
         "retrieval": {"method": "dense_vector_similarity", "top_k": top_k},
         "answering": {
             "mode": "extractive_verbatim",
+            "selection": (
+                "sibling_clause"
+                if pipeline.sibling_score_ratio is not None
+                else "score_order"
+            ),
+            "sibling_score_ratio": pipeline.sibling_score_ratio,
             "max_answer_sentences": pipeline.max_answer_sentences,
             "max_answer_chunks": pipeline.max_answer_chunks,
             "max_quote_chars": pipeline.max_quote_chars,

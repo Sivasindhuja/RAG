@@ -196,6 +196,70 @@ def test_citations_omit_retrieved_chunks_that_do_not_contribute():
     assert "[2]" not in answer.text
 
 
+def test_sibling_clause_selection_promotes_same_parent_clauses():
+    text = (
+        "4.3.4 Land mobile domestic communication services are described. "
+        "4.3.3 Domestic communication services include value added services. "
+        "4.3.2 Domestic communication services include telephone services. "
+        "Land mobile domestic communication services are important."
+    )
+    baseline = GroundedPipeline(
+        _FakeIndex([_hit("c1", text)]),
+        max_answer_sentences=2,
+        max_answer_chunks=1,
+        sibling_score_ratio=None,
+    ).answer("land mobile domestic communication services")
+    candidate = GroundedPipeline(
+        _FakeIndex([_hit("c1", text)]),
+        max_answer_sentences=2,
+        max_answer_chunks=1,
+        sibling_score_ratio=0.5,
+    ).answer("land mobile domestic communication services")
+
+    baseline_text = " ".join(statement.text for statement in baseline.statements)
+    candidate_text = " ".join(statement.text for statement in candidate.statements)
+    assert "4.3.4" in baseline_text and "important" in baseline_text
+    assert "4.3.4" in candidate_text and "4.3.3" in candidate_text
+    assert "important" not in candidate_text
+
+
+def test_sibling_clause_selection_ignores_weak_siblings_below_threshold():
+    text = (
+        "4.3.4 Land mobile domestic communication services are described. "
+        "4.3.3 Domestic. "
+        "Land mobile domestic communication services are important."
+    )
+    answer = GroundedPipeline(
+        _FakeIndex([_hit("c1", text)]),
+        max_answer_sentences=2,
+        max_answer_chunks=1,
+        sibling_score_ratio=0.5,
+    ).answer("land mobile domestic communication services")
+
+    selected = " ".join(statement.text for statement in answer.statements)
+    assert "4.3.4" in selected and "important" in selected
+    assert "4.3.3" not in selected
+
+
+def test_answer_from_hits_reuses_supplied_retrieval_without_searching():
+    class _NoSearchIndex:
+        def search(self, query, k=5):
+            raise AssertionError("answer_from_hits must not retrieve again")
+
+    pipeline = GroundedPipeline(_NoSearchIndex())
+    hit = _hit("c1", "The licensing authority grants the license.")
+    answer = pipeline.answer_from_hits("who grants the license?", [hit])
+
+    assert answer.status == ANSWERED
+    assert answer.retrieved == [hit]
+    assert answer.citations[0].chunk_id == "c1"
+
+
+def test_sibling_score_ratio_is_validated():
+    with pytest.raises(ValueError):
+        GroundedPipeline(_FakeIndex([]), sibling_score_ratio=1.1)
+
+
 def test_all_caps_heading_is_deprioritised_below_body_text():
     text = (
         "4.2 INTERNATIONAL COMMUNICATION SERVICES\n\n"

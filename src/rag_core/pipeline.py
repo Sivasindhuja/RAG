@@ -5,6 +5,9 @@ This module is the production-facing layer above the shared dense index.  It doe
 
 - it retrieves evidence with :class:`~src.rag_core.index.DenseIndex`;
 - it answers extractively by selecting verbatim sentences from retrieved chunks;
+- when the strongest sentence is a numbered clause, it may select sibling
+  clauses under the same parent (EXP-003) so multi-clause questions are not
+  truncated to one child clause;
 - every selected sentence carries a citation marker linked to exact source
   offsets and page numbers;
 - it abstains when the retrieval/confidence policy says the document does not
@@ -40,8 +43,13 @@ ABSTENTION_MESSAGE = (
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9(])|\n[ \t]*\n")
-_CLAUSE_START_RE = re.compile(r"^\d+(?:\.\d+)+[ \t]+")
+_CLAUSE_START_RE = re.compile(r"^(\d+(?:\.\d+)+)[ \t]+")
 _LIST_ITEM_RE = re.compile(r"^\(?[a-zA-Z0-9]{1,3}[.)][ \t]+")
+
+# Sibling-clause selection: when the strongest sentence is a numbered clause,
+# prefer clauses under the same parent whose score is at least this fraction of
+# the strongest score.  Accepted by EXP-003 (Q13 evidence coverage 1/3 → 3/3).
+DEFAULT_SIBLING_SCORE_RATIO = 0.5
 
 DEFAULT_STOPWORDS = frozenset(
     """
@@ -56,6 +64,9 @@ DEFAULT_STOPWORDS = frozenset(
 
 # Generator contract: question, retrieved chunks, citations -> answer prose.
 Generator = Callable[[str, Sequence[RetrievedChunk], Sequence["Citation"]], str]
+
+# (score, chunk position, sentence index, sentence, hit, local start, local end)
+Candidate = tuple[float, int, int, str, RetrievedChunk, int, int]
 
 
 @dataclass(frozen=True)
@@ -254,6 +265,20 @@ def _sentence_score(sentence: str, query_tokens: set[str], weights: dict[str, fl
     return score
 
 
+def _clause_parent(sentence: str) -> Optional[str]:
+    """Return the parent clause ID for a numbered sentence, or ``None``.
+
+    ``4.3.4 Land Mobile ...`` has parent ``4.3``; a non-clause sentence has no
+    parent.  This is deliberately lexical: it only groups clauses the source text
+    already labels.
+    """
+    match = _CLAUSE_START_RE.match(sentence)
+    if match is None:
+        return None
+    parts = match.group(1).split(".")
+    return ".".join(parts[:-1]) if len(parts) > 1 else None
+
+
 def _citation_for(hit: RetrievedChunk, marker: str, max_quote_chars: int) -> Citation:
     quote = hit.text[:max_quote_chars]
     if len(hit.text) > max_quote_chars:
@@ -286,6 +311,7 @@ class GroundedPipeline:
         max_answer_chunks: int = 5,
         max_quote_chars: int = 500,
         generator: Optional[Generator] = None,
+        sibling_score_ratio: Optional[float] = DEFAULT_SIBLING_SCORE_RATIO,
     ) -> None:
         if top_k <= 0:
             raise ValueError("top_k must be positive")
@@ -293,6 +319,8 @@ class GroundedPipeline:
             raise ValueError("max_answer_sentences must be positive")
         if max_answer_chunks <= 0:
             raise ValueError("max_answer_chunks must be positive")
+        if sibling_score_ratio is not None and not 0.0 <= sibling_score_ratio <= 1.0:
+            raise ValueError("sibling_score_ratio must be within [0, 1]")
         self.index = index
         self.top_k = top_k
         self.policy = policy or AbstentionPolicy()
@@ -300,13 +328,25 @@ class GroundedPipeline:
         self.max_answer_chunks = max_answer_chunks
         self.max_quote_chars = max_quote_chars
         self.generator = generator
+        self.sibling_score_ratio = sibling_score_ratio
 
     def answer(self, question: str) -> GroundedAnswer:
         question = question.strip()
         if not question:
             return self._abstain(question, [], "empty question", 0.0, None)
+        return self.answer_from_hits(question, self.index.search(question, k=self.top_k))
 
-        hits = self.index.search(question, k=self.top_k)
+    def answer_from_hits(self, question: str, hits: Sequence[RetrievedChunk]) -> GroundedAnswer:
+        """Answer from pre-computed retrieval results.
+
+        Used by controlled answer-layer experiments so both arms see exactly the
+        same chunks.  Production callers should normally use :meth:`answer`.
+        """
+        question = question.strip()
+        if not question:
+            return self._abstain(question, [], "empty question", 0.0, None)
+
+        hits = list(hits)
         if not hits:
             return self._abstain(question, hits, "no retrieval results", 0.0, None)
 
@@ -432,7 +472,7 @@ class GroundedPipeline:
             return f"{fallback} {citation.marker}", [statement], [citation]
 
         candidates.sort(key=lambda item: (-item[0], item[1], item[2]))
-        selected = candidates[: self.max_answer_sentences]
+        selected = self._select_candidates(candidates)
         # Restore source order for a readable answer.
         selected.sort(key=lambda item: (item[1], item[2]))
 
@@ -460,6 +500,47 @@ class GroundedPipeline:
         citations.sort(key=lambda citation: citation.marker)
         text = " ".join(f"{statement.text} {statement.marker}" for statement in statements)
         return text, statements, citations
+
+    def _select_candidates(self, candidates: List[Candidate]) -> List[Candidate]:
+        """Select at most ``max_answer_sentences`` candidates.
+
+        The default ranking is pure score order.  When ``sibling_score_ratio`` is
+        enabled and the strongest candidate starts with a numbered clause, clauses
+        under the same parent are promoted first.  Legal compound questions often
+        require sibling clauses (for example ``4.3.2``-``4.3.4``); selecting only
+        the single highest-scoring clause produces an incomplete answer even when
+        every sibling was retrieved.
+        """
+        maximum = self.max_answer_sentences
+        if self.sibling_score_ratio is None:
+            return candidates[:maximum]
+
+        top_score = candidates[0][0]
+        parent = _clause_parent(candidates[0][3])
+        selected: List[Candidate] = []
+        selected_keys: set[str] = set()
+        if parent is not None:
+            minimum = top_score * self.sibling_score_ratio
+            for candidate in candidates:
+                if _clause_parent(candidate[3]) != parent or candidate[0] < minimum:
+                    continue
+                key = " ".join(candidate[3].lower().split())
+                if key in selected_keys:
+                    continue
+                selected.append(candidate)
+                selected_keys.add(key)
+                if len(selected) >= maximum:
+                    return selected
+
+        for candidate in candidates:
+            if len(selected) >= maximum:
+                break
+            key = " ".join(candidate[3].lower().split())
+            if key in selected_keys:
+                continue
+            selected.append(candidate)
+            selected_keys.add(key)
+        return selected
 
     def _abstain(
         self,

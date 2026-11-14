@@ -204,7 +204,8 @@ implied support from chunks that contributed nothing to the answer.
   guaranteed by construction.
 - Retrieved-but-unused chunks are not cited (BUG-009).
 - Relevance is not guaranteed. The lexical selector misses relevant sentences in
-  Q10/Q13 and cannot recover evidence absent from the top-5 (Q05/Q08).
+  Q10 and cannot recover evidence absent from the top-5 (Q05/Q08). Q13 was later
+  resolved by sibling-clause selection (EXP-003, DR-010).
 - Regression coverage: `tests/test_pipeline.py`, including
   `test_citations_omit_retrieved_chunks_that_do_not_contribute` and
   `test_all_caps_heading_is_deprioritised_below_body_text`.
@@ -228,6 +229,49 @@ soft distance plus strict lexical support. Defaults:
 - Thresholds must be recalibrated for any embedding or index change.
 - Regression coverage: abstention branches in `tests/test_pipeline.py`.
 
+### DR-010 — Sibling-clause answer selection (EXP-003)
+
+**Context.** PROD-001 retrieved all required Q13 clauses (`Recall@5 = 1.0`) but
+selected only one of the four category clauses. The lexical selector chose
+`4.3.4` plus two non-clause sentences, covering `1/3` evidence units. This was a
+concrete answer-layer failure, not a retrieval failure.
+
+**Decision.** When the highest-scoring sentence starts with a numbered clause,
+promote same-parent clauses scoring at least 50% of that top score, then fill any
+remaining answer slots from the global ranking. The rule is opt-out via
+`sibling_score_ratio=None` for controlled comparison. It is lexical and depends
+on source clause IDs; it adds no model and no retrieval change.
+
+**Experiment.** EXP-003 held PDF, questions, 20 evidence units, chunks, embedding,
+top-5 retrieval, answer caps, citations, abstention and metrics constant. Both
+arms received identical precomputed hits via `answer_from_hits`.
+
+**Results.**
+
+| Measure | Baseline | Sibling-clause |
+|---|---:|---:|
+| Supported answers | 12/15 | 12/15 |
+| Supported statements | 13/45 (0.2889) | 15/45 (0.3333) |
+| Supported citations | 15/32 (0.4688) | 16/31 (0.5161) |
+| Q13 evidence coverage | 1/3 | 3/3 |
+| Abstention | 12/12 | 12/12 |
+
+All four pre-registered decision checks passed. The change is accepted as the
+production default.
+
+**Consequences.**
+- Q13 now selects `4.3.2`, `4.3.3` and `4.3.4`.
+- Q10 remains unsolved because its required `3.6.8` evidence does not begin with
+  the clause ID.
+- Q05/Q08 remain retrieval failures; answer selection cannot recover missing
+  evidence.
+- The 15-question set is small and the 0.5 ratio was chosen during exploratory
+  analysis; the improvement is not independently confirmed.
+- Regression coverage: `tests/test_pipeline.py` sibling tests and
+  `test_answer_from_hits_reuses_supplied_retrieval_without_searching`.
+
+See `docs/EXP-003.md` and `experiments/results/exp003/`.
+
 ---
 
 ## C. Defect log
@@ -247,7 +291,7 @@ this work. "Test" refers to an executed regression test in `tests/`.
 | BUG-008 | Medium | Experiments and production could drift into separate chunking/retrieval implementations | Duplicated logic and legacy paths | Shared `src/rag_core` index/evaluation; EXP-001 frozen as the documented exception (DR-006) | `test_dense_index_build_search_and_rebuild`, `test_chunk_metadata_is_scalar_and_preserves_traceability` | Fixed |
 | BUG-009 | Medium | Citation list included retrieved-but-unused chunks, overstating support | Initial assembly cited all top-K hits before sentence selection | Select statements first; cite only contributing chunks with renumbered markers (DR-008) | `test_citations_omit_retrieved_chunks_that_do_not_contribute` | Fixed |
 
-### Open known issue (not part of BUG-001…008)
+### Open known issue (not part of BUG-001…009)
 
 - **KNOWN-001 — legacy backend keyword error.** `backend/main.py` contains
   `raise HTTPException(status_status=429, ...)`; the correct keyword is
@@ -373,7 +417,7 @@ evaluate the grounded answer layer. This is not a retrieval experiment.
 | Chunks | 49 |
 | Embedding | `sentence-transformers/all-MiniLM-L6-v2` |
 | Retrieval | dense-only, top-5 |
-| Answer mode | extractive verbatim, max 3 sentences from 5 chunks |
+| Answer mode | extractive verbatim, sibling-clause selection, max 3 sentences from 5 chunks |
 | Abstention | hard 1.30 / soft 1.10 / min support 0.50 / strict 0.70 |
 
 **Document integrity.**
@@ -392,9 +436,9 @@ MRR@5 0.7944 (delta 0.0000 on all three).
 |---|---:|
 | Answered | 15 / 15 |
 | Answers with ≥1 evidence-supported statement | 12 / 15 |
-| Statements supported | 13 / 45 (0.2889) |
-| Citations supported | 15 / 32 (0.4688) |
-| Mean statements / citations per answer | 3.00 / 2.13 |
+| Statements supported | 15 / 45 (0.3333) |
+| Citations supported | 16 / 31 (0.5161) |
+| Mean statements / citations per answer | 3.00 / 2.07 |
 
 **Abstention smoke test.** 8/8 calibration and 4/4 held-out out-of-corpus
 questions abstained (12/12). All 15 in-corpus questions were answered.
@@ -406,20 +450,53 @@ questions abstained (12/12). All 15 in-corpus questions were answered.
 - Q08: Recall@5 0.3333. Only one of the three required `3.4.1`–`3.4.3` clauses is
   retrieved.
 - Q10: Recall@5 1.0 but 0/3 supported statements; the selector chooses a long
-  list block and later clauses instead of the conflict procedure.
-- Q13: Recall@5 1.0 but 1/3 supported statements; sibling categories
-  `4.3.2`/`4.3.3` are retrieved but not selected.
+  list block and later clauses instead of the conflict procedure. Its evidence
+  does not begin at a clause ID, so sibling selection does not help.
+- Q13: resolved by EXP-003. The baseline selected only `4.3.4` (`1/3`); sibling
+  clause selection now covers `4.3.2`–`4.3.4` (`3/3`).
 
 **Decision.** Accept the slice as the **validated retrieval-and-provenance
-foundation**. Do not present it as a complete answer engine. Answer relevance and
-multi-clause completeness are open defects, not hidden by the exact retrieval
-parity. See `docs/PRODUCTION_SLICE.md` and
+foundation**, with EXP-003 accepted as the answer-selection default. Do not
+present it as a complete answer engine. Q08 multi-clause completeness and Q10
+relevance remain open defects, not hidden by the exact retrieval parity. See
+`docs/PRODUCTION_SLICE.md`, `docs/EXP-003.md` and
 `experiments/results/production_slice/`.
 
 **Reproduction.** `python -m experiments.production_slice` writes config, chunks,
 integrity audit, retrieval results, answers, abstention results,
 per-question metrics and summary. Observed latency in the recorded run: index
-build 1,927.89 ms; pipeline mean 32.44 ms, median 32.50 ms, max 34.67 ms.
+build 2,422.49 ms; pipeline mean 38.60 ms, median 38.52 ms, max 44.97 ms.
+
+### EXP-003 — Answer-layer sibling-clause selection (accepted)
+
+**Role.** Controlled answer-layer experiment on the observed Q13 failure.
+Retrieval, chunks, embedding, questions, evidence and answer caps were held
+constant.
+
+**Arms.** Baseline pure score order vs sibling-clause promotion: when the
+top-ranked sentence is a numbered clause, promote same-parent clauses scoring at
+least 50% of the top score, then fill from the global ranking. Both arms received
+the same precomputed hits via `answer_from_hits`.
+
+**Pre-registered acceptance.** Statement support +0.02 or better; supported
+answers not lower; citation support no worse than −0.02; abstention unchanged.
+
+**Results.**
+
+| Measure | Baseline | Sibling |
+|---|---:|---:|
+| Supported answers | 12/15 | 12/15 |
+| Supported statements | 13/45 (0.2889) | 15/45 (0.3333) |
+| Supported citations | 15/32 (0.4688) | 16/31 (0.5161) |
+| Q13 evidence coverage | 1/3 | 3/3 |
+| Abstention | 12/12 | 12/12 |
+
+All checks passed. Only Q13 changed; every other question had the same supported
+statement count. The rule is accepted as the production default (DR-010).
+
+**Not fixed.** Q05 (retrieval miss), Q08 (partial retrieval), Q10 (body-level
+clause evidence), Q14 (two statements overlapping one evidence unit). See
+`docs/EXP-003.md` and `experiments/results/exp003/`.
 
 ---
 
@@ -434,7 +511,8 @@ build 1,927.89 ms; pipeline mean 32.44 ms, median 32.50 ms, max 34.67 ms.
 | RA-005 | Use heading-only spans as ground truth | Invalid: headings do not support the answer. Used only by the invalid original EXP-001 run. |
 | RA-006 | Adjust questions/ground truth to raise metrics | Prohibited. Ground truth may only be corrected with explicit, verified evidence and a recorded rationale. |
 | RA-007 | Treat the legacy `backend/` pipeline as validated production | Unvalidated advanced components and an open keyword bug (KNOWN-001). Not accepted. |
-| RA-008 | Tune the lexical answer selector further, or add a reranker/cross-encoder, on the 15-question set | Exploratory sweeps (sentence count, heading penalty, length normalisation, relative score floors) did not remove the Q10/Q13 selection failures and risk overfitting a small set. Deferred to a controlled answer-layer experiment with explicit acceptance criteria. |
+| RA-008 | Tune the lexical answer selector without a controlled protocol on the 15-question set | Exploratory sweeps (sentence count, heading penalty, length normalisation, relative score floors) risk overfitting a small set. Deferred to EXP-003, which tested one pre-registered selection rule and accepted it only after all decision checks passed. |
+| RA-009 | Adopt cross-encoder sentence reranking after an informal check | `cross-encoder/ms-marco-MiniLM-L-6-v2` raised statement support to 17/45 at three sentences but regressed Q13 to 0/3 and cost ~456 ms per query on CPU. Not adopted without a full controlled experiment and because it did not fix the main observed failure. |
 
 ---
 
@@ -444,9 +522,9 @@ build 1,927.89 ms; pipeline mean 32.44 ms, median 32.50 ms, max 34.67 ms.
 
 Command: `python -m pytest tests -q`
 
-Result (executed 2026-11-14, after PROD-001): **78 passed, 25 warnings** in
-~28.7 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
-tests.
+Result (executed 2026-11-14, after EXP-003): **82 passed, 25 warnings** in
+~29.4 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
+tests and EXP-003 added 4.
 
 Warnings are non-fatal Pydantic deprecation notices raised by Chroma
 (`Accessing the 'model_fields' attribute on the instance is deprecated`).
@@ -466,9 +544,10 @@ Coverage added across this work:
 - `tests/test_fixed_chunker.py` — 6 tests: chunk-by-chunk equivalence with the
   frozen 49 accepted EXP-001 v3 chunks, overlap/page boundaries, audit behaviour,
   unique/stable IDs, empty pages, invalid configuration.
-- `tests/test_pipeline.py` — 15 tests: extractive verbatim answers, sentence
-  provenance, citation-only-contributors, heading deprioritisation, abstention
-  branches, generator hook, token support, limit/dedupe, fallback.
+- `tests/test_pipeline.py` — 19 tests: extractive verbatim answers, sentence
+  provenance, citation-only-contributors, heading deprioritisation, sibling-clause
+  selection and threshold behaviour, `answer_from_hits` reuse, abstention branches,
+  generator hook, token support, limit/dedupe, fallback.
 
 ### F.2 Real-document integrity (EXP-002 chunk set)
 
@@ -511,8 +590,13 @@ Coverage added across this work:
   `retrieval_results.json`, `answers.json`, `abstention_results.json`,
   `per_question_metrics.csv` and `summary.md` under
   `experiments/results/production_slice/`.
-- PROD-001 observed latency: pipeline mean 32.44 ms, median 32.50 ms, max
-  34.67 ms; index build 1,927.89 ms for 49 chunks.
+- PROD-001 observed latency: pipeline mean 38.60 ms, median 38.52 ms, max
+  44.97 ms; index build 2,422.49 ms for 49 chunks.
+- EXP-003 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
+  `answers_baseline.json`, `answers_sibling.json`, `abstention_results.json`,
+  `comparison.json`, `per_question_metrics.csv` and `summary.md` under
+  `experiments/results/exp003/`. Answer-assembly latency (hits held fixed):
+  baseline 2.93 ms mean, sibling 3.06 ms mean (negligible; varies by run).
 
 ---
 
@@ -521,16 +605,17 @@ Coverage added across this work:
 | ID | Risk / open item | Impact | Mitigation / next step |
 |---|---|---|---|
 | R-001 | Evaluation set is small (15 Q / 20 units) | Metric deltas are noisy; overfitting to the set is easy | Require manual failure inspection; prefer clear directional results; expand dataset with verified units before large claims |
-| R-002 | Compound questions lose child-clause coverage under clause-level chunking | Wrong/incomplete answers for Q08/Q13-type questions | Next controlled experiment: sibling/parent-context expansion, measured on the same fixed set |
+| R-002 | Compound questions can lose child-clause coverage | Wrong/incomplete answers for Q08/Q10-type questions | Q13 is fixed by EXP-003 sibling-clause selection; Q08 remains a retrieval miss and Q10 needs clause-body handling. Continue with controlled experiments. |
 | R-003 | Very small chunks (<100 chars) weaken embeddings | Poor ranking / MRR | Consider minimum-size merge rules inside the structure-aware strategy, as a controlled change |
 | R-004 | Legacy backend has `status_status` bug and unvalidated pipeline (KNOWN-001) | App path may fail or bypass validation | Fix keyword; isolate legacy advanced components; build validated ingestion on `src/rag_core` |
 | R-005 | Generation and LLM faithfulness are not validated | Cannot claim generative answer quality | Extractive citations/abstention now have a baseline; evaluate any generator separately for faithfulness and citation validity |
 | R-006 | README performance claims (faithfulness 1.00, context recall 0.60) are not from this pipeline | Misleading project status | Treat as legacy; supersede with validated experiment reports |
 | R-007 | Chroma telemetry warnings | Noise in logs | Ignore; does not affect correctness |
 | R-008 | Environment drift (Python/Chroma/sentence-transformers versions) | Non-reproducible numbers | Record versions; pin before final release |
-| R-009 | Lexical sentence selection misses evidence that retrieval already found (Q10, Q13) | Incomplete/irrelevant answers despite perfect recall | Controlled answer-layer experiment; do not add a reranker without measurement |
-| R-010 | Multi-clause completeness not met; Q05 retrieval recall is 0.0 | Q08/Q13 answers lack required child clauses; Q05 has no evidence in top-5 | Treat as open acceptance failure; decide retrieval vs answer-layer fix by experiment |
+| R-009 | Lexical sentence selection still misses evidence that retrieval already found (Q10) | Incomplete/irrelevant answers despite perfect recall | EXP-003 fixed Q13; Q10 needs clause-body-aware answer units. Do not add a reranker without a controlled experiment. |
+| R-010 | Multi-clause completeness partial; Q05 retrieval recall is 0.0 | Q08 answer lacks required child clauses; Q05 has no evidence in top-5 | Treat as open acceptance failure; decide retrieval vs answer-layer fix by experiment |
 | R-011 | Abstention policy does not detect in-corpus retrieval failure | Q05 is answered without supporting evidence | Add answerability/relevance checks only with a labelled evaluation set; do not tune on the 15 questions |
+| R-012 | EXP-003's 0.5 sibling threshold and +0.044 improvement come from a small, reused 15-question set | Improvement may not generalise | Keep the rule but validate on an expanded/independent set before treating the delta as a general quality claim |
 
 ---
 
@@ -559,21 +644,28 @@ Coverage added across this work:
 11. Ran PROD-001 over 15 in-corpus and 12 out-of-corpus questions; recorded
     integrity, retrieval, answer/citation support and abstention results; fixed
     BUG-009; documented the answer-layer failures rather than hiding them.
-12. Wrote `docs/PRODUCTION_SLICE.md`; updated brief and this log; full suite now
+12. Wrote `docs/PRODUCTION_SLICE.md`; updated brief and this log; full suite then
     78 passed.
+13. Ran EXP-003: sibling-clause answer selection with retrieval held fixed. Q13
+    evidence coverage improved 1/3 → 3/3; statement support 0.2889 → 0.3333;
+    citation support 0.4688 → 0.5161; all pre-registered checks passed. Accepted
+    as the production default (DR-010).
+14. Added shared `evaluate_answer_support`, `answer_from_hits`, sibling-selection
+    tests and `docs/EXP-003.md`; reran PROD-001 and the full suite. Full suite now
+    82 passed.
 
 ### H.2 Next actions (ordered)
 
-1. **Run a controlled answer-layer experiment, retrieval fixed.** Observed
-   justification: Q10 and Q13 have the required evidence in the top-5 but the
-   lexical selector misses it. Test one change at a time (for example sibling
-   clause expansion or sentence reranking) on the same questions/evidence.
+1. **Run a controlled answer-layer experiment for Q10, retrieval fixed.** Its
+   evidence is inside a `3.6.8` clause body, not at a clause start, so the
+   sibling rule cannot find it. Candidate: clause-body-aware answer units.
 2. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
    are genuine retrieval misses. Any expansion/reranking must be a separate
    controlled experiment and must not silently replace the accepted baseline.
 3. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
    before exposing the application.
-4. Expand the verified evaluation set before making broader quality claims.
+4. Expand the verified evaluation set before making broader quality claims; the
+   EXP-003 threshold and delta are not independently validated.
 5. Add generation-phase evaluation (faithfulness, answer correctness, citation
    validity, abstention) only when a generation path is deliberately introduced.
 
@@ -586,4 +678,4 @@ Coverage added across this work:
 | 3 | EXP-002 structure-aware chunking experiment | Done (rejected as default) |
 | 4 | Justified chunking refinement (if pursued) | Not started |
 | 5 | Validated production ingestion | Done for accepted baseline (PROD-001) |
-| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention validated; generation not started |
+| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; generation not started |

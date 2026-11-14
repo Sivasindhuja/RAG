@@ -2,8 +2,8 @@
 
 Status: living document. Last updated 2026-11-14.
 Owner: engineering. Companion documents: `docs/ENGINEERING_LOG.md`,
-`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
-`docs/CHUNKING_STRATEGY.md`.
+`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
+`docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 ---
 
@@ -73,9 +73,10 @@ silently "fix". Ground-truth excerpts must match the extracted bytes exactly.
 ## 4. Definition of quality (acceptance criteria)
 
 The system is acceptable only when all of the following are demonstrated. As of
-PROD-001, retrieval parity, document integrity, answer traceability and the
-abstention smoke test are met; multi-clause completeness and answer relevance are
-**not** met (see `docs/PRODUCTION_SLICE.md` §9).
+PROD-001 plus EXP-003, retrieval parity, document integrity, answer traceability
+and the abstention smoke test are met; Q13 multi-clause coverage is met, but Q08
+multi-clause completeness and overall answer relevance are **not** met (see
+`docs/PRODUCTION_SLICE.md` §9).
 
 ### 4.1 Retrieval
 - Evidence-level Recall@K, Precision@K and MRR@K are reported against the verified
@@ -128,7 +129,7 @@ Every chunk set must satisfy the audit in `src/rag_core/chunker.py`
 | `chunker.py` | `StructureAwareChunker` and `FixedCharacterChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
 | `index.py` | `DenseIndex` over Chroma; `DenseIndexConfig`; `RetrievedChunk`; `chunk_to_metadata`. |
 | `evaluation.py` | `Question` / `EvidenceUnit`; verified EXP-001 manifest loading into global offsets; metric functions; coverage summary. |
-| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional unevaluated generator hook. |
+| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional unevaluated generator hook. |
 
 Design constraints:
 
@@ -151,6 +152,7 @@ experiments/
   exp001_questions.csv       # approved 15-question dataset (immutable)
   exp001_ground_truth.json   # 20 verified evidence units (immutable)
   exp002.py                  # structure-aware chunking experiment
+  exp003.py                  # answer-layer sibling-clause selection experiment
   production_slice.py        # accepted baseline + grounded extractive answers
   unanswerable_questions.csv # 8 calibration + 4 held-out abstention questions
   results/
@@ -158,6 +160,7 @@ experiments/
     exp001_v2/               # corrected intermediate run
     exp001_v3/               # ACCEPTED fixed-character baseline
     exp002/                  # structure-aware run + comparison + failure analysis
+    exp003/                  # ACCEPTED sibling-clause answer-selection comparison
     production_slice/        # PROD-001 config, chunks, answers, audit, metrics
 ```
 
@@ -171,8 +174,11 @@ experiments/
 - The extractive answer layer is faithful by construction (verbatim statements
   with exact global offsets) and cites only contributing chunks. It is **not** a
   complete answer engine: 12/15 answers contain at least one evidence-supported
-  statement, statement support is 13/45 (0.2889) and citation support is 15/32
-  (0.4688). Multi-clause questions Q08 and Q13 remain incomplete.
+  statement, statement support is 15/45 (0.3333) and citation support is 16/31
+  (0.5161).
+- EXP-003 accepted sibling-clause answer selection: Q13 now covers `3/3` evidence
+  units (was `1/3`) with no supported-answer regression. Q08 remains incomplete
+  because only one of its three clauses is retrieved.
 - Abstention was calibrated on 8 out-of-corpus questions and checked on 4
   held-out questions; all 12 abstained. This is a small smoke test, not a
   validated answerability classifier.
@@ -221,9 +227,10 @@ A chunk is relevant only when it overlaps an **actual supporting evidence span**
 | EXP-001 v3 | none (baseline) | **Accepted** | 0.8889 / 0.2533 / 0.7944 |
 | EXP-002 | chunking → structure-aware | **Rejected** as default | 0.8833 / 0.1867 / 0.6244 |
 | PROD-001 | production slice over accepted baseline | **Accepted retrieval; limited answer layer** | 0.8889 / 0.2533 / 0.7944 |
+| EXP-003 | answer selection → sibling clauses | **Accepted** | retrieval unchanged; statement support 0.2889 → 0.3333 |
 
-Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
-`docs/ENGINEERING_LOG.md`.
+Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
+`docs/PRODUCTION_SLICE.md`, `docs/ENGINEERING_LOG.md`.
 
 ---
 
@@ -236,16 +243,19 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
 - Phase 3: EXP-002 controlled structure-aware chunking experiment, including
   failure analysis and a documented **rejection** of this configuration as the
   production default.
-- Phase 5 (partial): PROD-001 production slice on the accepted baseline —
-  shared fixed-character ingestion, strict audit, dense retrieval, extractive
-  cited answers and an abstention policy. Retrieval matches EXP-001 exactly.
-- Test suite: **78 passed** (`python -m pytest tests -q`), including core,
+- Phase 5 (accepted baseline): PROD-001 production slice — shared
+  fixed-character ingestion, strict audit, dense retrieval, extractive cited
+  answers and an abstention policy. Retrieval matches EXP-001 exactly.
+- Phase 6 (partial): EXP-003 controlled answer-layer experiment — sibling-clause
+  selection accepted. Statement support improved from 13/45 (0.2889) to 15/45
+  (0.3333); Q13 evidence coverage improved from 1/3 to 3/3.
+- Test suite: **82 passed** (`python -m pytest tests -q`), including core,
   evaluation, fixed-chunker and grounded-answer tests.
 
 ### Next
-- Run a controlled answer-layer experiment on multi-clause selection, holding
-  retrieval fixed. Justification: Q10 and Q13 retrieve the required evidence but
-  the lexical selector misses it.
+- Run a controlled answer-layer experiment for Q10, whose evidence sits inside a
+  clause body rather than at a clause start. Candidate: clause-aware answer units,
+  holding retrieval fixed.
 - Decide from evidence whether retrieval expansion is justified for Q05 (recall
   0.0) and Q08 (0.3333); do not add hybrid retrieval/reranking without an
   experiment.
@@ -270,13 +280,14 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/PRODUCTION_SLICE.md`,
   `raise HTTPException(status_status=429, ...)` (invalid keyword) and still uses
   legacy collections/pipeline. Not used by the validated experiments.
 - **Answer relevance is weak.** The extractive selector is lexical and sentence
-  based. All statements are verbatim source text, but only 13/45 statements across
+  based. All statements are verbatim source text, but only 15/45 statements across
   the 15 questions overlap a verified evidence unit, and 3/15 answers contain no
-  supported statement. Q10/Q13 retrieve the evidence but select the wrong
+  supported statement. Q10 retrieves the evidence but selects the wrong
   sentences.
-- **Multi-clause completeness is not met.** Q08 and Q13 still lack required
-  child clauses; Q05 has a retrieval miss. Answer quality cannot exceed retrieval
-  recall for questions whose evidence is absent from the top-5.
+- **Multi-clause completeness is partial.** Q13 is now covered by EXP-003, but
+  Q08 still lacks required child clauses because only one of three is retrieved;
+  Q05 has a retrieval miss. Answer quality cannot exceed retrieval recall for
+  questions whose evidence is absent from the top-5.
 - **Abstention is a small smoke test.** Thresholds were calibrated on 8
   out-of-corpus questions and checked on 4 held-out questions (12/12 abstained).
   They do not detect in-corpus retrieval failures such as Q05, and no adversarial
@@ -304,6 +315,9 @@ python -m experiments.exp002
 
 # Reproduce PROD-001 (writes to experiments/results/production_slice/)
 python -m experiments.production_slice
+
+# Reproduce EXP-003 (writes to experiments/results/exp003/)
+python -m experiments.exp003
 ```
 
 The accepted EXP-001 baseline is reproduced only from its frozen runner and
@@ -320,5 +334,6 @@ fixed-character equivalence and retrieval parity against the frozen artifacts.
 | `docs/ENGINEERING_LOG.md` | Decisions, defects, experiments, rejected approaches, risks, test evidence. |
 | `docs/EXP-001.md` | Accepted fixed-character baseline. |
 | `docs/EXP-002.md` | Structure-aware chunking experiment report. |
+| `docs/EXP-003.md` | Sibling-clause answer-selection experiment, decision rule and results. |
 | `docs/PRODUCTION_SLICE.md` | PROD-001 architecture, integrity, retrieval parity, answer/citation metrics, abstention and failure analysis. |
 | `docs/CHUNKING_STRATEGY.md` | Earlier chunking design analysis (context only; EXP-002 supersedes its unvalidated assumptions). |

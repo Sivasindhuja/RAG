@@ -49,6 +49,7 @@ evaluated.
 | Vector store | Chroma collection `satcom_ngp_production_fixed_char` |
 | Retrieval | dense-only, top-5 |
 | Answer mode | `extractive_verbatim` |
+| Selection | `sibling_clause` (EXP-003, ratio 0.5) |
 | Max answer sentences | 3 |
 | Max chunks considered for selection | 5 |
 | Citation quote cap | 500 chars |
@@ -116,9 +117,9 @@ Retrieval is unchanged from the accepted baseline and reproduces it exactly:
 
 Observed build and query latency (single local run, not a benchmark):
 
-- index build: 1,927.89 ms for 49 chunks;
-- pipeline query (retrieval + answer assembly): mean 32.44 ms, median 32.50 ms,
-  max 34.67 ms over 15 questions.
+- index build: 2,422.49 ms for 49 chunks;
+- pipeline query (retrieval + answer assembly): mean 38.60 ms, median 38.52 ms,
+  max 44.97 ms over 15 questions.
 
 Latency varies by machine and Chroma state; only the correctness numbers are
 release-gating.
@@ -160,10 +161,10 @@ question.
 |---|---:|
 | Answered | 15 / 15 |
 | Answers with ≥1 evidence-supported statement | 12 / 15 |
-| Statements supported | 13 / 45 (0.2889) |
-| Citations supported | 15 / 32 (0.4688) |
+| Statements supported | 15 / 45 (0.3333) |
+| Citations supported | 16 / 31 (0.5161) |
 | Mean statements per answer | 3.00 |
-| Mean citations per answer | 2.13 |
+| Mean citations per answer | 2.07 |
 
 Per-question detail:
 
@@ -181,13 +182,13 @@ Per-question detail:
 | EXP001-Q10 | 1.0000 | 0/3 | 0/2 |
 | EXP001-Q11 | 1.0000 | 1/3 | 1/1 |
 | EXP001-Q12 | 1.0000 | 1/3 | 1/2 |
-| EXP001-Q13 | 1.0000 | 1/3 | 1/2 |
+| EXP001-Q13 | 1.0000 | 3/3 | 2/2 |
 | EXP001-Q14 | 1.0000 | 2/3 | 2/3 |
 | EXP001-Q15 | 1.0000 | 1/3 | 1/3 |
 
 ### 5.2 Failure analysis
 
-Three distinct failure modes are visible:
+Four distinct failure modes are visible:
 
 1. **Retrieval miss — Q05 (Recall@5 = 0.0).** The required clause `2.5.6` is not
    in the top-5, so no answer layer can recover it. The pipeline still answers
@@ -196,16 +197,21 @@ Three distinct failure modes are visible:
    but irrelevant in-corpus* evidence.
 2. **Partial retrieval — Q08 (Recall@5 = 0.3333).** Only one of the three required
    authorisation clauses is retrieved. The answer cannot cover `3.4.1`–`3.4.3`.
-3. **Selection miss — Q10 and Q13 (Recall@5 = 1.0, answers weak).** The required
-   evidence is in the top-5, but the lexical sentence selector chooses other
-   sentences. Q10 selects a long list block and later clauses instead of the
-   first-come-first-served rule. Q13 selects classification preamble and `4.3.4`
-   but not sibling categories `4.3.2`/`4.3.3`.
+3. **Selection miss — Q10 (Recall@5 = 1.0, answer weak).** The required evidence
+   is in the top-5, but the lexical sentence selector chooses a long list block
+   and later clauses instead of the first-come-first-served rule. The required
+   `3.6.8` sentence does not begin with its clause ID, so the sibling rule cannot
+   find it.
+4. **Resolved selection miss — Q13 (EXP-003).** Q13 previously selected the
+   classification preamble and `4.3.4` but not sibling categories
+   `4.3.2`/`4.3.3`. The accepted sibling-clause selection rule now selects all
+   three and covers `3/3` evidence units. See `docs/EXP-003.md`.
 
 Additional observed weakness: sentence splitting only breaks on sentence-ending
 punctuation and blank lines. OCR line breaks (including intra-word breaks such as
-`op erations`) and sibling clauses remain inside long sentences, which hurts both
-readability and selection.
+`op erations`) remain inside statements, and clause bodies that do not begin with
+a clause ID (such as the start of `3.6.8`) stay inside long sentences, which hurts
+selection (Q10) and readability.
 
 The statement-support metric is deliberately demanding and is **not** an
 answer-correctness score: an unsupported statement may still be true policy text
@@ -266,11 +272,14 @@ new, controlled generation experiment. None is made here.
 # Grounded answer + abstention tests
 python -m pytest tests/test_pipeline.py tests/test_fixed_chunker.py -q
 
-# Full suite (last executed: 78 passed, 25 Chroma/Pydantic warnings)
+# Full suite (last executed: 82 passed, 25 Chroma/Pydantic warnings)
 python -m pytest tests -q
 
 # Rebuild the production index and write all artifacts
 python -m experiments.production_slice
+
+# Controlled answer-selection experiment (does not change the production index)
+python -m experiments.exp003
 ```
 
 Outputs under `experiments/results/production_slice/`:
@@ -301,7 +310,7 @@ and do not affect results.
 | Every answer statement traceable to source text | Met (extractive path) |
 | Citations only from contributing chunks | Met |
 | Abstention on out-of-corpus questions | Smoke met (12/12, small set) |
-| Multi-clause completeness (Q08, Q13) | **Not met** |
+| Multi-clause completeness | **Partial**: Q13 met (3/3, EXP-003); Q08 not met (retrieval miss) |
 | Answer relevance / correctness | **Not met** as a quality bar |
 | Generation faithfulness | Not evaluated |
 
@@ -312,9 +321,9 @@ not yet a user-facing answer system.
 
 ## 10. Next work
 
-1. A controlled answer-layer experiment on multi-clause selection, holding
-   retrieval fixed. Observed justification: Q10 and Q13 have the evidence in the
-   top-5 but do not select it.
+1. A controlled answer-layer experiment for Q10: its evidence is inside a clause
+   body, not at a clause start. Candidate directions are clause-aware answer
+   units or explicit clause-block segmentation, holding retrieval fixed.
 2. Decide whether retrieval expansion is justified for Q05/Q08, with the same
    PDF, questions, ground truth, embedding, top-K and metrics held constant.
 3. Expand the verified question/evidence set before making broader quality claims.
