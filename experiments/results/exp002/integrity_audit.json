@@ -1,0 +1,506 @@
+{
+  "source": "satcom-ngp.pdf",
+  "ok": true,
+  "issues": [],
+  "total_chars": 35407,
+  "covered_chars": 35018,
+  "overlap_chars": 0,
+  "overlaps": [],
+  "within_bounds": true,
+  "bound_errors": [],
+  "fidelity_errors": [],
+  "duplicate_ids": [],
+  "sequence_order_ok": true,
+  "source_order_ok": true,
+  "page_mapping_errors": [],
+  "empty_chunks": [],
+  "oversized_chunks": [],
+  "uncovered_regions": [
+    {
+      "start": 0,
+      "end": 2,
+      "text": " \n"
+    },
+    {
+      "start": 173,
+      "end": 177,
+      "text": " \n \n"
+    },
+    {
+      "start": 337,
+      "end": 340,
+      "text": "\n \n"
+    },
+    {
+      "start": 1413,
+      "end": 1417,
+      "text": " \n \n"
+    },
+    {
+      "start": 1522,
+      "end": 1526,
+      "text": " \n \n"
+    },
+    {
+      "start": 1928,
+      "end": 1932,
+      "text": " \n \n"
+    },
+    {
+      "start": 1965,
+      "end": 1968,
+      "text": "\n \n"
+    },
+    {
+      "start": 3314,
+      "end": 3317,
+      "text": "\n \n"
+    },
+    {
+      "start": 4191,
+      "end": 4197,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 4226,
+      "end": 4230,
+      "text": " \n \n"
+    },
+    {
+      "start": 4502,
+      "end": 4506,
+      "text": " \n \n"
+    },
+    {
+      "start": 4730,
+      "end": 4734,
+      "text": " \n \n"
+    },
+    {
+      "start": 4937,
+      "end": 4941,
+      "text": " \n \n"
+    },
+    {
+      "start": 5392,
+      "end": 5396,
+      "text": " \n \n"
+    },
+    {
+      "start": 5428,
+      "end": 5432,
+      "text": " \n \n"
+    },
+    {
+      "start": 5833,
+      "end": 5837,
+      "text": " \n \n"
+    },
+    {
+      "start": 6046,
+      "end": 6050,
+      "text": " \n \n"
+    },
+    {
+      "start": 6252,
+      "end": 6256,
+      "text": " \n \n"
+    },
+    {
+      "start": 6429,
+      "end": 6433,
+      "text": " \n \n"
+    },
+    {
+      "start": 6643,
+      "end": 6647,
+      "text": " \n \n"
+    },
+    {
+      "start": 7055,
+      "end": 7059,
+      "text": " \n \n"
+    },
+    {
+      "start": 7298,
+      "end": 7302,
+      "text": " \n \n"
+    },
+    {
+      "start": 7345,
+      "end": 7349,
+      "text": " \n \n"
+    },
+    {
+      "start": 7669,
+      "end": 7673,
+      "text": " \n \n"
+    },
+    {
+      "start": 8498,
+      "end": 8502,
+      "text": " \n \n"
+    },
+    {
+      "start": 8608,
+      "end": 8612,
+      "text": " \n \n"
+    },
+    {
+      "start": 8914,
+      "end": 8918,
+      "text": " \n \n"
+    },
+    {
+      "start": 9372,
+      "end": 9378,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 10193,
+      "end": 10197,
+      "text": " \n \n"
+    },
+    {
+      "start": 10308,
+      "end": 10312,
+      "text": " \n \n"
+    },
+    {
+      "start": 10795,
+      "end": 10800,
+      "text": " \n  \n"
+    },
+    {
+      "start": 11285,
+      "end": 11290,
+      "text": "  \n \n"
+    },
+    {
+      "start": 11655,
+      "end": 11661,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 11796,
+      "end": 11800,
+      "text": " \n \n"
+    },
+    {
+      "start": 12334,
+      "end": 12338,
+      "text": " \n \n"
+    },
+    {
+      "start": 12561,
+      "end": 12565,
+      "text": " \n \n"
+    },
+    {
+      "start": 13085,
+      "end": 13089,
+      "text": " \n \n"
+    },
+    {
+      "start": 13137,
+      "end": 13140,
+      "text": "\n \n"
+    },
+    {
+      "start": 14162,
+      "end": 14168,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 14387,
+      "end": 14391,
+      "text": " \n \n"
+    },
+    {
+      "start": 15978,
+      "end": 15983,
+      "text": "  \n \n"
+    },
+    {
+      "start": 16258,
+      "end": 16262,
+      "text": " \n \n"
+    },
+    {
+      "start": 16425,
+      "end": 16429,
+      "text": " \n \n"
+    },
+    {
+      "start": 16809,
+      "end": 16813,
+      "text": " \n \n"
+    },
+    {
+      "start": 17186,
+      "end": 17190,
+      "text": " \n \n"
+    },
+    {
+      "start": 17311,
+      "end": 17315,
+      "text": " \n \n"
+    },
+    {
+      "start": 17794,
+      "end": 17796,
+      "text": " \n"
+    },
+    {
+      "start": 18521,
+      "end": 18525,
+      "text": " \n \n"
+    },
+    {
+      "start": 18990,
+      "end": 18994,
+      "text": " \n \n"
+    },
+    {
+      "start": 19342,
+      "end": 19346,
+      "text": " \n \n"
+    },
+    {
+      "start": 19640,
+      "end": 19644,
+      "text": " \n \n"
+    },
+    {
+      "start": 19938,
+      "end": 19942,
+      "text": " \n \n"
+    },
+    {
+      "start": 20183,
+      "end": 20187,
+      "text": " \n \n"
+    },
+    {
+      "start": 20951,
+      "end": 20955,
+      "text": " \n \n"
+    },
+    {
+      "start": 21014,
+      "end": 21018,
+      "text": " \n \n"
+    },
+    {
+      "start": 21228,
+      "end": 21232,
+      "text": " \n \n"
+    },
+    {
+      "start": 21322,
+      "end": 21326,
+      "text": " \n \n"
+    },
+    {
+      "start": 21658,
+      "end": 21662,
+      "text": " \n \n"
+    },
+    {
+      "start": 21958,
+      "end": 21964,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 22000,
+      "end": 22004,
+      "text": " \n \n"
+    },
+    {
+      "start": 23341,
+      "end": 23345,
+      "text": " \n \n"
+    },
+    {
+      "start": 23483,
+      "end": 23487,
+      "text": " \n \n"
+    },
+    {
+      "start": 23787,
+      "end": 23791,
+      "text": " \n \n"
+    },
+    {
+      "start": 24031,
+      "end": 24035,
+      "text": " \n \n"
+    },
+    {
+      "start": 24454,
+      "end": 24458,
+      "text": " \n \n"
+    },
+    {
+      "start": 24696,
+      "end": 24702,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 24791,
+      "end": 24795,
+      "text": " \n \n"
+    },
+    {
+      "start": 25002,
+      "end": 25006,
+      "text": " \n \n"
+    },
+    {
+      "start": 25795,
+      "end": 25799,
+      "text": " \n \n"
+    },
+    {
+      "start": 25910,
+      "end": 25914,
+      "text": " \n \n"
+    },
+    {
+      "start": 26023,
+      "end": 26027,
+      "text": " \n \n"
+    },
+    {
+      "start": 26073,
+      "end": 26077,
+      "text": " \n \n"
+    },
+    {
+      "start": 26542,
+      "end": 26546,
+      "text": " \n \n"
+    },
+    {
+      "start": 26802,
+      "end": 26806,
+      "text": " \n \n"
+    },
+    {
+      "start": 26929,
+      "end": 26933,
+      "text": " \n \n"
+    },
+    {
+      "start": 27069,
+      "end": 27075,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 27239,
+      "end": 27243,
+      "text": " \n \n"
+    },
+    {
+      "start": 27448,
+      "end": 27452,
+      "text": " \n \n"
+    },
+    {
+      "start": 27841,
+      "end": 27845,
+      "text": " \n \n"
+    },
+    {
+      "start": 28339,
+      "end": 28343,
+      "text": " \n \n"
+    },
+    {
+      "start": 29322,
+      "end": 29325,
+      "text": "\n \n"
+    },
+    {
+      "start": 30377,
+      "end": 30381,
+      "text": " \n \n"
+    },
+    {
+      "start": 30422,
+      "end": 30425,
+      "text": "\n \n"
+    },
+    {
+      "start": 31506,
+      "end": 31512,
+      "text": " \n \n \n"
+    },
+    {
+      "start": 31773,
+      "end": 31777,
+      "text": " \n \n"
+    },
+    {
+      "start": 32164,
+      "end": 32168,
+      "text": " \n \n"
+    },
+    {
+      "start": 32448,
+      "end": 32452,
+      "text": " \n \n"
+    },
+    {
+      "start": 32779,
+      "end": 32783,
+      "text": " \n \n"
+    },
+    {
+      "start": 32971,
+      "end": 32975,
+      "text": " \n \n"
+    },
+    {
+      "start": 33420,
+      "end": 33424,
+      "text": " \n \n"
+    },
+    {
+      "start": 33691,
+      "end": 33695,
+      "text": " \n \n"
+    },
+    {
+      "start": 33943,
+      "end": 33947,
+      "text": " \n \n"
+    },
+    {
+      "start": 34490,
+      "end": 34494,
+      "text": " \n \n"
+    },
+    {
+      "start": 34876,
+      "end": 34880,
+      "text": " \n \n"
+    },
+    {
+      "start": 35189,
+      "end": 35192,
+      "text": "\n \n"
+    },
+    {
+      "start": 35406,
+      "end": 35407,
+      "text": " "
+    }
+  ],
+  "uncovered_non_whitespace_regions": [],
+  "uncovered_non_whitespace_chars": 0,
+  "uncovered_whitespace_chars": 389,
+  "total_non_whitespace_chars": 29250,
+  "covered_non_whitespace_chars": 29250,
+  "coverage_percent": 100.0
+}

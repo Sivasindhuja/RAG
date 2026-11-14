@@ -1,0 +1,40 @@
+{
+  "experiment_id": "EXP-002",
+  "pdf_path": "C:\\Users\\sindh\\RAG\\data\\satcom-ngp.pdf",
+  "questions_csv": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+  "ground_truth": "C:\\Users\\sindh\\RAG\\experiments\\exp001_ground_truth.json",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "chunking": {
+    "strategy": "structure_aware",
+    "max_chars": 1000,
+    "paragraph_aware_splitting": true,
+    "page_aware_heading_scan": true,
+    "overlap": 0
+  },
+  "retrieval": {
+    "method": "dense_vector_similarity",
+    "top_k": 5
+  },
+  "vector_db": {
+    "backend": "chroma",
+    "collection_name": "satcom_ngp_exp002_structure_aware",
+    "persist_directory": "C:\\Users\\sindh\\RAG\\chroma_db_exp002"
+  },
+  "metrics": [
+    "Recall@5",
+    "Precision@5",
+    "MRR@5"
+  ],
+  "fixed_variables": [
+    "source_pdf",
+    "evaluation_questions",
+    "ground_truth_evidence_units",
+    "embedding_model",
+    "dense_retrieval",
+    "top_k",
+    "metric_definitions"
+  ],
+  "changed_variables": [
+    "chunking_strategy"
+  ]
+}

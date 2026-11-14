@@ -5,3 +5,5 @@ parent_docstore.pkl
 uv.lock
 chroma_db/
 chroma-embeddings/
+chroma_db_exp001/
+chroma_db_exp002/

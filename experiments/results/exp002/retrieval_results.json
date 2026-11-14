@@ -1,0 +1,2526 @@
+{
+  "experiment_id": "EXP-002",
+  "config": {
+    "experiment_id": "EXP-002",
+    "pdf_path": "C:\\Users\\sindh\\RAG\\data\\satcom-ngp.pdf",
+    "questions_csv": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+    "ground_truth": "C:\\Users\\sindh\\RAG\\experiments\\exp001_ground_truth.json",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "chunking": {
+      "strategy": "structure_aware",
+      "max_chars": 1000,
+      "paragraph_aware_splitting": true,
+      "page_aware_heading_scan": true,
+      "overlap": 0
+    },
+    "retrieval": {
+      "method": "dense_vector_similarity",
+      "top_k": 5
+    },
+    "vector_db": {
+      "backend": "chroma",
+      "collection_name": "satcom_ngp_exp002_structure_aware",
+      "persist_directory": "C:\\Users\\sindh\\RAG\\chroma_db_exp002"
+    },
+    "metrics": [
+      "Recall@5",
+      "Precision@5",
+      "MRR@5"
+    ],
+    "fixed_variables": [
+      "source_pdf",
+      "evaluation_questions",
+      "ground_truth_evidence_units",
+      "embedding_model",
+      "dense_retrieval",
+      "top_k",
+      "metric_definitions"
+    ],
+    "changed_variables": [
+      "chunking_strategy"
+    ]
+  },
+  "build_stats": {
+    "chunks": 107,
+    "build_ms": 2925.09,
+    "collection_count": 107
+  },
+  "latency": {
+    "mean_ms": 36.87,
+    "median_ms": 36.17,
+    "p90_ms": 41.97,
+    "max_ms": 46.19
+  },
+  "aggregate_metrics": {
+    "recall@5": 0.8833,
+    "precision@5": 0.1867,
+    "mrr@5": 0.6244
+  },
+  "per_question_metrics": [
+    {
+      "question_id": "EXP001-Q01",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.2,
+      "required_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q01-E01": {
+          "covered": true,
+          "best_rank": 5,
+          "overlap_chars": 300,
+          "clause_id": "ARTICLE-1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q02-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 266,
+          "clause_id": "2.3.1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q03-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 178,
+          "clause_id": "2.3.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q04-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 197,
+          "clause_id": "2.4.1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q05-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 203,
+          "clause_id": "2.5.6"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "required_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q06-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 241,
+          "clause_id": "2.6.5"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "required_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q07-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 445,
+          "clause_id": "3.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0,
+      "required_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "missing_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "covered_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q08-E01": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.1"
+        },
+        "EXP001-Q08-E02": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.2"
+        },
+        "EXP001-Q08-E03": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.3"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q09-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 374,
+          "clause_id": "3.6.4"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "required_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q10-E01": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 719,
+          "clause_id": "3.6.8"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "required_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q11-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 324,
+          "clause_id": "3.7.1.5"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "required_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q12-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 1000,
+          "clause_id": "4.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "recall@5": 0.25,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "required_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "missing_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q13-E04"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q13-E01": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.1"
+        },
+        "EXP001-Q13-E02": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.2"
+        },
+        "EXP001-Q13-E03": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.3"
+        },
+        "EXP001-Q13-E04": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 182,
+          "clause_id": "4.3.4"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "required_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q14-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 537,
+          "clause_id": "4.4.3"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "required_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "missing_evidence_ids": [],
+      "covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q15-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 198,
+          "clause_id": "4.4.6"
+        }
+      }
+    }
+  ],
+  "retrieval_results": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "expected_answer": "Proposals using Indian satellites are given preferential treatment over foreign satellites.",
+      "relevant_clause_ids": [
+        "ARTICLE-1"
+      ],
+      "relevant_source_pages": [
+        1
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-4::BODY::off28343",
+          "text": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE \nOF FOREIGN SATELLITES \n \nIn regard to the use of foreign satellites for services in India, Government states \nthat: \n \n (a) Operation from Indian soil with foreign satellites may be \nallowed only in special cases to be notified. These may be in the case of \noverseas services using internatio nal inter-governmental systems, \nsystems owned and operated by Indian Parties but registered in other \ncountries before rules for registrations have been formulated in India, \ninternational private systems where there is a substantial Indian \nparticipation by way of equity or in kind contribution and where \nconsidered necessary reciprocal a rrangements could be worked out \nwith the country/countries of registration or ownership. \n \n(b)  While operations from Indian  soil may be allowed with both \nIndian and foreign Satellites, propos als envisaging use of the Indian \nsatellites will be accorded preferential treatment. ",
+          "section": null,
+          "article": "ARTICLE-4",
+          "heading": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE OF FOREIGN SATELLITES",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28343,
+          "end_offset": 29322,
+          "distance": 0.7117273228502599,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::BODY::off10197",
+          "text": "ARTICLE-3:  NORMS, GUIDELINES AND PROCEDURES REGARDING \nESTABLISHMENT AND OPERATION OF INDIAN SATELITE \nSYSTEMS",
+          "section": null,
+          "article": "ARTICLE-3",
+          "heading": "ARTICLE-3:  NORMS, GUIDELINES AND PROCEDURES REGARDING ESTABLISHMENT AND OPERATION OF INDIAN SATELITE SYSTEMS",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10197,
+          "end_offset": 10308,
+          "distance": 0.8611286878585815,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.5::part_1::off13140",
+          "text": "In so far as the first two authorisati ons/licenses of 3.4 a bove are concerned a \ncommittee consisting of Secretaries to the Go vernment of India in the Department of \nSpace, Department of Telecommunications, Ministry of Information and Broadcasting, \nMinistry of Home Affairs, Secretary (R), Ministry of Defence and Ministry of Industry \n(Department of Industrial Policy and Prom otion) with Wireless Advisor to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the Committee for authorising the Establishment and Operation of Indian \nSatellite Systems (CAISS) shall be resident in the Department of Space. After the CAISS \napproval the authorisations/licenses for the establishment and operation of the Satellite \nSystem shall be issued by Department of Space following its norm al procedures. WPC \nshall also indicate the intersystem and terrestrial coo",
+          "section": "3.5",
+          "article": "ARTICLE-3",
+          "heading": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13140,
+          "end_offset": 14140,
+          "distance": 0.8850299715995789,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.1::off10312",
+          "text": "3.1 The Satellite Communications Policy Framework for India as approved by \nGovernment of India states: \n \n“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satellite systems and networks  by and for Indian private parties \nfollowing certain well defined and transparent norms. The satellite systems \nof all Government Agencies to be established by Department of Space;”",
+          "section": "3.1",
+          "article": "ARTICLE-3",
+          "heading": "3.1 The Satellite Communications Policy Framework for India as approved by",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10312,
+          "end_offset": 10795,
+          "distance": 0.9017348289489746,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-1::BODY::part_1::off340",
+          "text": "Government of India has decided that the Satellite Communications  Policy should be \nimplemented in such a manner that while ope rations from Indian soil may be allowed \nwith both Indian and foreign Satellites, proposal s envisaging use of I ndian Satellites will \nbe accorded preferential treatment. The norms for  operating with satellites from Indian \nsoil shall be formulated by the respective Administrative Ministry/Department in \naccordance with the above directive and also in accordance with the Articles-2, 3 and 4 of \nthis Satellite Communications Norms, Guidelines and Procedures. For instance, in case of \nBroadcasting (TV and Sound) the conditions will be governed by the Broadcast Bill as \nmay be passed by the Parliament. Similarly in case of GMPCS, the operating license \nconditions will be as determined by the GM PCS policy being piloted by the Department \nof Telecommunications. However, in respect of establishment and operations of Indian \nSatellite Systems the Articles of this",
+          "section": null,
+          "article": "ARTICLE-1",
+          "heading": "ARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING ALLOWING INDIAN PARTIES TO PROVIDE SERVICES INCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN SATELLITES",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 340,
+          "end_offset": 1340,
+          "distance": 0.9138972759246826,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q01-E01"
+          ],
+          "overlap_chars": 300
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.2,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        0,
+        0,
+        300
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-1::BODY::part_1::off340",
+          "evidence_ids": [
+            "EXP001-Q01-E01"
+          ],
+          "overlap_chars": 300
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q01-E01": {
+          "covered": true,
+          "best_rank": 5,
+          "overlap_chars": 300,
+          "clause_id": "ARTICLE-1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "expected_answer": "The INSAT capacity should be made available to the commercial sector on the basis of sound business lines, i.e. on a for-profit basis.",
+      "relevant_clause_ids": [
+        "2.3.1"
+      ],
+      "relevant_source_pages": [
+        2
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.1::off4230",
+          "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+          "section": "2.3.1",
+          "article": "ARTICLE-2",
+          "heading": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4230,
+          "end_offset": 4502,
+          "distance": 0.5499218702316284,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q02-E01"
+          ],
+          "overlap_chars": 266
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.7::off9378",
+          "text": "2.7     ADDITIONAL CAPACITY ON INSAT \n \nDepartment of Space/INSAT may build in  capacity for a non-governmental Party \nat its request based on commercial considerat ions and if technical ly feasible without \n 4adversely affecting the capacity for already projected, accepted and funded Government \nneeds. The additional capacity could be for pr oviding services in India or abroad. Such \ncapacity shall not be deemed part of the IN SAT capacity from Indian Regulations point \nof view unless ICC specifically declares it to be so. However, Department of \nSpace/INSAT shall ensure that providing additional capacity to foreign agencies are in \naccordance with the Government of India policies. ICC shall be kept informed of such \nsteps. The commercial and other terms will be determined by Department of \nSpace/INSAT.",
+          "section": "2.7",
+          "article": "ARTICLE-2",
+          "heading": "2.7     ADDITIONAL CAPACITY ON INSAT",
+          "start_page": 4,
+          "end_page": 5,
+          "start_offset": 9378,
+          "end_offset": 10193,
+          "distance": 0.7886872887611389,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.2::off7673",
+          "text": "2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of \nSpace/INSAT is authorised to provide this  capacity to the non-governmental users for \nservices other than telecommunications, follo wing its own procedures . It may enter into \nbilateral agreements with othe r agencies for marketing this capacity. In case the demand \nis more than the available capacity, the Depa rtment of Space/INSAT may evolve suitable \ntransparent procedures for allo tting the capacity. This procedure may be in the form of \nauction, good faith negotiations, first come first served or any other equitable method. In \nso far as telecommunications is concerned an y use of INSAT capacity for users in India \nwill be based on the existing provisions/arrangements. ICC may review this arrangement \nat any time as required.",
+          "section": "2.6.2",
+          "article": "ARTICLE-2",
+          "heading": "2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 7673,
+          "end_offset": 8498,
+          "distance": 0.8278126120567322,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.5.1::off5432",
+          "text": "2.5.1 As far as allocations to Department of Telecommunications, Doordarshan and All \nIndia Radio for their direct use on the exis ting and planned capacity on INSAT satellites \nare concerned the existing practice shall continue. Planned capacity means the capacity \nprojected by these agencies on a long term ba sis and included in the configuration of a \nparticular satellite or series of satellite.",
+          "section": "2.5.1",
+          "article": "ARTICLE-2",
+          "heading": "2.5.1 As far as allocations to Department of Telecommunications, Doordarshan and All",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 5432,
+          "end_offset": 5833,
+          "distance": 0.85865318775177,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.5::off8918",
+          "text": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a \nformal lease agreement signed between the Department of Space/INSAT and the Party \nwhich will spell out the technical, financial, contractual and management clauses. In so \nfar as Telecommunications is concerned the existing arrangement of providing the \ncapacity to non-governmental users through DOT will continue. ICC may review the \narrangement at any time as required.",
+          "section": "2.6.5",
+          "article": "ARTICLE-2",
+          "heading": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8918,
+          "end_offset": 9372,
+          "distance": 0.8608016967773438,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        266,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.1::off4230",
+          "evidence_ids": [
+            "EXP001-Q02-E01"
+          ],
+          "overlap_chars": 266
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q02-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 266,
+          "clause_id": "2.3.1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "expected_answer": "The INSAT Coordination Committee (ICC).",
+      "relevant_clause_ids": [
+        "2.3.2"
+      ],
+      "relevant_source_pages": [
+        2
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.2::off4506",
+          "text": "2.3.2 All the policies regarding INSAT syst em shall be determined by the INSAT \nCoordination Committee(ICC)  keeping in view Policy Frame-work for Satellite \nCommunications in India. \n \n \n \n 2",
+          "section": "2.3.2",
+          "article": "ARTICLE-2",
+          "heading": "2.3.2 All the policies regarding INSAT syst em shall be determined by the INSAT",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4506,
+          "end_offset": 4699,
+          "distance": 0.798968493938446,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q03-E01"
+          ],
+          "overlap_chars": 178
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-2::BODY::off1417",
+          "text": "ARTICLE-2: NORMS, GUIDELINES AND PR OCEDURES REGARDING USE \nOF INSAT CAPACITY BY NON-GOVERNMENTAL PARTIES",
+          "section": null,
+          "article": "ARTICLE-2",
+          "heading": "ARTICLE-2: NORMS, GUIDELINES AND PR OCEDURES REGARDING USE OF INSAT CAPACITY BY NON-GOVERNMENTAL PARTIES",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1417,
+          "end_offset": 1522,
+          "distance": 0.8329669833183289,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.4::off8612",
+          "text": "2.6.4 When INSAT capacity is made available for operations from outside India, the \nContract must ensure that such operations are carried out in conformity with the UN/ITU \nConstitution, Convention, Treaties, Agreements and Regulations and also consistent with \napplicable Government of India Policies.",
+          "section": "2.6.4",
+          "article": "ARTICLE-2",
+          "heading": "2.6.4 When INSAT capacity is made available for operations from outside India, the",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8612,
+          "end_offset": 8914,
+          "distance": 0.9060282707214355,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.5::off8918",
+          "text": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a \nformal lease agreement signed between the Department of Space/INSAT and the Party \nwhich will spell out the technical, financial, contractual and management clauses. In so \nfar as Telecommunications is concerned the existing arrangement of providing the \ncapacity to non-governmental users through DOT will continue. ICC may review the \narrangement at any time as required.",
+          "section": "2.6.5",
+          "article": "ARTICLE-2",
+          "heading": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8918,
+          "end_offset": 9372,
+          "distance": 0.9152892231941223,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.1::off4230",
+          "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+          "section": "2.3.1",
+          "article": "ARTICLE-2",
+          "heading": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4230,
+          "end_offset": 4502,
+          "distance": 0.9893495440483093,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        178,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.2::off4506",
+          "evidence_ids": [
+            "EXP001-Q03-E01"
+          ],
+          "overlap_chars": 178
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q03-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 178,
+          "clause_id": "2.3.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "expected_answer": "Telecommunications, broadcasting, education and developmental communications, and security communications.",
+      "relevant_clause_ids": [
+        "2.4.1"
+      ],
+      "relevant_source_pages": [
+        3
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.4.1::off4734",
+          "text": "2.4.1 The user sectors can be broadly classified as: \n \n(a) Telecommunications \n(b) Broadcasting \n(c) Education and developmental communications \n(d) Security Communications for Defence Ministry/Services",
+          "section": "2.4.1",
+          "article": "ARTICLE-2",
+          "heading": "2.4.1 The user sectors can be broadly classified as:",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 4734,
+          "end_offset": 4937,
+          "distance": 0.6894797682762146,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q04-E01"
+          ],
+          "overlap_chars": 197
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.3.1::off4230",
+          "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+          "section": "2.3.1",
+          "article": "ARTICLE-2",
+          "heading": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector",
+          "start_page": 2,
+          "end_page": 2,
+          "start_offset": 4230,
+          "end_offset": 4502,
+          "distance": 0.8898339867591858,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.4::off4699",
+          "text": "2.4       CLASSIFICATION OF USE",
+          "section": "2.4",
+          "article": "ARTICLE-2",
+          "heading": "2.4       CLASSIFICATION OF USE",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 4699,
+          "end_offset": 4730,
+          "distance": 1.0406606197357178,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.3::off8502",
+          "text": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad.",
+          "section": "2.6.3",
+          "article": "ARTICLE-2",
+          "heading": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8502,
+          "end_offset": 8608,
+          "distance": 1.0504992008209229,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.2::part_1::off1968",
+          "text": "INSAT is a multi-agency, multi-purpose satellite system providing \nTelecommunications, Broadcasting and Meteorological services.  It is a joint venture \nof the Department of Space, Department of Telecommunications, Department of \nScience and Technology and the Ministry of Informa tion and Broadcasting.  The \nsatellite in the system are either built by DOS or procured.  It may also lease \ntransponders from other satellite systems to augment its capacity.  The ground system \nestablishment and operation is the responsibility of the respective \n 1Department/Ministry.  The INSAT Progr amme is managed by the INSAT Co-\nordination Committee (ICC) with the technical support of  its Technical Advisory \nGroup (TAG).  The predominant users of IN SAT communications capacity at present \nare the Department of Telecommunications (DOT), Doordarshan (DD) and All India \nRadio (AIR).  The other major users are National Informatics Centre, Ministry of \nDefence, Security Agencies, Several Pub lic Sector Uni",
+          "section": "2.2",
+          "article": "ARTICLE-2",
+          "heading": "2.2 FACTORS LEADING TO THE NORMS",
+          "start_page": 1,
+          "end_page": 2,
+          "start_offset": 1968,
+          "end_offset": 2968,
+          "distance": 1.0875720977783203,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        197,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.4.1::off4734",
+          "evidence_ids": [
+            "EXP001-Q04-E01"
+          ],
+          "overlap_chars": 197
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q04-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 197,
+          "clause_id": "2.4.1"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "expected_answer": "The Party which has taken the capacity on lease.",
+      "relevant_clause_ids": [
+        "2.5.6"
+      ],
+      "relevant_source_pages": [
+        3
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.5.6::off6647",
+          "text": "2.5.6 The responsibility for obtaining the necessary licenses to offer a service in a \nparticular territory (in India or in other coun tries) shall be that of the Party which has \ntaken the capacity on lease. \n \n \n \n 3",
+          "section": "2.5.6",
+          "article": "ARTICLE-2",
+          "heading": "2.5.6 The responsibility for obtaining the necessary licenses to offer a service in a",
+          "start_page": 3,
+          "end_page": 3,
+          "start_offset": 6647,
+          "end_offset": 6865,
+          "distance": 0.5653722882270813,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q05-E01"
+          ],
+          "overlap_chars": 203
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.5::off13089",
+          "text": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES ",
+          "section": "3.5",
+          "article": "ARTICLE-3",
+          "heading": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13089,
+          "end_offset": 13137,
+          "distance": 0.7609380483627319,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6::off14168",
+          "text": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN \nISSUING THE LICENSES \n \nIn case of satellite systems of Privat e Parties and Public Sector Units, the \nfollowing procedures, norms and guidelines shall be adopted:",
+          "section": "3.6",
+          "article": "ARTICLE-3",
+          "heading": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN ISSUING THE LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 14168,
+          "end_offset": 14387,
+          "distance": 0.8796117305755615,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.2.2::off23345",
+          "text": "3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for \nestablishing and operating an Indian Satellite System.",
+          "section": "3.7.2.2",
+          "article": "ARTICLE-3",
+          "heading": "3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 23345,
+          "end_offset": 23483,
+          "distance": 0.9489612579345703,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.4.7::off27452",
+          "text": "3.7.4.7 DOS shall have the right to take over th e system, equipment and networks of the \nlicensee in part or in whole in  case of emergency or war or  low intensity conflict or any \nother eventuality in public interest, as decl ared by the Government of India. Specific \norders or direction from the Government of India issued un der such conditi ons shall be \napplicable to the licensee.",
+          "section": "3.7.4.7",
+          "article": "ARTICLE-3",
+          "heading": "3.7.4.7 DOS shall have the right to take over th e system, equipment and networks of the",
+          "start_page": 11,
+          "end_page": 11,
+          "start_offset": 27452,
+          "end_offset": 27841,
+          "distance": 0.9494277801321903,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        203,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.5.6::off6647",
+          "evidence_ids": [
+            "EXP001-Q05-E01"
+          ],
+          "overlap_chars": 203
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q05-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 203,
+          "clause_id": "2.5.6"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "expected_answer": "A formal lease agreement signed between the Department of Space/INSAT and the Party.",
+      "relevant_clause_ids": [
+        "2.6.5"
+      ],
+      "relevant_source_pages": [
+        4
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-2::BODY::off1417",
+          "text": "ARTICLE-2: NORMS, GUIDELINES AND PR OCEDURES REGARDING USE \nOF INSAT CAPACITY BY NON-GOVERNMENTAL PARTIES",
+          "section": null,
+          "article": "ARTICLE-2",
+          "heading": "ARTICLE-2: NORMS, GUIDELINES AND PR OCEDURES REGARDING USE OF INSAT CAPACITY BY NON-GOVERNMENTAL PARTIES",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 1417,
+          "end_offset": 1522,
+          "distance": 0.4642845690250397,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.5::off8918",
+          "text": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a \nformal lease agreement signed between the Department of Space/INSAT and the Party \nwhich will spell out the technical, financial, contractual and management clauses. In so \nfar as Telecommunications is concerned the existing arrangement of providing the \ncapacity to non-governmental users through DOT will continue. ICC may review the \narrangement at any time as required.",
+          "section": "2.6.5",
+          "article": "ARTICLE-2",
+          "heading": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8918,
+          "end_offset": 9372,
+          "distance": 0.693951427936554,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q06-E01"
+          ],
+          "overlap_chars": 241
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.7::off9378",
+          "text": "2.7     ADDITIONAL CAPACITY ON INSAT \n \nDepartment of Space/INSAT may build in  capacity for a non-governmental Party \nat its request based on commercial considerat ions and if technical ly feasible without \n 4adversely affecting the capacity for already projected, accepted and funded Government \nneeds. The additional capacity could be for pr oviding services in India or abroad. Such \ncapacity shall not be deemed part of the IN SAT capacity from Indian Regulations point \nof view unless ICC specifically declares it to be so. However, Department of \nSpace/INSAT shall ensure that providing additional capacity to foreign agencies are in \naccordance with the Government of India policies. ICC shall be kept informed of such \nsteps. The commercial and other terms will be determined by Department of \nSpace/INSAT.",
+          "section": "2.7",
+          "article": "ARTICLE-2",
+          "heading": "2.7     ADDITIONAL CAPACITY ON INSAT",
+          "start_page": 4,
+          "end_page": 5,
+          "start_offset": 9378,
+          "end_offset": 10193,
+          "distance": 0.8384544849395752,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.3::off8502",
+          "text": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad.",
+          "section": "2.6.3",
+          "article": "ARTICLE-2",
+          "heading": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8502,
+          "end_offset": 8608,
+          "distance": 0.890387773513794,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.4::off8612",
+          "text": "2.6.4 When INSAT capacity is made available for operations from outside India, the \nContract must ensure that such operations are carried out in conformity with the UN/ITU \nConstitution, Convention, Treaties, Agreements and Regulations and also consistent with \napplicable Government of India Policies.",
+          "section": "2.6.4",
+          "article": "ARTICLE-2",
+          "heading": "2.6.4 When INSAT capacity is made available for operations from outside India, the",
+          "start_page": 4,
+          "end_page": 4,
+          "start_offset": 8612,
+          "end_offset": 8914,
+          "distance": 0.9126752614974976,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        241,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-2::2.6.5::off8918",
+          "evidence_ids": [
+            "EXP001-Q06-E01"
+          ],
+          "overlap_chars": 241
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q06-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 241,
+          "clause_id": "2.6.5"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "expected_answer": "The satellites which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations, for the actions of which Government of India shall be internationally responsible.",
+      "relevant_clause_ids": [
+        "3.2"
+      ],
+      "relevant_source_pages": [
+        5
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.1::off10312",
+          "text": "3.1 The Satellite Communications Policy Framework for India as approved by \nGovernment of India states: \n \n“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satellite systems and networks  by and for Indian private parties \nfollowing certain well defined and transparent norms. The satellite systems \nof all Government Agencies to be established by Department of Space;”",
+          "section": "3.1",
+          "article": "ARTICLE-3",
+          "heading": "3.1 The Satellite Communications Policy Framework for India as approved by",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10312,
+          "end_offset": 10795,
+          "distance": 0.4062216281890869,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.2::off10800",
+          "text": "3.2 DEFINITION OF INDIAN SATELLITES \n \n“Indian Satellites” shall be defined as  the satellites which are part of a \nsatellite network or system which are informed, Co-ordinated, Registered and \nNotified by the Indian Administration following the International \nTelecommunications Union (ITU) Radio Regu lations (RR) and for the actions of \nwhich Government of India shall be intern ationally responsible.  Indian Satellites \nare a subset of the broader concept of Indian Space Objects.",
+          "section": "3.2",
+          "article": "ARTICLE-3",
+          "heading": "3.2 DEFINITION OF INDIAN SATELLITES",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10800,
+          "end_offset": 11285,
+          "distance": 0.41490796208381653,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q07-E01"
+          ],
+          "overlap_chars": 445
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::PREAMBLE::BODY::off2",
+          "text": "The norms, guidelines and procedures for implementation of the policy frame-work \nfor satellite communications in India as  approved by Government in 2000 are as \nfollows:",
+          "section": null,
+          "article": null,
+          "heading": null,
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 2,
+          "end_offset": 173,
+          "distance": 0.4937293529510498,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-4::BODY::off28343",
+          "text": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE \nOF FOREIGN SATELLITES \n \nIn regard to the use of foreign satellites for services in India, Government states \nthat: \n \n (a) Operation from Indian soil with foreign satellites may be \nallowed only in special cases to be notified. These may be in the case of \noverseas services using internatio nal inter-governmental systems, \nsystems owned and operated by Indian Parties but registered in other \ncountries before rules for registrations have been formulated in India, \ninternational private systems where there is a substantial Indian \nparticipation by way of equity or in kind contribution and where \nconsidered necessary reciprocal a rrangements could be worked out \nwith the country/countries of registration or ownership. \n \n(b)  While operations from Indian  soil may be allowed with both \nIndian and foreign Satellites, propos als envisaging use of the Indian \nsatellites will be accorded preferential treatment. ",
+          "section": null,
+          "article": "ARTICLE-4",
+          "heading": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE OF FOREIGN SATELLITES",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28343,
+          "end_offset": 29322,
+          "distance": 0.5732085604441617,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-1::BODY::part_1::off340",
+          "text": "Government of India has decided that the Satellite Communications  Policy should be \nimplemented in such a manner that while ope rations from Indian soil may be allowed \nwith both Indian and foreign Satellites, proposal s envisaging use of I ndian Satellites will \nbe accorded preferential treatment. The norms for  operating with satellites from Indian \nsoil shall be formulated by the respective Administrative Ministry/Department in \naccordance with the above directive and also in accordance with the Articles-2, 3 and 4 of \nthis Satellite Communications Norms, Guidelines and Procedures. For instance, in case of \nBroadcasting (TV and Sound) the conditions will be governed by the Broadcast Bill as \nmay be passed by the Parliament. Similarly in case of GMPCS, the operating license \nconditions will be as determined by the GM PCS policy being piloted by the Department \nof Telecommunications. However, in respect of establishment and operations of Indian \nSatellite Systems the Articles of this",
+          "section": null,
+          "article": "ARTICLE-1",
+          "heading": "ARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING ALLOWING INDIAN PARTIES TO PROVIDE SERVICES INCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN SATELLITES",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 340,
+          "end_offset": 1340,
+          "distance": 0.583097517490387,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        445,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.2::off10800",
+          "evidence_ids": [
+            "EXP001-Q07-E01"
+          ],
+          "overlap_chars": 445
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q07-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 445,
+          "clause_id": "3.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "expected_answer": "Three authorizations/licenses are required: an authorisation from the Department of Space, an authorisation by the Wireless Planning and Coordination Wing, and operating licenses for the services.",
+      "relevant_clause_ids": [
+        "3.4.1",
+        "3.4.2",
+        "3.4.3"
+      ],
+      "relevant_source_pages": [
+        5,
+        6
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.4::off11661",
+          "text": "3.4 LICENSES REQUIRED \n \nFor establishing Indian Satellite Systems three distinct authorisations/licenses will \nbe required. These are:",
+          "section": "3.4",
+          "article": "ARTICLE-3",
+          "heading": "3.4 LICENSES REQUIRED",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 11661,
+          "end_offset": 11796,
+          "distance": 0.2446671724319458,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.5::part_1::off13140",
+          "text": "In so far as the first two authorisati ons/licenses of 3.4 a bove are concerned a \ncommittee consisting of Secretaries to the Go vernment of India in the Department of \nSpace, Department of Telecommunications, Ministry of Information and Broadcasting, \nMinistry of Home Affairs, Secretary (R), Ministry of Defence and Ministry of Industry \n(Department of Industrial Policy and Prom otion) with Wireless Advisor to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the Committee for authorising the Establishment and Operation of Indian \nSatellite Systems (CAISS) shall be resident in the Department of Space. After the CAISS \napproval the authorisations/licenses for the establishment and operation of the Satellite \nSystem shall be issued by Department of Space following its norm al procedures. WPC \nshall also indicate the intersystem and terrestrial coo",
+          "section": "3.5",
+          "article": "ARTICLE-3",
+          "heading": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13140,
+          "end_offset": 14140,
+          "distance": 0.49551713466644287,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.9::off18525",
+          "text": "3.6.9 For 3.6.7(c) and 3.6.7(d) above, where these are linked to particular service (e.g., \nDirect Broadcast Satellite Service (DBS)), only the Licensee for the service could be \nconsidered as the Applicant. In this case a service operating license is not adequate and \nthe Licensee shall apply for th e satellite operating license a nd appropriate orbit spectrum \nlicense as well following the procedure for establishment and operation of Indian Satellite \nSystem.",
+          "section": "3.6.9",
+          "article": "ARTICLE-3",
+          "heading": "3.6.9 For 3.6.7(c) and 3.6.7(d) above, where these are linked to particular service (e.g.,",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 18525,
+          "end_offset": 18990,
+          "distance": 0.5560798645019531,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.3::off33947",
+          "text": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in \nthe Indian Satellites, the services shall be auth orised only on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift to Indian satellites \nas soon as the capacity and capability is availa ble. To that extent the initial permission \nshould be issued only for a limited period and must be reviewed before renewal.",
+          "section": "4.4.3",
+          "article": "ARTICLE-4",
+          "heading": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33947,
+          "end_offset": 34490,
+          "distance": 0.5562745987436717,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-4::BODY::part_1::off29325",
+          "text": "(c) Satellite broadcasting includi ng Direct to Home (DTH) TV \nbroadcasting, may be licensed by the Licensing Authority  constituted \nunder the relevant statute, on Indian  Satellite Systems or any other \nsatellite system, excepting those pr ohibited for the purpose by the \ncompetent authority, notified by the Central Government in this \nregard, on technical or security  considerations. In cases where \noperations of services with foreign satellites are licensed, the Licensing \nAuthority at the time of renewal or re-issue of licenses for these \nservices, will require the licensee to opt for the Indian Satellite System \nsubject to availability of capacity which meets the requirement of the \nservice. \n \n(d) Department of Space should ensure that the various provisions \nof the Policy would conform to the proposed Broadcasting Law. \n \n \n \n \n \n 12",
+          "section": null,
+          "article": "ARTICLE-4",
+          "heading": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE OF FOREIGN SATELLITES",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 29325,
+          "end_offset": 30178,
+          "distance": 0.5741204330570778,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [],
+      "required_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "covered_evidence_ids": [],
+      "missing_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q08-E01": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.1"
+        },
+        "EXP001-Q08-E02": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.2"
+        },
+        "EXP001-Q08-E03": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.3"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "expected_answer": "Within the territory of India, or at another location authorised by CAISS based on technical requirements.",
+      "relevant_clause_ids": [
+        "3.6.4"
+      ],
+      "relevant_source_pages": [
+        7
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.4::off16429",
+          "text": "3.6.4 The Satellite Control Centre/s (SCC), i. e., the facility that monitors correct \nfunctioning of the key technica l parameters and controls the movements of the satellite \nwith the ability to partially or complete ly close down the network, should be located \nwithin the territory of the Union of India, or at a place authorised by CAISS based on the \ntechnical requirements.",
+          "section": "3.6.4",
+          "article": "ARTICLE-3",
+          "heading": "3.6.4 The Satellite Control Centre/s (SCC), i. e., the facility that monitors correct",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 16429,
+          "end_offset": 16809,
+          "distance": 0.2929827570915222,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "overlap_chars": 374
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.5::off16813",
+          "text": "3.6.5 The Satellite Systems, whose SCC is loca ted in a territory ot her than India shall \nbe required to shift the SCC to a location insi de the territory of the Union of India within \na reasonable period as determined by CAI SS but not exceeding two years from the time \nthe license is granted. After the SCC is shif ted within India there shall be no other SCC \noutside.",
+          "section": "3.6.5",
+          "article": "ARTICLE-3",
+          "heading": "3.6.5 The Satellite Systems, whose SCC is loca ted in a territory ot her than India shall",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 16813,
+          "end_offset": 17186,
+          "distance": 0.7719506621360779,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.3::off24702",
+          "text": "3.7.3  COORDINATION WITH OTHER SATELLITE SYSTEM OPERATORS /  \n            ADMINISTRATIONS",
+          "section": "3.7.3",
+          "article": "ARTICLE-3",
+          "heading": "3.7.3  COORDINATION WITH OTHER SATELLITE SYSTEM OPERATORS / ADMINISTRATIONS",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 24702,
+          "end_offset": 24791,
+          "distance": 1.0298052266953293,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.4.4::off26933",
+          "text": "3.7.4.4 All foreign personnel deployed for instal lation/operations/maintenance of the \nSCC shall be security cleared by the Government.",
+          "section": "3.7.4.4",
+          "article": "ARTICLE-3",
+          "heading": "3.7.4.4 All foreign personnel deployed for instal lation/operations/maintenance of the",
+          "start_page": 11,
+          "end_page": 11,
+          "start_offset": 26933,
+          "end_offset": 27069,
+          "distance": 1.039552599902953,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.5::part_1::off13140",
+          "text": "In so far as the first two authorisati ons/licenses of 3.4 a bove are concerned a \ncommittee consisting of Secretaries to the Go vernment of India in the Department of \nSpace, Department of Telecommunications, Ministry of Information and Broadcasting, \nMinistry of Home Affairs, Secretary (R), Ministry of Defence and Ministry of Industry \n(Department of Industrial Policy and Prom otion) with Wireless Advisor to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the Committee for authorising the Establishment and Operation of Indian \nSatellite Systems (CAISS) shall be resident in the Department of Space. After the CAISS \napproval the authorisations/licenses for the establishment and operation of the Satellite \nSystem shall be issued by Department of Space following its norm al procedures. WPC \nshall also indicate the intersystem and terrestrial coo",
+          "section": "3.5",
+          "article": "ARTICLE-3",
+          "heading": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 13140,
+          "end_offset": 14140,
+          "distance": 1.044568657875061,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        374,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.4::off16429",
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "overlap_chars": 374
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q09-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 374,
+          "clause_id": "3.6.4"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "expected_answer": "First come first served when other conditions are fulfilled, with priority to government-owned systems in case of conflict; discussions between non-governmental applicants and the Administration to resolve conflicts; if unresolved, a common API is filed and the decision is taken at the AP S4 filing stage or later, depending on progress.",
+      "relevant_clause_ids": [
+        "3.6.8"
+      ],
+      "relevant_source_pages": [
+        8
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.7::off17315",
+          "text": "3.6.7 The authorisation to operate and the or bit-spectrum notification/registration may \nbe done for all satellite communications services: \n \n(a) for new orbit-spectrum as per requirements \n(b) in the unplanned bands \n(c) in the planned bands as per the ITU established Plans \n(d) for the allotted orbital slot s as per ITU established Plans \n(e) at frequency bands and orbita l slots for which India has set up \ncoordination process already in anticipation of requirements \n 7",
+          "section": "3.6.7",
+          "article": "ARTICLE-3",
+          "heading": "3.6.7 The authorisation to operate and the or bit-spectrum notification/registration may",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 17315,
+          "end_offset": 17794,
+          "distance": 0.7433487772941589,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.10::off18994",
+          "text": "3.6.10 For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat \nresident in DOS, shall announce its intention to make the orbit spectrum available for \nnon-governmental applicants and invite ap plications giving a fixed closing date. \nFollowing this, the procedure described for 3.6.7(a) and 3.6.7(b) above shall be adopted.",
+          "section": "3.6.10",
+          "article": "ARTICLE-3",
+          "heading": "3.6.10 For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 18994,
+          "end_offset": 19342,
+          "distance": 0.7855674028396606,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.8::off17796",
+          "text": "3.6.8 For 3.6.7(a) and 3.6.7(b) other conditions  being fulfilled, authorisation and \nnotification/co-ordination/registration shall be done on a first come first served basis. In \ncase of a conflict, Government owned system shall have prio rity. In case two or more \nnon-governmental systems ask for the same or bit spectrum the Administration shall hold \ndiscussions with the Applicants and try to fulfill all the requirements. In case such a \nsolution is not possible, the Administartion may file a common Advanced Publication of \nInformation (API) and take a decision on the choice of the Applicant at the stage of AP \nS4 filing (Appendix 3) of ITU Radio Regulatio ns or later depending upon the progress of \ncoordination.",
+          "section": "3.6.8",
+          "article": "ARTICLE-3",
+          "heading": "3.6.8 For 3.6.7(a) and 3.6.7(b) other conditions  being fulfilled, authorisation and",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 17796,
+          "end_offset": 18521,
+          "distance": 1.0174672603607178,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q10-E01"
+          ],
+          "overlap_chars": 719
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.1.6::off21662",
+          "text": "3.7.1.6 Orbit-spectrum requirements including al ternate choices indicating priority. The \ninformation on the proposed system al ong with data required for Advanced \nPublication Information (API) of Radio Regulations and Interference Analysis \nincluding frequency sharing with terrestrial system.",
+          "section": "3.7.1.6",
+          "article": "ARTICLE-3",
+          "heading": "3.7.1.6 Orbit-spectrum requirements including al ternate choices indicating priority. The",
+          "start_page": 9,
+          "end_page": 9,
+          "start_offset": 21662,
+          "end_offset": 21958,
+          "distance": 1.0361461639404297,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.3.2::off25006",
+          "text": "3.7.3.2 The Administration may, in the interest of expediting the c oordination process, \nauthorise the Applicant to  deal directly with other Satellite System \nOperators/Administrations on detailed technical aspects of the coordination of frequency \nand orbital locations in accordance with the procedures of the Radio Regulations, \nprovided the Applicant demonstrates to the Ad ministration’s satisfaction that they have \nthe necessary competence to carry out the c oordination. The Administration shall attend \nany coordination meeting where it is deemed  necessary. Any coordination agreements \nreached shall be subject to ratification by the Administration in consultation with DOS. \n \n 10",
+          "section": "3.7.3.2",
+          "article": "ARTICLE-3",
+          "heading": "3.7.3.2 The Administration may, in the interest of expediting the c oordination process,",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 25006,
+          "end_offset": 25700,
+          "distance": 1.0632429586059275,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        719,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.8::off17796",
+          "evidence_ids": [
+            "EXP001-Q10-E01"
+          ],
+          "overlap_chars": 719
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q10-E01": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 719,
+          "clause_id": "3.6.8"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "expected_answer": "Evidence that the Applicant has current financial ability to meet the cost of construction and launch, plus a broad business plan showing intended sources of funding and estimated revenues.",
+      "relevant_clause_ids": [
+        "3.7.1.5"
+      ],
+      "relevant_source_pages": [
+        9
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.1.5::off21326",
+          "text": "3.7.1.5 Evidence that the Applicant has current financial ability to meet the cost of \nconstruction and launch of the proposed sate llite(s) and that it has the financial \nresources to operate the system. A broad business plan of th e Applicant showing \nthe intended sources of funding and estimated revenues shall also be provided.",
+          "section": "3.7.1.5",
+          "article": "ARTICLE-3",
+          "heading": "3.7.1.5 Evidence that the Applicant has current financial ability to meet the cost of",
+          "start_page": 9,
+          "end_page": 9,
+          "start_offset": 21326,
+          "end_offset": 21658,
+          "distance": 1.0164841413497925,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q11-E01"
+          ],
+          "overlap_chars": 324
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.3.3::off25700",
+          "text": "3.7.3.3 All processing, coordination and associ ated costs shall be  charged to the \nApplicant.",
+          "section": "3.7.3.3",
+          "article": "ARTICLE-3",
+          "heading": "3.7.3.3 All processing, coordination and associ ated costs shall be  charged to the",
+          "start_page": 11,
+          "end_page": 11,
+          "start_offset": 25700,
+          "end_offset": 25795,
+          "distance": 1.184009328844014,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.2.4::off23791",
+          "text": "3.7.2.4 After the API stage, th e Applicant shall provide updated and more detailed \ninformation on the items enumerated under 3.7.1 and coordination data as per APS4 \n(Appendix 3) as may be required by CAISS Secretariat and Administration.",
+          "section": "3.7.2.4",
+          "article": "ARTICLE-3",
+          "heading": "3.7.2.4 After the API stage, th e Applicant shall provide updated and more detailed",
+          "start_page": 10,
+          "end_page": 10,
+          "start_offset": 23791,
+          "end_offset": 24031,
+          "distance": 1.1854873895645142,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.2::off15983",
+          "text": "3.6.2 The applicant must establish to the sa tisfaction of CAISS th at they have the \nrequired technical, financial a nd legal credentials to constr uct, launch and operate the \nproposed satellite system in conformity with the time-scales contained within its business \nplan.",
+          "section": "3.6.2",
+          "article": "ARTICLE-3",
+          "heading": "3.6.2 The applicant must establish to the sa tisfaction of CAISS th at they have the",
+          "start_page": 7,
+          "end_page": 7,
+          "start_offset": 15983,
+          "end_offset": 16258,
+          "distance": 1.249373435974121,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.1::off14391",
+          "text": "3.6.1 Only Indian registered Companies may be allowed to establish and operate an \nIndian Satellite System. The application for notifying, registering and operating an Indian \nSatellite System/Network must be on behalf of a company registered in India (Applicant). \nThe Foreign Direct Investment (FDI) in su ch a Company shall not exceed 74 per cent. \nNRI/OCB equity will be treated at  par with FDI. In the intere st of facilitating investment \nby Indian Companies, only the direct foreign investment in the licensee Company (i.e. the \n 6Applicant) shall be considered for the cap of 74 per cent and the FDI in the investing \ncompany. If any, shall not be set off against this cap pr ovided the FDI in such an \ninvesting company does not exceed 49 per cent and the management of the investing \ncompany is with Indian owners. However, CAISS may license Indian registered \ncompanies with 100 per cent foreign direct i nvestment to establish Indian Satellite \nSystems with the condition that over a per",
+          "section": "3.6.1",
+          "article": "ARTICLE-3",
+          "heading": "3.6.1 Only Indian registered Companies may be allowed to establish and operate an",
+          "start_page": 6,
+          "end_page": 7,
+          "start_offset": 14391,
+          "end_offset": 15391,
+          "distance": 1.3245151042938232,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        324,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.7.1.5::off21326",
+          "evidence_ids": [
+            "EXP001-Q11-E01"
+          ],
+          "overlap_chars": 324
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q11-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 324,
+          "clause_id": "3.7.1.5"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "expected_answer": "International communications include PSTN, GMPCS, Value Added Services, Programme Exchange, where one end of the link terminates in a foreign country; the Maritime Mobile Satellite Service and the Aeronautical Mobile Satellite Service may be treated as international communications.",
+      "relevant_clause_ids": [
+        "4.2"
+      ],
+      "relevant_source_pages": [
+        13
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.1::off30178",
+          "text": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services",
+          "section": "4.1",
+          "article": "ARTICLE-4",
+          "heading": "4.1 SERVICE CLASSIFICATION",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30178,
+          "end_offset": 30377,
+          "distance": 0.4808929582181512,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_1::off30425",
+          "text": "In so far as International communication is concerned the existing practice of \nusing International Inter-Governmental Systems shall continue.  Private sector off-shoots, \nwhich retain their international character and include Indian equity will also be eligible. \nHowever, wherever Indian Satellites provide capacity and capability for international \ncommunications, the use of the same sha ll be allowed subject to International \nAgreements. The International communications  provider shall actively promote this use \nin accordance with the applicable intern ational agreements. The International \nCommunications Services will include PSTN, GMPCS, Value Added Services, \nProgramme Exchange etc., where one end of th e link terminates in a foreign country i.e., \nthe ‘call’ either originates or terminates  in a foreign country. The Maritime Mobile \nSatellite Service (MMSS) and Aeronautical Mobile Satellite Servie (AMSS) may be \ntreated as International communications, even though there may be an",
+          "section": "4.2",
+          "article": "ARTICLE-4",
+          "heading": "4.2 INTERNATIONAL COMMUNICATION SERVICES",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30425,
+          "end_offset": 31425,
+          "distance": 0.553542242238264,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "overlap_chars": 1000
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.3::off31512",
+          "text": "4.3 DOMESTIC COMMUNICATION  SERVICES CLASSIFICATION \n \nIn so far as Domestic Satellite Co mmunications Services are concerned, \nconvergence of communications, broadcasting and information technologies \nnotwithstanding, the usage shall be categorised as follows:",
+          "section": "4.3",
+          "article": "ARTICLE-4",
+          "heading": "4.3 DOMESTIC COMMUNICATION  SERVICES CLASSIFICATION",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 31512,
+          "end_offset": 31773,
+          "distance": 0.5617661586951592,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.1::off10312",
+          "text": "3.1 The Satellite Communications Policy Framework for India as approved by \nGovernment of India states: \n \n“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satellite systems and networks  by and for Indian private parties \nfollowing certain well defined and transparent norms. The satellite systems \nof all Government Agencies to be established by Department of Space;”",
+          "section": "3.1",
+          "article": "ARTICLE-3",
+          "heading": "3.1 The Satellite Communications Policy Framework for India as approved by",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 10312,
+          "end_offset": 10795,
+          "distance": 0.6495095491409302,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.2::off30381",
+          "text": "4.2 INTERNATIONAL COMMUNICATION SERVICES ",
+          "section": "4.2",
+          "article": "ARTICLE-4",
+          "heading": "4.2 INTERNATIONAL COMMUNICATION SERVICES",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30381,
+          "end_offset": 30422,
+          "distance": 0.7010924927306424,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        1000,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_1::off30425",
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "overlap_chars": 1000
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q12-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 1000,
+          "clause_id": "4.2"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "expected_answer": "Broadcasting; Public Switched Telephone Network (domestic); Value Added Services (domestic); Land Mobile Satellite Services (domestic and coastal waters).",
+      "relevant_clause_ids": [
+        "4.3.1",
+        "4.3.2",
+        "4.3.3",
+        "4.3.4"
+      ],
+      "relevant_source_pages": [
+        13,
+        14
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.1::off30178",
+          "text": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services",
+          "section": "4.1",
+          "article": "ARTICLE-4",
+          "heading": "4.1 SERVICE CLASSIFICATION",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30178,
+          "end_offset": 30377,
+          "distance": 0.3911385895924016,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.3::off31512",
+          "text": "4.3 DOMESTIC COMMUNICATION  SERVICES CLASSIFICATION \n \nIn so far as Domestic Satellite Co mmunications Services are concerned, \nconvergence of communications, broadcasting and information technologies \nnotwithstanding, the usage shall be categorised as follows:",
+          "section": "4.3",
+          "article": "ARTICLE-4",
+          "heading": "4.3 DOMESTIC COMMUNICATION  SERVICES CLASSIFICATION",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 31512,
+          "end_offset": 31773,
+          "distance": 0.3993488424346339,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.3.4::off32783",
+          "text": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters): \n \nThis includes communications to and from moving vehicles, hand-held personal \nterminals and portable small terminals.",
+          "section": "4.3.4",
+          "article": "ARTICLE-4",
+          "heading": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 32783,
+          "end_offset": 32971,
+          "distance": 0.6099705340523097,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q13-E04"
+          ],
+          "overlap_chars": 182
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_2::off31425",
+          "text": " element of \ndomestic traffic, in respect for operations with foreign satellites.",
+          "section": "4.2",
+          "article": "ARTICLE-4",
+          "heading": "4.2 INTERNATIONAL COMMUNICATION SERVICES",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 31425,
+          "end_offset": 31506,
+          "distance": 0.698282609158631,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_1::off30425",
+          "text": "In so far as International communication is concerned the existing practice of \nusing International Inter-Governmental Systems shall continue.  Private sector off-shoots, \nwhich retain their international character and include Indian equity will also be eligible. \nHowever, wherever Indian Satellites provide capacity and capability for international \ncommunications, the use of the same sha ll be allowed subject to International \nAgreements. The International communications  provider shall actively promote this use \nin accordance with the applicable intern ational agreements. The International \nCommunications Services will include PSTN, GMPCS, Value Added Services, \nProgramme Exchange etc., where one end of th e link terminates in a foreign country i.e., \nthe ‘call’ either originates or terminates  in a foreign country. The Maritime Mobile \nSatellite Service (MMSS) and Aeronautical Mobile Satellite Servie (AMSS) may be \ntreated as International communications, even though there may be an",
+          "section": "4.2",
+          "article": "ARTICLE-4",
+          "heading": "4.2 INTERNATIONAL COMMUNICATION SERVICES",
+          "start_page": 13,
+          "end_page": 13,
+          "start_offset": 30425,
+          "end_offset": 31425,
+          "distance": 0.7679193907920487,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 0.25,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        182,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.3.4::off32783",
+          "evidence_ids": [
+            "EXP001-Q13-E04"
+          ],
+          "overlap_chars": 182
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q13-E04"
+      ],
+      "missing_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q13-E01": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.1"
+        },
+        "EXP001-Q13-E02": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.2"
+        },
+        "EXP001-Q13-E03": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "4.3.3"
+        },
+        "EXP001-Q13-E04": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 182,
+          "clause_id": "4.3.4"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "expected_answer": "The services shall be authorised only on Indian satellites; if capacity or capability is lacking, operations through foreign satellites may be authorised with permission to shift to Indian satellites when capacity becomes available.",
+      "relevant_clause_ids": [
+        "4.4.3"
+      ],
+      "relevant_source_pages": [
+        14
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-4::BODY::off28343",
+          "text": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE \nOF FOREIGN SATELLITES \n \nIn regard to the use of foreign satellites for services in India, Government states \nthat: \n \n (a) Operation from Indian soil with foreign satellites may be \nallowed only in special cases to be notified. These may be in the case of \noverseas services using internatio nal inter-governmental systems, \nsystems owned and operated by Indian Parties but registered in other \ncountries before rules for registrations have been formulated in India, \ninternational private systems where there is a substantial Indian \nparticipation by way of equity or in kind contribution and where \nconsidered necessary reciprocal a rrangements could be worked out \nwith the country/countries of registration or ownership. \n \n(b)  While operations from Indian  soil may be allowed with both \nIndian and foreign Satellites, propos als envisaging use of the Indian \nsatellites will be accorded preferential treatment. ",
+          "section": null,
+          "article": "ARTICLE-4",
+          "heading": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE OF FOREIGN SATELLITES",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 28343,
+          "end_offset": 29322,
+          "distance": 0.5023580067923785,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.3::off33947",
+          "text": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in \nthe Indian Satellites, the services shall be auth orised only on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift to Indian satellites \nas soon as the capacity and capability is availa ble. To that extent the initial permission \nshould be issued only for a limited period and must be reviewed before renewal.",
+          "section": "4.4.3",
+          "article": "ARTICLE-4",
+          "heading": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 33947,
+          "end_offset": 34490,
+          "distance": 0.5045734762923723,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "overlap_chars": 537
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-4::BODY::part_1::off29325",
+          "text": "(c) Satellite broadcasting includi ng Direct to Home (DTH) TV \nbroadcasting, may be licensed by the Licensing Authority  constituted \nunder the relevant statute, on Indian  Satellite Systems or any other \nsatellite system, excepting those pr ohibited for the purpose by the \ncompetent authority, notified by the Central Government in this \nregard, on technical or security  considerations. In cases where \noperations of services with foreign satellites are licensed, the Licensing \nAuthority at the time of renewal or re-issue of licenses for these \nservices, will require the licensee to opt for the Indian Satellite System \nsubject to availability of capacity which meets the requirement of the \nservice. \n \n(d) Department of Space should ensure that the various provisions \nof the Policy would conform to the proposed Broadcasting Law. \n \n \n \n \n \n 12",
+          "section": null,
+          "article": "ARTICLE-4",
+          "heading": "ARTICLE-4: NORMS, GUIDELINES AN D PROCEDURES REGARDING USE OF FOREIGN SATELLITES",
+          "start_page": 12,
+          "end_page": 12,
+          "start_offset": 29325,
+          "end_offset": 30178,
+          "distance": 0.5883861112685885,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.4::off34494",
+          "text": "4.4.4 While examining a propoasl for permitti ng a service to operate through a foreign \nsatellite, the need aspect should be considered from ‘end to end’ and not only on the basis \nof frequency band of  operation, equipment availability from a vendor or vendors etc. The \nproposal should be examined to see that there is no deliberat e attempt to exclude Indian \nSatellite Systems.",
+          "section": "4.4.4",
+          "article": "ARTICLE-4",
+          "heading": "4.4.4 While examining a propoasl for permitti ng a service to operate through a foreign",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 34494,
+          "end_offset": 34876,
+          "distance": 0.6323498702170174,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-1::BODY::off177",
+          "text": "ARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING \nALLOWING INDIAN PARTIES TO PROVIDE SERVICES \nINCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN \nSATELLITES ",
+          "section": null,
+          "article": "ARTICLE-1",
+          "heading": "ARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING ALLOWING INDIAN PARTIES TO PROVIDE SERVICES INCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN SATELLITES",
+          "start_page": 1,
+          "end_page": 1,
+          "start_offset": 177,
+          "end_offset": 337,
+          "distance": 0.63805091381073,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        537,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.3::off33947",
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "overlap_chars": 537
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q14-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 537,
+          "clause_id": "4.4.3"
+        }
+      }
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "expected_answer": "The system must be internationally coordinated for frequency and orbit and security concerns must be fully addressed.",
+      "relevant_clause_ids": [
+        "4.4.6"
+      ],
+      "relevant_source_pages": [
+        15
+      ],
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6::off14168",
+          "text": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN \nISSUING THE LICENSES \n \nIn case of satellite systems of Privat e Parties and Public Sector Units, the \nfollowing procedures, norms and guidelines shall be adopted:",
+          "section": "3.6",
+          "article": "ARTICLE-3",
+          "heading": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN ISSUING THE LICENSES",
+          "start_page": 6,
+          "end_page": 6,
+          "start_offset": 14168,
+          "end_offset": 14387,
+          "distance": 0.5934013724327087,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.6::off35192",
+          "text": "4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it. It should also ensure that the security \nconcerns are fully addressed. \n \n \n*****",
+          "section": "4.4.6",
+          "article": "ARTICLE-4",
+          "heading": "4.4.6 The process of giving operating license  must ensure that the system is",
+          "start_page": 15,
+          "end_page": 15,
+          "start_offset": 35192,
+          "end_offset": 35406,
+          "distance": 0.6289631760228265,
+          "relevant": true,
+          "evidence_ids": [
+            "EXP001-Q15-E01"
+          ],
+          "overlap_chars": 198
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4::off32975",
+          "text": "4.4 NORMS, GUIDELINES AND PROCEDURES FOR DOMESTIC \nSATELLITE SERVICES \n \n For any use of foreign sate llites for any of the above services, the Administrative \nMinistry/Department shall adopt the following norms/procedures from the point of viwe \nthe Satellite Communications Policy Frame-wo rk. This shall be in addition to the \nprocedures/norms that the Administrative Ministry/Department may have for processing \nthe issue of service license.",
+          "section": "4.4",
+          "article": "ARTICLE-4",
+          "heading": "4.4 NORMS, GUIDELINES AND PROCEDURES FOR DOMESTIC SATELLITE SERVICES",
+          "start_page": 14,
+          "end_page": 14,
+          "start_offset": 32975,
+          "end_offset": 33420,
+          "distance": 0.6520212748258034,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.6.9::off18525",
+          "text": "3.6.9 For 3.6.7(c) and 3.6.7(d) above, where these are linked to particular service (e.g., \nDirect Broadcast Satellite Service (DBS)), only the Licensee for the service could be \nconsidered as the Applicant. In this case a service operating license is not adequate and \nthe Licensee shall apply for th e satellite operating license a nd appropriate orbit spectrum \nlicense as well following the procedure for establishment and operation of Indian Satellite \nSystem.",
+          "section": "3.6.9",
+          "article": "ARTICLE-3",
+          "heading": "3.6.9 For 3.6.7(c) and 3.6.7(d) above, where these are linked to particular service (e.g.,",
+          "start_page": 8,
+          "end_page": 8,
+          "start_offset": 18525,
+          "end_offset": 18990,
+          "distance": 0.7045176029205322,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        },
+        {
+          "rank": 5,
+          "chunk_id": "satcom-ngp::ARTICLE-3::3.4::off11661",
+          "text": "3.4 LICENSES REQUIRED \n \nFor establishing Indian Satellite Systems three distinct authorisations/licenses will \nbe required. These are:",
+          "section": "3.4",
+          "article": "ARTICLE-3",
+          "heading": "3.4 LICENSES REQUIRED",
+          "start_page": 5,
+          "end_page": 5,
+          "start_offset": 11661,
+          "end_offset": 11796,
+          "distance": 0.7382599115371704,
+          "relevant": false,
+          "evidence_ids": [],
+          "overlap_chars": 0
+        }
+      ],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.5,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        198,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::ARTICLE-4::4.4.6::off35192",
+          "evidence_ids": [
+            "EXP001-Q15-E01"
+          ],
+          "overlap_chars": 198
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q15-E01": {
+          "covered": true,
+          "best_rank": 2,
+          "overlap_chars": 198,
+          "clause_id": "4.4.6"
+        }
+      }
+    }
+  ]
+}

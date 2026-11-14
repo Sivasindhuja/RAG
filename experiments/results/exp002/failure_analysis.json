@@ -1,0 +1,284 @@
+[
+  {
+    "question_id": "EXP001-Q05",
+    "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+    "required_clause_ids": [
+      "2.5.6"
+    ],
+    "recall@5": 1.0,
+    "precision@5": 0.2,
+    "mrr@5": 1.0,
+    "missing_evidence_ids": [],
+    "covered_evidence_ids": [
+      "EXP001-Q05-E01"
+    ],
+    "evidence_coverage": {
+      "EXP001-Q05-E01": {
+        "covered": true,
+        "best_rank": 1,
+        "overlap_chars": 203,
+        "clause_id": "2.5.6"
+      }
+    },
+    "top_results": [
+      {
+        "rank": 1,
+        "chunk_id": "satcom-ngp::ARTICLE-2::2.5.6::off6647",
+        "section": "2.5.6",
+        "pages": "3-3",
+        "relevant": true,
+        "evidence_ids": [
+          "EXP001-Q05-E01"
+        ],
+        "overlap_chars": 203,
+        "distance": 0.5653722882270813,
+        "preview": "2.5.6 The responsibility for obtaining the necessary licenses to offer a service in a  particular territory (in India or in other coun tries) shall be that of t"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.5::off13089",
+        "section": "3.5",
+        "pages": "6-6",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.7609380483627319,
+        "preview": "3.5 RESPONSIBLE AUTHORITY FOR ISSUE OF LICENSES "
+      },
+      {
+        "rank": 3,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.6::off14168",
+        "section": "3.6",
+        "pages": "6-6",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.8796117305755615,
+        "preview": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN  ISSUING THE LICENSES    In case of satellite systems of Privat e Parties and Public Sector Units, the  f"
+      },
+      {
+        "rank": 4,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.7.2.2::off23345",
+        "section": "3.7.2.2",
+        "pages": "10-10",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.9489612579345703,
+        "preview": "3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for  establishing and operating an Indian Satellite System."
+      },
+      {
+        "rank": 5,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.7.4.7::off27452",
+        "section": "3.7.4.7",
+        "pages": "11-11",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.9494277801321903,
+        "preview": "3.7.4.7 DOS shall have the right to take over th e system, equipment and networks of the  licensee in part or in whole in  case of emergency or war or  low inte"
+      }
+    ]
+  },
+  {
+    "question_id": "EXP001-Q08",
+    "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+    "required_clause_ids": [
+      "3.4.1",
+      "3.4.2",
+      "3.4.3"
+    ],
+    "recall@5": 0.0,
+    "precision@5": 0.0,
+    "mrr@5": 0.0,
+    "missing_evidence_ids": [
+      "EXP001-Q08-E01",
+      "EXP001-Q08-E02",
+      "EXP001-Q08-E03"
+    ],
+    "covered_evidence_ids": [],
+    "evidence_coverage": {
+      "EXP001-Q08-E01": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "3.4.1"
+      },
+      "EXP001-Q08-E02": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "3.4.2"
+      },
+      "EXP001-Q08-E03": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "3.4.3"
+      }
+    },
+    "top_results": [
+      {
+        "rank": 1,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.4::off11661",
+        "section": "3.4",
+        "pages": "5-5",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.2446671724319458,
+        "preview": "3.4 LICENSES REQUIRED    For establishing Indian Satellite Systems three distinct authorisations/licenses will  be required. These are:"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.5::part_1::off13140",
+        "section": "3.5",
+        "pages": "6-6",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.49551713466644287,
+        "preview": "In so far as the first two authorisati ons/licenses of 3.4 a bove are concerned a  committee consisting of Secretaries to the Go vernment of India in the Depart"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "satcom-ngp::ARTICLE-3::3.6.9::off18525",
+        "section": "3.6.9",
+        "pages": "8-8",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.5560798645019531,
+        "preview": "3.6.9 For 3.6.7(c) and 3.6.7(d) above, where these are linked to particular service (e.g.,  Direct Broadcast Satellite Service (DBS)), only the Licensee for the"
+      },
+      {
+        "rank": 4,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.4.3::off33947",
+        "section": "4.4.3",
+        "pages": "14-14",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.5562745987436717,
+        "preview": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in  the Indian Satellites, the services shall be auth orised only on India"
+      },
+      {
+        "rank": 5,
+        "chunk_id": "satcom-ngp::ARTICLE-4::BODY::part_1::off29325",
+        "section": null,
+        "pages": "12-12",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.5741204330570778,
+        "preview": "(c) Satellite broadcasting includi ng Direct to Home (DTH) TV  broadcasting, may be licensed by the Licensing Authority  constituted  under the relevant statute"
+      }
+    ]
+  },
+  {
+    "question_id": "EXP001-Q13",
+    "question": "What are the categories of domestic satellite communication services?",
+    "required_clause_ids": [
+      "4.3.1",
+      "4.3.2",
+      "4.3.3",
+      "4.3.4"
+    ],
+    "recall@5": 0.25,
+    "precision@5": 0.2,
+    "mrr@5": 0.3333,
+    "missing_evidence_ids": [
+      "EXP001-Q13-E01",
+      "EXP001-Q13-E02",
+      "EXP001-Q13-E03"
+    ],
+    "covered_evidence_ids": [
+      "EXP001-Q13-E04"
+    ],
+    "evidence_coverage": {
+      "EXP001-Q13-E01": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "4.3.1"
+      },
+      "EXP001-Q13-E02": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "4.3.2"
+      },
+      "EXP001-Q13-E03": {
+        "covered": false,
+        "best_rank": null,
+        "overlap_chars": 0,
+        "clause_id": "4.3.3"
+      },
+      "EXP001-Q13-E04": {
+        "covered": true,
+        "best_rank": 3,
+        "overlap_chars": 182,
+        "clause_id": "4.3.4"
+      }
+    },
+    "top_results": [
+      {
+        "rank": 1,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.1::off30178",
+        "section": "4.1",
+        "pages": "13-13",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.3911385895924016,
+        "preview": "4.1 SERVICE CLASSIFICATION    The Satellite Communication Services could be broadly classified as    1. International (i.e., trans-bo rder) communications servi"
+      },
+      {
+        "rank": 2,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.3::off31512",
+        "section": "4.3",
+        "pages": "13-13",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.3993488424346339,
+        "preview": "4.3 DOMESTIC COMMUNICATION  SERVICES CLASSIFICATION    In so far as Domestic Satellite Co mmunications Services are concerned,  convergence of communications, b"
+      },
+      {
+        "rank": 3,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.3.4::off32783",
+        "section": "4.3.4",
+        "pages": "14-14",
+        "relevant": true,
+        "evidence_ids": [
+          "EXP001-Q13-E04"
+        ],
+        "overlap_chars": 182,
+        "distance": 0.6099705340523097,
+        "preview": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):    This includes communications to and from moving vehicles, hand-held personal  terminals a"
+      },
+      {
+        "rank": 4,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_2::off31425",
+        "section": "4.2",
+        "pages": "13-13",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.698282609158631,
+        "preview": " element of  domestic traffic, in respect for operations with foreign satellites."
+      },
+      {
+        "rank": 5,
+        "chunk_id": "satcom-ngp::ARTICLE-4::4.2::part_1::off30425",
+        "section": "4.2",
+        "pages": "13-13",
+        "relevant": false,
+        "evidence_ids": [],
+        "overlap_chars": 0,
+        "distance": 0.7679193907920487,
+        "preview": "In so far as International communication is concerned the existing practice of  using International Inter-Governmental Systems shall continue.  Private sector o"
+      }
+    ]
+  }
+]

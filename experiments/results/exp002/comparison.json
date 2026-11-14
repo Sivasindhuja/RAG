@@ -1,0 +1,304 @@
+{
+  "baseline_available": true,
+  "baseline_source": "experiments\\results\\exp001_v3\\retrieval_results.json",
+  "baseline_aggregate_metrics": {
+    "recall@5": 0.8889,
+    "precision@5": 0.2533,
+    "mrr@5": 0.7944
+  },
+  "delta_aggregate": {
+    "recall@5": -0.0056,
+    "precision@5": -0.0666,
+    "mrr@5": -0.17
+  },
+  "improved_questions": 1,
+  "regressed_questions": 8,
+  "unchanged_questions": 6,
+  "per_question": [
+    {
+      "question_id": "EXP001-Q01",
+      "baseline": {
+        "question_id": "EXP001-Q01",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.25
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.2
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": -0.05
+      }
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "baseline": {
+        "question_id": "EXP001-Q02",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "baseline": {
+        "question_id": "EXP001-Q03",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "baseline": {
+        "question_id": "EXP001-Q04",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "baseline": {
+        "question_id": "EXP001-Q05",
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "baseline": {
+        "question_id": "EXP001-Q06",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": -0.5
+      }
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "baseline": {
+        "question_id": "EXP001-Q07",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": -0.5
+      }
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "baseline": {
+        "question_id": "EXP001-Q08",
+        "recall@5": 0.3333,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333
+      },
+      "exp002": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "delta": {
+        "recall@5": -0.3333,
+        "precision@5": -0.2,
+        "mrr@5": -0.3333
+      }
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "baseline": {
+        "question_id": "EXP001-Q09",
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": -0.2,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "baseline": {
+        "question_id": "EXP001-Q10",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "baseline": {
+        "question_id": "EXP001-Q11",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      }
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "baseline": {
+        "question_id": "EXP001-Q12",
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": -0.2,
+        "mrr@5": -0.5
+      }
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "baseline": {
+        "question_id": "EXP001-Q13",
+        "recall@5": 1.0,
+        "precision@5": 0.6,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 0.25,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333
+      },
+      "delta": {
+        "recall@5": -0.75,
+        "precision@5": -0.4,
+        "mrr@5": -0.6667
+      }
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "baseline": {
+        "question_id": "EXP001-Q14",
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": -0.2,
+        "mrr@5": -0.5
+      }
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "baseline": {
+        "question_id": "EXP001-Q15",
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "exp002": {
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "delta": {
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": -0.5
+      }
+    }
+  ]
+}

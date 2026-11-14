@@ -1,0 +1,71 @@
+{
+  "chunk_count": 107,
+  "characters": {
+    "min": 22,
+    "median": 256.0,
+    "mean": 327.27,
+    "p90": 761.0,
+    "max": 1000
+  },
+  "tokens": {
+    "min": 5,
+    "median": 52.0,
+    "mean": 64.92,
+    "p90": 151.4,
+    "max": 209
+  },
+  "tokenizer": "embedding_model_tokenizer",
+  "oversized_chunks": [],
+  "small_chunks": [
+    "satcom-ngp::ARTICLE-1::BODY::part_2::off1340",
+    "satcom-ngp::ARTICLE-2::2.2::off1932",
+    "satcom-ngp::ARTICLE-2::2.3::off4197",
+    "satcom-ngp::ARTICLE-2::2.4::off4699",
+    "satcom-ngp::ARTICLE-2::2.5::off5396",
+    "satcom-ngp::ARTICLE-2::2.6::off7302",
+    "satcom-ngp::ARTICLE-3::3.5::off13089",
+    "satcom-ngp::ARTICLE-3::3.5::part_2::off14140",
+    "satcom-ngp::ARTICLE-3::3.7.1.2::off20955",
+    "satcom-ngp::ARTICLE-3::3.7.1.4::off21232",
+    "satcom-ngp::ARTICLE-3::3.7.2::off21964",
+    "satcom-ngp::ARTICLE-3::3.7.3::off24702",
+    "satcom-ngp::ARTICLE-3::3.7.3.3::off25700",
+    "satcom-ngp::ARTICLE-3::3.7.4::off26027",
+    "satcom-ngp::ARTICLE-4::4.2::off30381",
+    "satcom-ngp::ARTICLE-4::4.2::part_2::off31425"
+  ],
+  "small_chunk_threshold_chars": 100,
+  "multi_page_chunks": [
+    "satcom-ngp::ARTICLE-2::2.2::part_1::off1968",
+    "satcom-ngp::ARTICLE-2::2.7::off9378",
+    "satcom-ngp::ARTICLE-3::3.4.1::off11800",
+    "satcom-ngp::ARTICLE-3::3.6.1::off14391",
+    "satcom-ngp::ARTICLE-3::3.7.2.1::off22004",
+    "satcom-ngp::ARTICLE-4::4.3.3::off32452",
+    "satcom-ngp::ARTICLE-4::4.4.5::off34880"
+  ],
+  "split_clauses": [
+    "2.2",
+    "3.5",
+    "3.6.1",
+    "3.7.2.1",
+    "4.2"
+  ],
+  "headless_chunks": [
+    "satcom-ngp::PREAMBLE::BODY::off2",
+    "satcom-ngp::ARTICLE-1::BODY::off177",
+    "satcom-ngp::ARTICLE-1::BODY::part_1::off340",
+    "satcom-ngp::ARTICLE-1::BODY::part_2::off1340",
+    "satcom-ngp::ARTICLE-2::BODY::off1417",
+    "satcom-ngp::ARTICLE-3::BODY::off10197",
+    "satcom-ngp::ARTICLE-4::BODY::off28343",
+    "satcom-ngp::ARTICLE-4::BODY::part_1::off29325"
+  ],
+  "chunks_by_article": {
+    "ARTICLE-1": 3,
+    "ARTICLE-2": 28,
+    "ARTICLE-3": 57,
+    "ARTICLE-4": 18,
+    "PREAMBLE": 1
+  }
+}
