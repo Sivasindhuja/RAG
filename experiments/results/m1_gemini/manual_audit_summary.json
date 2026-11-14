@@ -1,0 +1,27 @@
+{
+  "total": 15,
+  "correctness": {
+    "correct": 5,
+    "partial": 4,
+    "incorrect": 2,
+    "abstained": 4
+  },
+  "completeness": {
+    "complete": 5,
+    "partial": 2,
+    "incomplete": 4,
+    "na": 4
+  },
+  "faithfulness": {
+    "grounded": 9,
+    "partially_grounded": 2,
+    "unfaithful": 0,
+    "abstained": 4
+  },
+  "citation_quality": {
+    "correct": 8,
+    "partial": 3,
+    "incorrect": 0,
+    "na": 4
+  }
+}

@@ -527,10 +527,107 @@ irrelevant selected evidence, not semantically wrong-but-lexically-related cases
 like Q10). No live Gemini availability/cost/latency/quality data yet; cannot
 claim M1 validation complete or production readiness. Small 15-question set.
 
-**Status.** **Partially complete / blocked on credentials.** Architecture and
-contract implemented and tested; live model selection, Gemini generation run, and
-manual+mechanical faithfulness/correctness/completeness/citation audit remain
-required.
+**Status.** Superseded by DR-015 (live validation executed). Architecture and
+contract implemented and tested; live run completed with explicit model selection
+after probe failures; M1 exit criteria not fully met.
+
+### DR-015 — M1 live Gemini validation results (executed, exit criteria not met)
+
+**Date.** 2026-11-14.
+
+**Context.** Continued M1 live validation using credentials present in local
+`.env` (`GEMINI_API_KEY` present; value not exposed). Frozen retrieval, chunking,
+embeddings, ground truth and EXP-003 selection unchanged.
+
+**Model availability/selection (actual).**
+- `google.generativeai.list_models()` returned 49 `generateContent` models for
+  the configured key (recorded in `experiments/results/m1_gemini/config.json`).
+- Probes attempted (actual availability/latency/cost signals): `gemini-2.5-flash`
+  selected by fallback but **unavailable** to account (404 "no longer available to
+  new users"); `gemini-3.8-flash` (explicit, API-suggested) **probe timeout/504**
+  (~599s); `gemini-flash-latest` (explicit) **probe failed** (connection abort/
+  retry timeout ~740s). `gemini-flash-lite-latest` (explicit) **probe succeeded**
+  (3182 ms, prompt/candidate/total tokens 10/9/19, JSON `{"sentences":[]}`).
+- **Selected model:** `gemini-flash-lite-latest` (explicit, based on successful
+  probe after availability failures). Pricing not configured in harness; cost not
+  computed.
+
+**Execution/results (15-question frozen set).**
+- `python -m experiments.m1_gemini_eval --model gemini-flash-lite-latest` (with
+  `.env` loaded): extractive baseline unchanged (15/15 answered, 12/15 supported,
+  15/45 statements 0.3333, 16/31 citations 0.5161). Gemini: **11 answered, 3
+  model-abstained, 1 insufficient-evidence abstained (Q05), 0 errors, 0 blocked**.
+- Mechanical (generated claims): 18 claims, 14 grounded by token overlap ≥0.8
+  (**0.7778**), 0 uncited claims, 0 invalid source IDs. Latency (14 API calls):
+  mean 2504.93 ms, median 2435.07 ms, max 5175.49 ms. Tokens: prompt 5311,
+  candidates 704, total 6015 (counts from API usage metadata where available).
+- Out-of-corpus abstention: 12/12 (extractive and Gemini path).
+- Manual audit (`experiments/results/m1_gemini/manual_audit.{json,csv,summary}`; not
+  independent external audit): correctness **5 correct / 4 partial / 2 incorrect /
+  4 abstained**; completeness **5 complete / 2 partial / 4 incomplete / 4 n/a**;
+  faithfulness **9 grounded / 2 partially grounded / 0 unfaithful / 4 abstained**;
+  citation quality **8 correct / 3 partial / 0 incorrect / 4 n/a**. Lexical
+  support/overlap and valid citation IDs were **not** treated as proof of semantic
+  sufficiency or claim-citation support.
+
+**Per-question findings (Q04,Q05,Q08,Q10,Q12 and key cases).**
+- **Q05 (recall 0.0):** M1 sufficiency gate abstained (selected support 0.3333) —
+  trustworthy given missing/wrong evidence; corpus answer exists but not
+  retrievable/selected (BL-001/BL-007).
+- **Q10 (recall 1.0, wrong selection):** model abstained despite lexical gate pass
+  (0.7778); selected evidence lacked 3.6.8 procedure. Faithful to supplied evidence
+  but question unanswered (BL-003).
+- **Q12:** model abstained; selected evidence lacked international services
+  definition (BL-005/insufficient selected evidence).
+- **Q15:** model abstained; selected evidence included frequency/orbit coordination
+  but missed security concerns (conservative/incomplete).
+- **Q04:** incorrect/incomplete (heading-only answer unit; omitted sector list;
+  faithful to selected text but not a complete answer) (BL-004).
+- **Q08:** incorrect/incomplete (retrieval 0.3333; omitted required specific
+  authorisations DoS/WPC/operating licenses) (BL-002).
+- **Q13:** partial/incomplete (omitted Broadcasting 4.3.1; paraphrased headings,
+  mechanical overlap <0.8 though semantically close).
+- **Q11:** partial/incomplete and partially grounded (omitted construction/launch
+  cost, business plan, funding/revenues; truncated evidence/generalized claim).
+- **Q09:** partial (SCC in India and 2-year shift stated; CAISS-authorised other
+  location exception not included).
+- **Q14, Q02,Q03,Q06,Q07:** correct/complete/grounded. **Q01:** partial (core
+  correct, added relevant foreign-ops preference detail).
+
+**Comparison (measured vs manual).** EXP-003 extractive baseline unchanged
+(12/15 supported answers, 15/45, 16/31). EXP-004 (local qwen2.5:1.5b, rejected):
+15 answered, mechanical claim grounding 0.875, manual 5 correct/6 partial/4
+incorrect, 14 grounded/1 partial/0 unfaithful. M1 Gemini (`gemini-flash-lite-latest`,
+single run): 11 answered + 4 abstentions, mechanical grounding 0.7778, manual 5
+correct/4 partial/2 incorrect/4 abstained, 9 grounded/2 partially grounded/0
+unfaithful. Differences reflect model behavior, abstentions, and the same
+upstream retrieval/selection failures; results are on the small 15-question set
+and not general production evidence.
+
+**Bug fixed during live run.** `experiments/m1_gemini_eval.py`:
+`_evaluate_generated/_claim_grounded` assumed statement objects; Gemini
+`GeneratedAnswer.to_dict()` stores evidence statements as dicts, causing
+`AttributeError` (`'dict' object has no attribute 'text'`). Fixed to accept
+dict/object (`_stmt_text`).
+
+**Decision.** **M1 exit criteria not met.** Gemini path and app-validated
+citations work with a real model, and no unfaithful claims were observed in
+manual audit; however correctness/completeness remain insufficient (5/15 correct,
+5/15 complete; 2 incorrect, 4 incomplete), key questions fail due to upstream
+retrieval/selection/evidence-unit issues (Q04,Q05,Q08,Q10,Q12) or conservative
+abstention (Q15), and results are limited to one explicitly selected model/run on
+15 questions. Lexical sufficiency did not ensure semantic sufficiency (Q10).
+
+**Smallest justified next actions (evidence-driven).** (1) Treat M1 as
+implemented-but-not-validated-for-quality: document selected model limitations
+and rerun on a more capable/available Gemini model if/when probe succeeds, with
+same frozen pipeline (model/config choice remains M1). (2) Address M1-blocking
+quality only where justified: improve evidence selection/answer-unit coverage for
+BL-003/BL-004/BL-005 and retrieval for BL-001/BL-002 as controlled M6 experiments
+before claiming grounded Gemini quality. (3) Do not start M2 or add retrieval/
+chunking techniques outside controlled experiments.
+
+**Status.** Live validation executed; **M1 not accepted as meeting exit criteria**.
 
 ---
 
@@ -1056,6 +1153,21 @@ Coverage added across this work:
     abstained by sufficiency gate (0.3333 < 0.5); 14 sufficient questions blocked
     pending credentials; out-of-corpus 12/12 abstained. Artifacts in
     `experiments/results/m1_gemini/`.
+19. Completed M1 live validation run (DR-015) with local `.env` credentials
+    (key not exposed). Actual availability: 49 generateContent models listed.
+    Probes: `gemini-2.5-flash` unavailable (404), `gemini-3.8-flash` 504 timeout,
+    `gemini-flash-latest` connection abort/timeout; selected
+    `gemini-flash-lite-latest` (explicit, probe ok 3182 ms, tokens 10/9/19).
+    Frozen pipeline unchanged. Gemini: 11 answered, 3 model-abstained, 1
+    insufficient-evidence abstained (Q05), 0 errors; mechanical claims 18,
+    grounded>=0.8 14 (0.7778), 0 uncited, 0 invalid IDs; latency mean/median/max
+    2504.93/2435.07/5175.49 ms (14 calls), tokens 5311/704/6015. Manual audit:
+    correctness 5/4/2/4, completeness 5/2/4/4, faithfulness 9/2/0/4, citation
+    quality 8/3/0/4. Q04 incorrect/incomplete (heading unit), Q05 abstained
+    (retrieval 0.0, gate), Q08 incorrect/incomplete (retrieval 0.3333), Q10
+    model-abstained despite lexical sufficiency (wrong selection), Q12/Q15
+    model-abstained (insufficient selected evidence). Fixed eval script
+    dict/object evidence-text bug. **M1 exit criteria not met.**
 
 ### H.2 Milestone roadmap (authoritative, evidence-bounded)
 
@@ -1065,21 +1177,20 @@ not declare complete without it. Detailed issue tracking: `docs/BACKLOG.md`.
 | Milestone | Objective | Key outputs | Exit evidence | Status |
 |---|---|---|---|---|
 | **M0** | Direction & backlog | Authoritative brief/log, backlog, reconciled status | Documented; no new RAG technique added | **Done** |
-| **M1** | Validated Gemini answer path (local/integration) | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, PDF-linked citations, citation/abstention enforcement, faithfulness checks | Controlled evaluation on current set shows grounded inspectable citations; failures recorded; no silent regression vs extractive traceability | **Partially complete / blocked** (path+contract+tests+harness done; live model selection/generation/manual audit blocked by missing API credentials) |
-| **M2** | End-to-end application integration | Clean API contract, React UI evidence/citation display, local reproducible run, KNOWN-001/legacy path handled per plan | User can ask and inspect exact evidence/citations locally; API/integration tests pass | Not started |
+| **M1** | Validated Gemini answer path (local/integration) | Gemini model/config documented, versioned prompt contract, retrieval→context→Gemini flow, PDF-linked citations, citation/abstention enforcement, faithfulness checks | Controlled evaluation on current set shows grounded inspectable citations; failures recorded; no silent regression vs extractive traceability | **Executed, not accepted** (live run complete with `gemini-flash-lite-latest`; correctness/completeness insufficient and upstream Q04/Q05/Q08/Q10/Q12 failures block quality; no M2/new retrieval/chunking) |
+| **M2** | End-to-end application integration | Clean API contract, React UI evidence/citation display, local reproducible run, KNOWN-001/legacy path handled per plan | User can ask and inspect exact evidence/citations locally; API/integration tests pass | Not started (blocked until M1 quality/exit evidence justified) |
 | **M3** | Deployment-ready (Vercel Hobby) | Hobby-compatible storage/index strategy, serverless-safe packaging, env/secret handling, cold-start/latency/cost measurements, runbook | Publicly accessible app or documented blocking constraint with approved alternative; measured limits recorded | Not started |
 | **M4** | Golden dataset & offline evaluation | ~50–200 verified Q/A with evidence/citations/abstention labels, retrieval/answer/faithfulness/completeness/citation/abstention metrics, baseline report | Reproducible evaluation with thresholds derived from baseline evidence (not invented) | Not started |
 | **M5** | Quality gates & observability | CI quality checks, tracing, prompt/response/token/cost/latency/citation/failure instrumentation, monitoring/investigation path | CI blocks important regressions per defined thresholds; traces explain request outcomes | Not started |
 | **M6** | Targeted quality improvements | Only justified fixes/experiments for observed gaps (e.g. BL-001..BL-007) | Each change accepted/rejected by controlled evidence; backlog updated | Backlog-driven, not started |
 
-**Recommended immediate next step:** unblock and complete **M1 live validation** by
-providing Gemini API credentials (`GOOGLE_API_KEY`/`GEMINI_API_KEY`), then rerun
-`python -m experiments.m1_gemini_eval` to execute availability-based model
-selection/probe, generate answers for sufficient-evidence questions, record
-latency/token/cost, perform manual correctness/completeness/faithfulness/citation
-audit (using `manual_audit_template.csv`), and compare against EXP-004. Record
-Q05/Q08/Q10/Q04/Q12 outcomes and decide any M1-blocking fixes vs M6. Do not
-start M2 or add chunking/retrieval techniques until M1 evidence is collected.
+**Recommended immediate next step (smallest justified):** keep frozen pipeline and
+run controlled, evidence-driven **M6** fixes for the observed blockers before
+claiming M1 complete/M2: (a) Q10 reference-aware/selection fix (retrieval fixed),
+(b) Q04/Q12 answer-unit fix (heading + following list/definition), (c) Q05/Q08
+retrieval experiments (separate, controlled). Optionally rerun M1 eval with a
+more capable available Gemini model when probe succeeds (M1 config choice only,
+no retrieval/chunking changes). Do not start M2 or add untested RAG techniques.
 
 ### H.3 Historical phase status (pre-DR-013)
 

@@ -1,8 +1,8 @@
 # M1 — Validated Gemini Answer Path
 
 - Experiment: `M1-gemini`
-- Gemini available: `False`
-- Selected model: `None`
+- Gemini available: `True`
+- Selected model: `gemini-flash-lite-latest`
 - Prompt version: `m1-v1`
 - Evidence sufficiency gate: `selected_support >= 0.5`
 
@@ -14,8 +14,8 @@
 
 ## Gemini generation
 
-- Answered: 0, model abstained: 0, insufficient-evidence abstained: 1, blocked: 15, errors: 0
-- Claims: 0, grounded claims (>=0.80 overlap): 0 (0.0000)
+- Answered: 11, model abstained: 3, insufficient-evidence abstained: 1, blocked: 0, errors: 0
+- Claims: 18, grounded claims (>=0.80 overlap): 14 (0.7778)
 - Uncited claims: 0, invalid source IDs: 0
 
 ## Abstention (out-of-corpus)

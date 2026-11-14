@@ -124,10 +124,16 @@ def _evidence_sufficient(question: str, extractive_answer: Any, min_support: flo
     return True, None
 
 
+def _stmt_text(statement: Any) -> str:
+    if isinstance(statement, dict):
+        return statement.get("text", "") or ""
+    return getattr(statement, "text", "") or ""
+
+
 def _claim_grounded(claim: Dict[str, Any], statements_by_id: Dict[int, Any]) -> Tuple[bool, float]:
     claim_tokens = set(_tokenize(claim.get("text", "")))
     cited = claim.get("source_ids", [])
-    evidence_text = " ".join(statements_by_id[sid].text for sid in cited if sid in statements_by_id)
+    evidence_text = " ".join(_stmt_text(statements_by_id[sid]) for sid in cited if sid in statements_by_id)
     evidence_tokens = set(_tokenize(evidence_text))
     if not claim_tokens:
         return False, 0.0
