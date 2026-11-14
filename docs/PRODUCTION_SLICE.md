@@ -261,8 +261,13 @@ Generated text has no statement-level provenance and is **not** validated for
 faithfulness, citation correctness or abstention. Only the extractive path is
 covered by tests and the metrics above.
 
-Any claim about answer fluency, synthesis quality or LLM faithfulness requires a
-new, controlled generation experiment. None is made here.
+EXP-004 separately evaluated a constrained generator over the **selected**
+evidence (not this hook's full-context contract). It was rejected for the
+production default: the pre-registered grounding rate failed (`0.875 < 0.90`),
+the manual audit found 4/15 incorrect answers (same as extractive), and the
+generator could not fix upstream retrieval/selection failures. See
+`docs/EXP-004.md`. No fluency, synthesis or LLM-faithfulness claim is made for the
+production path.
 
 ---
 
@@ -272,7 +277,7 @@ new, controlled generation experiment. None is made here.
 # Grounded answer + abstention tests
 python -m pytest tests/test_pipeline.py tests/test_fixed_chunker.py -q
 
-# Full suite (last executed: 82 passed, 25 Chroma/Pydantic warnings)
+# Full suite (last executed: 89 passed, 25 Chroma/Pydantic warnings)
 python -m pytest tests -q
 
 # Rebuild the production index and write all artifacts
@@ -280,6 +285,12 @@ python -m experiments.production_slice
 
 # Controlled answer-selection experiment (does not change the production index)
 python -m experiments.exp003
+
+# Controlled generator evaluation (requires local Ollama + qwen2.5:1.5b)
+python -m experiments.exp004
+
+# Validate the EXP-004 manual audit
+python -m experiments.exp004_audit
 ```
 
 Outputs under `experiments/results/production_slice/`:
@@ -312,7 +323,7 @@ and do not affect results.
 | Abstention on out-of-corpus questions | Smoke met (12/12, small set) |
 | Multi-clause completeness | **Partial**: Q13 met (3/3, EXP-003); Q08 not met (retrieval miss) |
 | Answer relevance / correctness | **Not met** as a quality bar |
-| Generation faithfulness | Not evaluated |
+| Generation faithfulness | **Not met / rejected for production**: EXP-004 mechanical gate failed (0.875 grounding vs 0.90) and manual audit found 4/15 incorrect |
 
 The slice is suitable as the validated retrieval-and-provenance foundation. It is
 not yet a user-facing answer system.
@@ -326,6 +337,9 @@ not yet a user-facing answer system.
    units or explicit clause-block segmentation, holding retrieval fixed.
 2. Decide whether retrieval expansion is justified for Q05/Q08, with the same
    PDF, questions, ground truth, embedding, top-K and metrics held constant.
-3. Expand the verified question/evidence set before making broader quality claims.
-4. Evaluate any generation path separately for faithfulness and citation validity.
-5. Keep the legacy `backend/` path isolated until KNOWN-001 is fixed.
+3. Fix Q04/Q12 answer units: the selected evidence is a heading; the following
+   list or definition is needed.
+4. Expand the verified question/evidence set before making broader quality claims.
+5. Revisit generation only after upstream coverage improves, with an independent
+   audit and a grounding metric that is not satisfied by wrong evidence.
+6. Keep the legacy `backend/` path isolated until KNOWN-001 is fixed.

@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-004",
+  "generator": {
+    "model": "qwen2.5:1.5b",
+    "answered_generations": 15,
+    "mean_ms": 3757.21,
+    "median_ms": 3256.99,
+    "max_ms": 7818.54,
+    "min_ms": 1912.2
+  },
+  "note": "Latency measured around the local Ollama generation call for each answered positive question. Extractive per-question selection latency was not persisted by the recorded run."
+}

@@ -5,7 +5,8 @@ Scope: decisions, defects, experiments, rejected approaches, verification eviden
 risks and next actions for the SATCOM NGP RAG project.
 
 Companion documents: `docs/PROJECT_BRIEF.md`, `docs/EXP-001.md`,
-`docs/EXP-002.md`, `docs/CHUNKING_STRATEGY.md`.
+`docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
+`docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 Convention: entries are append-only in spirit. Do not rewrite history to make a
 later decision look inevitable; record what was known at the time.
@@ -272,6 +273,59 @@ production default.
 
 See `docs/EXP-003.md` and `experiments/results/exp003/`.
 
+### DR-011 — Constrained generator evaluation rejected (EXP-004)
+
+**Context.** The user selected generator evaluation as the next controlled piece
+of work. No hosted-model API key was available, so the experiment used local
+Ollama. Full-context pilot prompts were rejected during preparation because the
+available small models selected wrong clauses, omitted citation markers or echoed
+source metadata. The full experiment was therefore limited to synthesis over the
+accepted extractive selector's own evidence.
+
+**Decision.** Do **not** replace the extractive production answer path with the
+evaluated generator. Keep `GroundedPipeline` extractive as the default. The new
+`src/rag_core/generation.py` module is experimental, not wired into production.
+
+**Experiment.** EXP-004 held PDF, questions, 20 evidence units, 49 chunks,
+MiniLM embedding, dense top-5 retrieval, EXP-003 sibling selection, answer caps,
+citations and abstention constant. The candidate used `qwen2.5:1.5b` with a JSON
+claim contract over the selected evidence. Every claim named a selected evidence
+sentence; the harness attached the original citation markers.
+
+**Results.**
+
+| Measure | Extractive | Generated |
+|---|---:|---:|
+| Answered | 15/15 | 15/15 |
+| Model abstained / errors | — | 0 / 0 |
+| Claims | 45 statements | 16 claims |
+| Claims grounded at >=0.80 | — | 14/16 (0.8750) |
+| Uncited / invalid-source claims | — | 0 / 0 |
+| Citations | 31 | 17 |
+| Citations overlapping verified evidence | — | 14/17 (0.8235) |
+| Manual correctness (correct / partial / incorrect) | 0 / 11 / 4 | 5 / 6 / 4 |
+| Manual faithfulness (grounded / partial / ungrounded) | 15 / 0 / 0 | 14 / 1 / 0 |
+| Abstention (12 out-of-corpus) | 12/12 | 12/12 |
+| Mean generation latency | — | 3,757 ms |
+
+The pre-registered mechanical gate failed on claim grounding (`0.875` vs
+required `0.90`). The manual audit found no fabricated material claim, but the
+same four questions remained incorrect (Q04, Q05, Q10, Q12), and Q11 completed a
+truncated source with the unsupported word “requirements.” The generator could
+not fix retrieval or selection failures because it never saw unselected chunks.
+
+**Consequences.**
+- Production remains extractive; no generator dependency or latency is added.
+- `tests/test_generation.py` covers the experimental contract but no test calls
+  the local model.
+- Full-context generation remains unevaluated end to end; the pilot observations
+  are not a substitute for a controlled run.
+- Revisit only after upstream Q05/Q08/Q10/Q04/Q12 coverage improves, with an
+  independent audit and a grounding metric that is not satisfied by wrong
+  evidence.
+
+See `docs/EXP-004.md` and `experiments/results/exp004/`.
+
 ---
 
 ## C. Defect log
@@ -498,6 +552,46 @@ statement count. The rule is accepted as the production default (DR-010).
 clause evidence), Q14 (two statements overlapping one evidence unit). See
 `docs/EXP-003.md` and `experiments/results/exp003/`.
 
+### EXP-004 — Constrained generator over selected evidence (rejected)
+
+**Role.** Controlled answer-synthesis experiment on the accepted extractive
+path. Retrieval and selection were held fixed; the candidate rewrote only the
+selector's selected verbatim sentences into JSON claims, each naming the evidence
+sentence(s) it used.
+
+**Model.** Local Ollama `qwen2.5:1.5b`, `temperature=0`, JSON format. Full-context
+free-text and JSON prompts were rejected during pilots because the available
+models selected wrong clauses, omitted citations or produced malformed/repeated
+JSON. Those pilots were not advanced to the full 15-question run.
+
+**Pre-registered mechanical gate.** 12/12 negative abstention; no generation
+errors and all 15 positives parse; zero invalid source IDs; zero uncited claims;
+>=90% of claims at >=0.80 cited-token coverage; >=12/15 positives answered.
+
+**Results.**
+
+| Measure | Extractive | Generated |
+|---|---:|---:|
+| Answered | 15/15 | 15/15 |
+| Claims | 45 statements | 16 claims |
+| Claims at >=0.80 cited coverage | — | 14/16 (0.8750) |
+| Uncited / invalid-source claims | — | 0 / 0 |
+| Citations | 31 | 17 |
+| Manual correctness (correct / partial / incorrect) | 0 / 11 / 4 | 5 / 6 / 4 |
+| Manual faithfulness (grounded / partial / ungrounded) | 15 / 0 / 0 | 14 / 1 / 0 |
+| Abstention | 12/12 | 12/12 |
+
+The mechanical gate failed only on grounding rate (`0.875` < `0.90`). The manual
+audit found no fabricated material claim, but the same four questions remained
+incorrect (Q04, Q05, Q10, Q12), and Q11 was partially grounded because it
+completed a truncated source with “requirements.” Q10's wrong claims had `1.0`
+token coverage, showing the proxy does not measure relevance.
+
+**Decision.** Reject as the production default (DR-011). The generator is not
+wired into production. Q04/Q12 headings, Q05/Q08 retrieval misses and Q10
+selection remain upstream problems. See `docs/EXP-004.md` and
+`experiments/results/exp004/`.
+
 ---
 
 ## E. Rejected approaches
@@ -513,6 +607,7 @@ clause evidence), Q14 (two statements overlapping one evidence unit). See
 | RA-007 | Treat the legacy `backend/` pipeline as validated production | Unvalidated advanced components and an open keyword bug (KNOWN-001). Not accepted. |
 | RA-008 | Tune the lexical answer selector without a controlled protocol on the 15-question set | Exploratory sweeps (sentence count, heading penalty, length normalisation, relative score floors) risk overfitting a small set. Deferred to EXP-003, which tested one pre-registered selection rule and accepted it only after all decision checks passed. |
 | RA-009 | Adopt cross-encoder sentence reranking after an informal check | `cross-encoder/ms-marco-MiniLM-L-6-v2` raised statement support to 17/45 at three sentences but regressed Q13 to 0/3 and cost ~456 ms per query on CPU. Not adopted without a full controlled experiment and because it did not fix the main observed failure. |
+| RA-010 | Adopt a local LLM generator over selected evidence | EXP-004's `qwen2.5:1.5b` synthesis passed the citation/uncited-claim checks but failed the pre-registered grounding rate (0.875 < 0.90). The manual audit found 4/15 answers still incorrect (same as extractive), 1/15 partially grounded, and no evidence it fixes upstream retrieval/selection failures. Rejected for the production default; revisit only after upstream coverage improves. |
 
 ---
 
@@ -522,9 +617,9 @@ clause evidence), Q14 (two statements overlapping one evidence unit). See
 
 Command: `python -m pytest tests -q`
 
-Result (executed 2026-11-14, after EXP-003): **82 passed, 25 warnings** in
+Result (executed 2026-11-14, after EXP-004): **89 passed, 25 warnings** in
 ~29.4 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
-tests and EXP-003 added 4.
+tests, EXP-003 added 4, and EXP-004 added 7 generation-contract tests.
 
 Warnings are non-fatal Pydantic deprecation notices raised by Chroma
 (`Accessing the 'model_fields' attribute on the instance is deprecated`).
@@ -548,6 +643,10 @@ Coverage added across this work:
   provenance, citation-only-contributors, heading deprioritisation, sibling-clause
   selection and threshold behaviour, `answer_from_hits` reuse, abstention branches,
   generator hook, token support, limit/dedupe, fallback.
+- `tests/test_generation.py` — 7 tests: selected-evidence prompt construction,
+  source-ID → original-marker mapping, invalid-source recording, empty-model
+  abstention, malformed JSON, duplicate-key detection and missing-field
+  validation. No local model is called.
 
 ### F.2 Real-document integrity (EXP-002 chunk set)
 
@@ -597,6 +696,13 @@ Coverage added across this work:
   `comparison.json`, `per_question_metrics.csv` and `summary.md` under
   `experiments/results/exp003/`. Answer-assembly latency (hits held fixed):
   baseline 2.93 ms mean, sibling 3.06 ms mean (negligible; varies by run).
+- EXP-004 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
+  `answers_extractive.json`, `answers_generated.json`, `abstention_results.json`,
+  `comparison.json`, `per_question_metrics.csv`, `latency.json`, `summary.md`,
+  `manual_audit_template.csv`, `manual_audit.json`, `manual_audit_summary.json`
+  and `decision.md` under `experiments/results/exp004/`. The generator run used
+  an isolated `chroma_db_exp004/` collection. Observed generator latency:
+  mean 3,757.21 ms, median 3,256.99 ms, max 7,818.54 ms for 15 answered questions.
 
 ---
 
@@ -608,7 +714,7 @@ Coverage added across this work:
 | R-002 | Compound questions can lose child-clause coverage | Wrong/incomplete answers for Q08/Q10-type questions | Q13 is fixed by EXP-003 sibling-clause selection; Q08 remains a retrieval miss and Q10 needs clause-body handling. Continue with controlled experiments. |
 | R-003 | Very small chunks (<100 chars) weaken embeddings | Poor ranking / MRR | Consider minimum-size merge rules inside the structure-aware strategy, as a controlled change |
 | R-004 | Legacy backend has `status_status` bug and unvalidated pipeline (KNOWN-001) | App path may fail or bypass validation | Fix keyword; isolate legacy advanced components; build validated ingestion on `src/rag_core` |
-| R-005 | Generation and LLM faithfulness are not validated | Cannot claim generative answer quality | Extractive citations/abstention now have a baseline; evaluate any generator separately for faithfulness and citation validity |
+| R-005 | Generation quality is not established | Cannot claim generative answer quality | EXP-004 evaluated constrained synthesis and rejected it; full-context generation remains unevaluated. Keep extractive default until a generator beats it under a controlled protocol. |
 | R-006 | README performance claims (faithfulness 1.00, context recall 0.60) are not from this pipeline | Misleading project status | Treat as legacy; supersede with validated experiment reports |
 | R-007 | Chroma telemetry warnings | Noise in logs | Ignore; does not affect correctness |
 | R-008 | Environment drift (Python/Chroma/sentence-transformers versions) | Non-reproducible numbers | Record versions; pin before final release |
@@ -616,6 +722,7 @@ Coverage added across this work:
 | R-010 | Multi-clause completeness partial; Q05 retrieval recall is 0.0 | Q08 answer lacks required child clauses; Q05 has no evidence in top-5 | Treat as open acceptance failure; decide retrieval vs answer-layer fix by experiment |
 | R-011 | Abstention policy does not detect in-corpus retrieval failure | Q05 is answered without supporting evidence | Add answerability/relevance checks only with a labelled evaluation set; do not tune on the 15 questions |
 | R-012 | EXP-003's 0.5 sibling threshold and +0.044 improvement come from a small, reused 15-question set | Improvement may not generalise | Keep the rule but validate on an expanded/independent set before treating the delta as a general quality claim |
+| R-013 | EXP-004's generator conclusion rests on a selected-evidence design, one small local model, one reviewer and a lexical grounding proxy | The result may not generalise to full-context or larger models | State the scope explicitly; do not claim "generation is worse" in general. Re-evaluate with independent labels and an upstream-fixed selector before revisiting. |
 
 ---
 
@@ -651,8 +758,14 @@ Coverage added across this work:
     citation support 0.4688 → 0.5161; all pre-registered checks passed. Accepted
     as the production default (DR-010).
 14. Added shared `evaluate_answer_support`, `answer_from_hits`, sibling-selection
-    tests and `docs/EXP-003.md`; reran PROD-001 and the full suite. Full suite now
+    tests and `docs/EXP-003.md`; reran PROD-001 and the full suite. Full suite then
     82 passed.
+15. Ran EXP-004: constrained `qwen2.5:1.5b` generation over the selected evidence.
+    The mechanical gate failed on grounding rate (0.875 < 0.90); manual audit
+    found 5 correct / 6 partial / 4 incorrect, with no fabricated claim but one
+    partially grounded completion. Rejected for production (DR-011, RA-010).
+    Added `src/rag_core/generation.py`, `tests/test_generation.py`,
+    `docs/EXP-004.md` and the EXP-004 audit artifacts. Full suite now 89 passed.
 
 ### H.2 Next actions (ordered)
 
@@ -662,12 +775,15 @@ Coverage added across this work:
 2. **Decide retrieval work from evidence.** Q05 (Recall@5 0.0) and Q08 (0.3333)
    are genuine retrieval misses. Any expansion/reranking must be a separate
    controlled experiment and must not silently replace the accepted baseline.
-3. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
+3. **Fix Q04/Q12 answer units.** The selected evidence is a heading; the answer
+   needs the following list or definition. This is a sentence-unit problem, not
+   a generation problem.
+4. Fix KNOWN-001 and isolate or retire unvalidated legacy pipeline components
    before exposing the application.
-4. Expand the verified evaluation set before making broader quality claims; the
-   EXP-003 threshold and delta are not independently validated.
-5. Add generation-phase evaluation (faithfulness, answer correctness, citation
-   validity, abstention) only when a generation path is deliberately introduced.
+5. Expand the verified evaluation set before making broader quality claims; the
+   EXP-003 threshold and EXP-004 labels are not independently validated.
+6. Revisit generation only after upstream coverage improves, with an independent
+   audit and a grounding metric that is not satisfied by wrong evidence.
 
 ### H.3 Phase status
 
@@ -678,4 +794,4 @@ Coverage added across this work:
 | 3 | EXP-002 structure-aware chunking experiment | Done (rejected as default) |
 | 4 | Justified chunking refinement (if pursued) | Not started |
 | 5 | Validated production ingestion | Done for accepted baseline (PROD-001) |
-| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; generation not started |
+| 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention + sibling-clause selection validated; constrained generation evaluated and rejected (EXP-004) |

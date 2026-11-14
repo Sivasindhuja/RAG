@@ -1,0 +1,1804 @@
+{
+  "experiment_id": "EXP-004",
+  "arm": "selected_evidence_generator",
+  "generator": {
+    "model": "qwen2.5:1.5b",
+    "options": {
+      "temperature": 0,
+      "top_p": 0.9,
+      "num_ctx": 4096,
+      "num_predict": 220,
+      "repeat_penalty": 1.1
+    }
+  },
+  "summary": {
+    "question_count": 15,
+    "answered": 15,
+    "model_abstained": 0,
+    "generation_errors": 0,
+    "claim_count": 16,
+    "cited_claim_count": 16,
+    "uncited_claim_count": 0,
+    "invalid_source_count": 0,
+    "duplicate_claim_count": 0,
+    "claims_with_coverage_ge_0_8": 14,
+    "claim_grounding_rate": 0.875,
+    "mean_cited_coverage": 0.9149,
+    "citation_count": 17,
+    "evidence_overlapping_citation_count": 14,
+    "expected_token_recall": 0.5137,
+    "mean_words": 29.0,
+    "truncated": 0
+  },
+  "answers": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "expected_answer": "Proposals using Indian satellites are given preferential treatment over foreign satellites.",
+      "relevant_clause_ids": [
+        "ARTICLE-1"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+        "text": "The Government of India has decided that the Satellite Communications Policy should be implemented in such a manner that while operations from Indian soil may be allowed with both Indian and foreign satellites, proposals envisaging use of Indian satellites will be accorded preferential treatment. [2]",
+        "claims": [
+          {
+            "text": "The Government of India has decided that the Satellite Communications Policy should be implemented in such a manner that while operations from Indian soil may be allowed with both Indian and foreign satellites, proposals envisaging use of Indian satellites will be accorded preferential treatment.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-1",
+            "section": null,
+            "heading": "ARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING ALLOWING INDIAN PARTIES TO PROVIDE SERVICES INCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN SATELLITES",
+            "start_page": 1,
+            "end_page": 1,
+            "start_offset": 2,
+            "end_offset": 1002,
+            "quote": "The norms, guidelines and procedures for implementation of the policy frame-work \nfor satellite communications in India as  approved by Government in 2000 are as \nfollows: \n \nARTICLE-1: NORMS, GUIDELINES AND PROCEDURES CONCERNING \nALLOWING INDIAN PARTIES TO PROVIDE SERVICES \nINCLUDING UPLINKING OF TV  SIGNALS WITH INDIAN \nSATELLITES \n \nGovernment of India has decided that the Satellite Communications  Policy should be \nimplemented in such a manner that while ope rations from Indian soil may be a …",
+            "distance": 0.8627434077641097
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "4.4.5 While authorising foreign satellite op erations under 4.5.3 above, preference shall \nbe given to (a) Inter-Governmental Inte rnational Systems in which India is a \nSignatory/Party and (b) Other systems where th",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+            "start_offset": 34880,
+            "end_offset": 35096
+          },
+          {
+            "text": "Government of India has decided that the Satellite Communications  Policy should be \nimplemented in such a manner that while ope rations from Indian soil may be allowed \nwith both Indian and foreign Satellites, proposal s envisaging use of I ndian Satellites will \nbe accorded preferential treatment.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+            "start_offset": 340,
+            "end_offset": 640
+          },
+          {
+            "text": "The norms for  operating with satellites from Indian \nsoil shall be formulated by the respective Administrative Ministry/Department in \naccordance with the above directive and also in accordance with the Articles-2, 3 and 4 of \nthis Satellite Communications Norms, Guidelines and Procedures.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+            "start_offset": 641,
+            "end_offset": 932
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The Government of India has decided that the Satellite Communications Policy should be implemented in such a manner that while operations from Indian soil may be allowed with both Indian and foreign satellites, proposals envisaging use of Indian satellites will be accorded preferential treatment.\", \"sources\": [2]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 7818.54,
+        "errors": [],
+        "metadata": {
+          "eval_count": 65,
+          "prompt_eval_count": 394,
+          "done_reason": "stop",
+          "total_duration_ns": 7346209900
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.9048,
+        "min_cited_coverage": 0.9048,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.75,
+        "word_count": 45,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The Government of India has decided that the Satellite Communications Policy should be implemented in such a manner that while operations from Indian soil may be allowed with both Indian and foreign satellites, proposals envisaging use of Indian satellites will be accorded preferential treatment.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_1::chunk_0::off2"
+            ],
+            "cited_coverage": 0.9048,
+            "all_selected_coverage": 0.9048,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "expected_answer": "The INSAT capacity should be made available to the commercial sector on the basis of sound business lines, i.e. on a for-profit basis.",
+      "relevant_clause_ids": [
+        "2.3.1"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+        "text": "As a baseline making the INSAT capacity available to the Commercial Sector should be based on sound business lines, i.e., this activity should be on a 'for profit' basis and at the same time consistent with Government policies in the concerned user sectors. [1]",
+        "claims": [
+          {
+            "text": "As a baseline making the INSAT capacity available to the Commercial Sector should be based on sound business lines, i.e., this activity should be on a 'for profit' basis and at the same time consistent with Government policies in the concerned user sectors.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-2",
+            "section": "2.3",
+            "heading": "2.3      THE BASIC GUIDELINES",
+            "start_page": 2,
+            "end_page": 2,
+            "start_offset": 4117,
+            "end_offset": 4699,
+            "quote": "T and \nINMARSAT \n(g) The commitments made by India in the WTO forums, etc. \n \n \n2.3      THE BASIC GUIDELINES \n \n2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors. \n \n2.3.2 All the policies regarding INSAT syst em shall be determined by the INSAT \nCoordination Committee(ICC)  k …",
+            "distance": 0.7789110242213878
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "start_offset": 4230,
+            "end_offset": 4502
+          },
+          {
+            "text": "2.6.4 When INSAT capacity is made available for opera",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+            "start_offset": 8612,
+            "end_offset": 8665
+          },
+          {
+            "text": "2.6.4 When INSAT capacity is made available for operations from outside India, the \nContract must ensure that such operations are carried out in conformity with the UN/ITU \nConstitution, Convention, Treaties, Agreements and Regulations and also consistent with \napplicable Government of India Policies.",
+            "marker": "[3]",
+            "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+            "start_offset": 8612,
+            "end_offset": 8914
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"As a baseline making the INSAT capacity available to the Commercial Sector should be based on sound business lines, i.e., this activity should be on a 'for profit' basis and at the same time consistent with Government policies in the concerned user sectors.\", \"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 3670.73,
+        "errors": [],
+        "metadata": {
+          "eval_count": 66,
+          "prompt_eval_count": 359,
+          "done_reason": "stop",
+          "total_duration_ns": 3665577700
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 1.0,
+        "min_cited_coverage": 1.0,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.9091,
+        "word_count": 44,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "As a baseline making the INSAT capacity available to the Commercial Sector should be based on sound business lines, i.e., this activity should be on a 'for profit' basis and at the same time consistent with Government policies in the concerned user sectors.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_2::chunk_2::off4117"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "expected_answer": "The INSAT Coordination Committee (ICC).",
+      "relevant_clause_ids": [
+        "2.3.2"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "Who determines policies regarding the INSAT system?",
+        "text": "The policies regarding the INSAT system are determined by the INSAT Coordination Committee (ICC). [1]",
+        "claims": [
+          {
+            "text": "The policies regarding the INSAT system are determined by the INSAT Coordination Committee (ICC).",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-2",
+            "section": "2.3",
+            "heading": "2.3      THE BASIC GUIDELINES",
+            "start_page": 2,
+            "end_page": 2,
+            "start_offset": 4117,
+            "end_offset": 4699,
+            "quote": "T and \nINMARSAT \n(g) The commitments made by India in the WTO forums, etc. \n \n \n2.3      THE BASIC GUIDELINES \n \n2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors. \n \n2.3.2 All the policies regarding INSAT syst em shall be determined by the INSAT \nCoordination Committee(ICC)  k …",
+            "distance": 0.9928305257834935
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "start_offset": 4230,
+            "end_offset": 4502
+          },
+          {
+            "text": "2.3.2 All the policies regarding INSAT syst em shall be determined by the INSAT \nCoordination Committee(ICC)  keeping in view Policy Frame-work for Satellite \nCommunications in India.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "start_offset": 4506,
+            "end_offset": 4689
+          },
+          {
+            "text": "2.6.4 When INSAT capacity is made available for operations from outside India, the \nContract must ensure that such operations are carried out in conformity with the UN/ITU \nConstitution, Convention, Treaties, Agreements and Regulations and also consistent with \napplicable Government of India Policies.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+            "start_offset": 8612,
+            "end_offset": 8914
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The policies regarding the INSAT system are determined by the INSAT Coordination Committee (ICC).\", \"sources\": [2]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 2269.36,
+        "errors": [],
+        "metadata": {
+          "eval_count": 36,
+          "prompt_eval_count": 380,
+          "done_reason": "stop",
+          "total_duration_ns": 2264627000
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.875,
+        "min_cited_coverage": 0.875,
+        "verbatim_claim_count": 0,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 1.0,
+        "word_count": 15,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The policies regarding the INSAT system are determined by the INSAT Coordination Committee (ICC).",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_2::chunk_2::off4117"
+            ],
+            "cited_coverage": 0.875,
+            "all_selected_coverage": 0.875,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "expected_answer": "Telecommunications, broadcasting, education and developmental communications, and security communications.",
+      "relevant_clause_ids": [
+        "2.4.1"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What are the broad classifications of INSAT user sectors?",
+        "text": "The user sectors can be broadly classified as: [1]",
+        "claims": [
+          {
+            "text": "The user sectors can be broadly classified as:",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-2",
+            "section": "2.4",
+            "heading": "2.4       CLASSIFICATION OF USE",
+            "start_page": 3,
+            "end_page": 3,
+            "start_offset": 4699,
+            "end_offset": 5699,
+            "quote": "2.4       CLASSIFICATION OF USE \n \n2.4.1 The user sectors can be broadly classified as: \n \n(a) Telecommunications \n(b) Broadcasting \n(c) Education and developmental communications \n(d) Security Communications for Defence Ministry/Services \n \n2.4.2 Education has been separately identified since the future use by this sector is \nexpected to be considerable. Also Secu rity Communications is an area where the \ndemands are expected to grow rather rapidl y. In both these cases the normal licensing \npr …",
+            "distance": 0.9438762625312203
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "2.4.1 The user sectors can be broadly classified as:",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+            "start_offset": 4734,
+            "end_offset": 4786
+          },
+          {
+            "text": "The financial arra ngements for INSAT system also may be different in the \ncase of these sectors.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+            "start_offset": 5295,
+            "end_offset": 5392
+          },
+          {
+            "text": "2.3.1 As a baseline making the INSAT capacity  available to the Commercial Sector \nshould be based on sound business lines, i.e.., this activity should be on a ‘for profit’ \nbasis and at the same time consistent with the Government policies in the concerned user \nsectors.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+            "start_offset": 4230,
+            "end_offset": 4502
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The user sectors can be broadly classified as:\", \"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 1912.2,
+        "errors": [],
+        "metadata": {
+          "eval_count": 25,
+          "prompt_eval_count": 314,
+          "done_reason": "stop",
+          "total_duration_ns": 1907311800
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 1.0,
+        "min_cited_coverage": 1.0,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.0,
+        "word_count": 9,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The user sectors can be broadly classified as:",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_3::chunk_0::off4699"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "expected_answer": "The Party which has taken the capacity on lease.",
+      "relevant_clause_ids": [
+        "2.5.6"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+        "text": "The Licensing Authority at the time of renewal or re-issue of licenses for services with foreign satellites will require the licensee to opt for the Indian Satellite System. [1]",
+        "claims": [
+          {
+            "text": "The Licensing Authority at the time of renewal or re-issue of licenses for services with foreign satellites will require the licensee to opt for the Indian Satellite System.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+            "source": "satcom-ngp.pdf",
+            "article": null,
+            "section": null,
+            "heading": null,
+            "start_page": 12,
+            "end_page": 12,
+            "start_offset": 29601,
+            "end_offset": 30178,
+            "quote": "ompetent authority, notified by the Central Government in this \nregard, on technical or security  considerations. In cases where \noperations of services with foreign satellites are licensed, the Licensing \nAuthority at the time of renewal or re-issue of licenses for these \nservices, will require the licensee to opt for the Indian Satellite System \nsubject to availability of capacity which meets the requirement of the \nservice. \n \n(d) Department of Space should ensure that the various provisions …",
+            "distance": 0.8424245812761417
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "In cases where \noperations of services with foreign satellites are licensed, the Licensing \nAuthority at the time of renewal or re-issue of licenses for these \nservices, will require the licensee to opt for the Indian Satellite System \nsubject to availability of capacity which meets the requirement of the \nservice.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_12::chunk_2::off29601",
+            "start_offset": 29715,
+            "end_offset": 30031
+          },
+          {
+            "text": "4.4.2 For services listed under item 4.4.1 a bove, the procedure prescribed in the \nBroadcast Bill shall apply.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+            "start_offset": 33695,
+            "end_offset": 33806
+          },
+          {
+            "text": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in \nthe Indian Satellites, the services shall be auth orised only on Indian Satellites.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+            "start_offset": 33947,
+            "end_offset": 34120
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The Licensing Authority at the time of renewal or re-issue of licenses for services with foreign satellites will require the licensee to opt for the Indian Satellite System.\", \n\"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 3256.99,
+        "errors": [],
+        "metadata": {
+          "eval_count": 47,
+          "prompt_eval_count": 354,
+          "done_reason": "stop",
+          "total_duration_ns": 3250669900
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 1.0,
+        "min_cited_coverage": 1.0,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 0,
+        "citation_evidence_rate": 0.0,
+        "expected_token_recall": 0.0,
+        "word_count": 29,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The Licensing Authority at the time of renewal or re-issue of licenses for services with foreign satellites will require the licensee to opt for the Indian Satellite System.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_12::chunk_2::off29601"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "expected_answer": "A formal lease agreement signed between the Department of Space/INSAT and the Party.",
+      "relevant_clause_ids": [
+        "2.6.5"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+        "text": "A formal lease agreement signed between the Department of Space/INSAT and the Party will spell out the technical, financial, contractual, and management clauses. [1]",
+        "claims": [
+          {
+            "text": "A formal lease agreement signed between the Department of Space/INSAT and the Party will spell out the technical, financial, contractual, and management clauses.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-2",
+            "section": "2.6.3",
+            "heading": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation",
+            "start_page": 4,
+            "end_page": 4,
+            "start_offset": 8465,
+            "end_offset": 9465,
+            "quote": "ngement \nat any time as required. \n \n2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad. \n \n2.6.4 When INSAT capacity is made available for operations from outside India, the \nContract must ensure that such operations are carried out in conformity with the UN/ITU \nConstitution, Convention, Treaties, Agreements and Regulations and also consistent with \napplicable Government of India Policies. \n \n2.6.5 The use of INSAT capacity by non-govern m …",
+            "distance": 0.79521408415835
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "2.6.3 The INSAT capacity may also be made av ailable to foreign parties for operation \nin India or abroad.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+            "start_offset": 8502,
+            "end_offset": 8608
+          },
+          {
+            "text": "2.6.5 The use of INSAT capacity by non-govern mental Parties will be based on a \nformal lease agreement signed between the Department of Space/INSAT and the Party \nwhich will spell out the technical, financial, contractual and management clauses.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+            "start_offset": 8918,
+            "end_offset": 9164
+          },
+          {
+            "text": "2.6.2 Once capacity is earmarked by ICC for non-governmental users, Department of \nSpace/INSAT is authorised to provide this  capacity to the non-governmental users for \nservices other than telecommunications, follo wing its own procedures .",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_4::chunk_1::off7665",
+            "start_offset": 7673,
+            "end_offset": 7914
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"A formal lease agreement signed between the Department of Space/INSAT and the Party will spell out the technical, financial, contractual, and management clauses.\", \"sources\": [2]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 3819.89,
+        "errors": [],
+        "metadata": {
+          "eval_count": 46,
+          "prompt_eval_count": 355,
+          "done_reason": "stop",
+          "total_duration_ns": 3813772900
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 1.0,
+        "min_cited_coverage": 1.0,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 1.0,
+        "word_count": 24,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "A formal lease agreement signed between the Department of Space/INSAT and the Party will spell out the technical, financial, contractual, and management clauses.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_4::chunk_2::off8465"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "expected_answer": "The satellites which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations, for the actions of which Government of India shall be internationally responsible.",
+      "relevant_clause_ids": [
+        "3.2"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "How is an Indian Satellite defined in the policy?",
+        "text": "An Indian satellite is defined as a satellite that is part of a satellite network or system, which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations (RR). [1]",
+        "claims": [
+          {
+            "text": "An Indian satellite is defined as a satellite that is part of a satellite network or system, which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations (RR).",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.2",
+            "heading": "3.2 DEFINITION OF INDIAN SATELLITES",
+            "start_page": 5,
+            "end_page": 5,
+            "start_offset": 10388,
+            "end_offset": 11388,
+            "quote": "Government of India states: \n \n“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satellite systems and networks  by and for Indian private parties \nfollowing certain well defined and transparent norms. The satellite systems \nof all Government Agencies to be established by Department of Space;” \n  \n3.2 DEFINITION OF INDIAN SATELLITES \n \n“Indian Satellites” shall be defined as  the sate …",
+            "distance": 0.4030090524773789
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "“Authorise Indian Administration in co nsultation with Department of Space \nand other concerned regulatory authorities to inform, notify, coordinate and \nregister satellite systems and networks  by and for Indian private parties \nfollowing certain well defined and transparent norms.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+            "start_offset": 10419,
+            "end_offset": 10702
+          },
+          {
+            "text": "“Indian Satellites” shall be defined as  the satellites which are part of a \nsatellite network or system which are informed, Co-ordinated, Registered and \nNotified by the Indian Administration following the International \nTelecommunications Union (ITU) Radio Regu lations (RR) and for the actions of \nwhich Government of India shall be intern ationally responsible.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+            "start_offset": 10839,
+            "end_offset": 11204
+          },
+          {
+            "text": "3.1 The Satellite Communications Policy Framework for India as approved by \nGovernment of India states:",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_5::chunk_0::off9588",
+            "start_offset": 10312,
+            "end_offset": 10415
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"An Indian satellite is defined as a satellite that is part of a satellite network or system, which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations (RR).\", \"sources\": [2]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 4660.12,
+        "errors": [],
+        "metadata": {
+          "eval_count": 62,
+          "prompt_eval_count": 358,
+          "done_reason": "stop",
+          "total_duration_ns": 4652641900
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.8889,
+        "min_cited_coverage": 0.8889,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.6842,
+        "word_count": 38,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "An Indian satellite is defined as a satellite that is part of a satellite network or system, which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations (RR).",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_5::chunk_1::off10388"
+            ],
+            "cited_coverage": 0.8889,
+            "all_selected_coverage": 0.8889,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "expected_answer": "Three authorizations/licenses are required: an authorisation from the Department of Space, an authorisation by the Wireless Planning and Coordination Wing, and operating licenses for the services.",
+      "relevant_clause_ids": [
+        "3.4.1",
+        "3.4.2",
+        "3.4.3"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+        "text": "Three distinct authorizations/licenses are required for establishing an Indian Satellite System. [1] [2]",
+        "claims": [
+          {
+            "text": "Three distinct authorizations/licenses are required for establishing an Indian Satellite System.",
+            "source_ids": [
+              1,
+              2,
+              3
+            ],
+            "markers": [
+              "[1]",
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.6",
+            "heading": "3.6 NORMS, GUIDELINES AND PROCEDURES TO BE FOLLOWED IN ISSUING THE LICENSES",
+            "start_page": 6,
+            "end_page": 6,
+            "start_offset": 13550,
+            "end_offset": 14550,
+            "quote": " to the \nGovernment of India as a Permanent Invitee shall be the single window for clearing the \nsystems. The Committee shall be chaired by th e Secretary, Department of Space. The \nSecretariat of the Committee for authorising the Establishment and Operation of Indian \nSatellite Systems (CAISS) shall be resident in the Department of Space. After the CAISS \napproval the authorisations/licenses for the establishment and operation of the Satellite \nSystem shall be issued by Department of Space foll …",
+            "distance": 0.4414274451275659
+          },
+          {
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.3",
+            "heading": "3.3 ADMINISTRATIVE MINISTRY/DEPARTMENT",
+            "start_page": 5,
+            "end_page": 5,
+            "start_offset": 11188,
+            "end_offset": 11948,
+            "quote": "lly responsible.  Indian Satellites \nare a subset of the broader concept of Indian Space Objects.  \n \n3.3 ADMINISTRATIVE MINISTRY/DEPARTMENT \n \nThe Department of Space shall be the Admi nistrative Ministry in respect of the \nsatellite systems as per the Government’s Allocation of Business. Rules .The satellite \nsystems of all Government Ag encies shall be established by Department of Space. The \nassociated ground segment could be established by the User Agencies. \n \n \n3.4 LICENSES REQUIRED \n \nFo …",
+            "distance": 0.4735851092198782
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "After the CAISS \napproval the authorisations/licenses for the establishment and operation of the Satellite \nSystem shall be issued by Department of Space following its norm al procedures.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+            "start_offset": 13892,
+            "end_offset": 14079
+          },
+          {
+            "text": "3.6.1 Only Indian registered Companies may be allowed to establish and operate an \nIndian Satellite System.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_6::chunk_2::off13550",
+            "start_offset": 14391,
+            "end_offset": 14498
+          },
+          {
+            "text": "For establishing Indian Satellite Systems three distinct authorisations/licenses will \nbe required.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+            "start_offset": 11686,
+            "end_offset": 11785
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"Three distinct authorizations/licenses are required for establishing an Indian Satellite System.\", \"sources\": [1, 2, 3]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 2647.14,
+        "errors": [],
+        "metadata": {
+          "eval_count": 36,
+          "prompt_eval_count": 288,
+          "done_reason": "stop",
+          "total_duration_ns": 2640736800
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.8889,
+        "min_cited_coverage": 0.8889,
+        "verbatim_claim_count": 0,
+        "citation_count": 2,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 0.5,
+        "expected_token_recall": 0.3077,
+        "word_count": 13,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "Three distinct authorizations/licenses are required for establishing an Indian Satellite System.",
+            "source_ids": [
+              1,
+              2,
+              3
+            ],
+            "markers": [
+              "[1]",
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_5::chunk_2::off11188",
+              "satcom-ngp::page_6::chunk_2::off13550"
+            ],
+            "cited_coverage": 0.8889,
+            "all_selected_coverage": 0.8889,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "expected_answer": "Within the territory of India, or at another location authorised by CAISS based on technical requirements.",
+      "relevant_clause_ids": [
+        "3.6.4"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "Where should the Satellite Control Centre (SCC) be located?",
+        "text": "The Satellite Control Centre (SCC), i.e., the facility that monitors critical technical parameters and controls satellite movements with the ability to partially or completely close down the network, should be located within the territory of the Union of India. [2]",
+        "claims": [
+          {
+            "text": "The Satellite Control Centre (SCC), i.e., the facility that monitors critical technical parameters and controls satellite movements with the ability to partially or completely close down the network, should be located within the territory of the Union of India.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_7::chunk_1::off15730",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.6.2",
+            "heading": "3.6.2 The applicant must establish to the sa tisfaction of CAISS th at they have the",
+            "start_page": 7,
+            "end_page": 7,
+            "start_offset": 15730,
+            "end_offset": 16730,
+            "quote": "ible for automatic  approval from RBI. The CAISS may also \nconsider authorizing the registration of systems /networks of foreign companies as Indian \nSatellite Systems/Networks in the interest of attracting advanced services or foreign \ninvestment.  \n \n3.6.2 The applicant must establish to the sa tisfaction of CAISS th at they have the \nrequired technical, financial a nd legal credentials to constr uct, launch and operate the \nproposed satellite system in conformity with the time-scales containe …",
+            "distance": 0.8036404935738976
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "3.6.5 The Satellite Systems, whose SCC is loca ted in a territory ot her than India shall \nbe required to shift the SCC to a location insi de the territory of the Union of India within \na reasonable period as determined by CAI SS but not exceeding two years from the time \nthe license is granted.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_7::chunk_2::off16530",
+            "start_offset": 16813,
+            "end_offset": 17109
+          },
+          {
+            "text": "3.6.6 WPC/MOC shall have regulatory control over the SCC f acility in the event of \ninterference to other radio services.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_7::chunk_2::off16530",
+            "start_offset": 17190,
+            "end_offset": 17311
+          },
+          {
+            "text": "3.6.4 The Satellite Control Centre/s (SCC), i. e., the facility that monitors correct \nfunctioning of the key technica l parameters and controls the movements of the satellite \nwith the ability to partially or complete ly close down the network, should be located \nwithin the territory of the Union of",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_7::chunk_1::off15730",
+            "start_offset": 16429,
+            "end_offset": 16730
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The Satellite Control Centre (SCC), i.e., the facility that monitors critical technical parameters and controls satellite movements with the ability to partially or completely close down the network, should be located within the territory of the Union of India.\", \"sources\": [3]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 4931.67,
+        "errors": [],
+        "metadata": {
+          "eval_count": 62,
+          "prompt_eval_count": 384,
+          "done_reason": "stop",
+          "total_duration_ns": 4922832500
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.8182,
+        "min_cited_coverage": 0.8182,
+        "verbatim_claim_count": 0,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.4,
+        "word_count": 40,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The Satellite Control Centre (SCC), i.e., the facility that monitors critical technical parameters and controls satellite movements with the ability to partially or completely close down the network, should be located within the territory of the Union of India.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_7::chunk_1::off15730"
+            ],
+            "cited_coverage": 0.8182,
+            "all_selected_coverage": 0.8636,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "expected_answer": "First come first served when other conditions are fulfilled, with priority to government-owned systems in case of conflict; discussions between non-governmental applicants and the Administration to resolve conflicts; if unresolved, a common API is filed and the decision is taken at the AP S4 filing stage or later, depending on progress.",
+      "relevant_clause_ids": [
+        "3.6.8"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+        "text": "For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat resident in DOS, shall announce its intention to make the orbit spectrum available for non-governmental applicants and invite applications giving a fixed closing date. [2] In this case, a service operating license is not adequate and the Licensee shall apply for the satellite operating license and appropriate orbit spectrum license as well following the procedure for establishment and operation of Indian Satellite System. [2]",
+        "claims": [
+          {
+            "text": "For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat resident in DOS, shall announce its intention to make the orbit spectrum available for non-governmental applicants and invite applications giving a fixed closing date.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          },
+          {
+            "text": "In this case, a service operating license is not adequate and the Licensee shall apply for the satellite operating license and appropriate orbit spectrum license as well following the procedure for establishment and operation of Indian Satellite System.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_8::chunk_1::off18596",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.6.10",
+            "heading": "3.6.10 For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat",
+            "start_page": 8,
+            "end_page": 8,
+            "start_offset": 18596,
+            "end_offset": 19596,
+            "quote": "ular service (e.g., \nDirect Broadcast Satellite Service (DBS)), only the Licensee for the service could be \nconsidered as the Applicant. In this case a service operating license is not adequate and \nthe Licensee shall apply for th e satellite operating license a nd appropriate orbit spectrum \nlicense as well following the procedure for establishment and operation of Indian Satellite \nSystem. \n \n3.6.10 For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat \nresident in DO …",
+            "distance": 0.9012313259802882
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "(a) for new orbit-spectrum as per requirements \n(b) in the unplanned bands \n(c) in the planned bands as per the ITU established Plans \n(d) for the allotted orbital slot s as per ITU established Plans \n(e) at frequency bands and orbita l slots for which India has set up \ncoordination process already in anticipation of requirements \n 7",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_7::chunk_3::off17330",
+            "start_offset": 17459,
+            "end_offset": 17794
+          },
+          {
+            "text": "In this case a service operating license is not adequate and \nthe Licensee shall apply for th e satellite operating license a nd appropriate orbit spectrum \nlicense as well following the procedure for establishment and operation of Indian Satellite \nSystem.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_8::chunk_1::off18596",
+            "start_offset": 18733,
+            "end_offset": 18990
+          },
+          {
+            "text": "3.6.10 For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat \nresident in DOS, shall announce its intention to make the orbit spectrum available for \nnon-governmental applicants and invite ap plications giving a fixed closing date.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_8::chunk_1::off18596",
+            "start_offset": 18994,
+            "end_offset": 19251
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\":\"For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat resident in DOS, shall announce its intention to make the orbit spectrum available for non-governmental applicants and invite applications giving a fixed closing date.\",\"sources\": [3]},{\"text\":\"In this case, a service operating license is not adequate and the Licensee shall apply for the satellite operating license and appropriate orbit spectrum license as well following the procedure for establishment and operation of Indian Satellite System.\",\"sources\": [2]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 7226.31,
+        "errors": [],
+        "metadata": {
+          "eval_count": 115,
+          "prompt_eval_count": 408,
+          "done_reason": "stop",
+          "total_duration_ns": 7219524000
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 2,
+        "cited_claim_count": 2,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 2,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.9783,
+        "min_cited_coverage": 0.9565,
+        "verbatim_claim_count": 2,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 0,
+        "citation_evidence_rate": 0.0,
+        "expected_token_recall": 0.1379,
+        "word_count": 74,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "For 3.6.7(e) above, INSAT Coordination Committee (ICC), through its Secretariat resident in DOS, shall announce its intention to make the orbit spectrum available for non-governmental applicants and invite applications giving a fixed closing date.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_8::chunk_1::off18596"
+            ],
+            "cited_coverage": 0.9565,
+            "all_selected_coverage": 0.9565,
+            "verbatim_span_match": true
+          },
+          {
+            "claim_index": 2,
+            "text": "In this case, a service operating license is not adequate and the Licensee shall apply for the satellite operating license and appropriate orbit spectrum license as well following the procedure for establishment and operation of Indian Satellite System.",
+            "source_ids": [
+              2
+            ],
+            "markers": [
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_8::chunk_1::off18596"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "expected_answer": "Evidence that the Applicant has current financial ability to meet the cost of construction and launch, plus a broad business plan showing intended sources of funding and estimated revenues.",
+      "relevant_clause_ids": [
+        "3.7.1.5"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What financial information must an applicant provide?",
+        "text": "An applicant must provide evidence of their current financial ability to meet the requirements. [1]",
+        "claims": [
+          {
+            "text": "An applicant must provide evidence of their current financial ability to meet the requirements.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-3",
+            "section": "3.7.1",
+            "heading": "3.7.1 INFORMATION TO BE PROVIDED BY THE APPLICANT",
+            "start_page": 9,
+            "end_page": 9,
+            "start_offset": 20403,
+            "end_offset": 21403,
+            "quote": "3.7.1 INFORMATION TO BE PROVIDED BY THE APPLICANT \n \nThe Applicant shall make an application for Operating an Indian Satellite \nSystem/Network to CAISS (addressed to the CAISS Secretariat resident at Department of \nSpace) giving the following information: \n \n(i) Technical description of the proposed system including information on: \n(ii) Intended service, service area; \n(iii) Network descripti on and characteristics; \n(iv) Spacecraft description, including na ture and capabilitie s of all payloa …",
+            "distance": 1.2656642004768794
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "3.7.1.3 Management Information including",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+            "start_offset": 21018,
+            "end_offset": 21058
+          },
+          {
+            "text": "3.7.1.4 Licensing information including operating license obtained already or applied for.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+            "start_offset": 21232,
+            "end_offset": 21322
+          },
+          {
+            "text": "3.7.1.5 Evidence that the Applicant has current financial ability to meet the",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+            "start_offset": 21326,
+            "end_offset": 21403
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"An applicant must provide evidence of their current financial ability to meet the requirements.\", \n\"sources\": [3]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 2195.99,
+        "errors": [],
+        "metadata": {
+          "eval_count": 32,
+          "prompt_eval_count": 262,
+          "done_reason": "stop",
+          "total_duration_ns": 2191147500
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 0,
+        "claim_grounding_rate": 0.0,
+        "mean_cited_coverage": 0.75,
+        "min_cited_coverage": 0.75,
+        "verbatim_claim_count": 0,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.3158,
+        "word_count": 15,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "An applicant must provide evidence of their current financial ability to meet the requirements.",
+            "source_ids": [
+              3
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_9::chunk_0::off20403"
+            ],
+            "cited_coverage": 0.75,
+            "all_selected_coverage": 0.75,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "expected_answer": "International communications include PSTN, GMPCS, Value Added Services, Programme Exchange, where one end of the link terminates in a foreign country; the Maritime Mobile Satellite Service and the Aeronautical Mobile Satellite Service may be treated as international communications.",
+      "relevant_clause_ids": [
+        "4.2"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "How are international satellite communication services defined?",
+        "text": "The Satellite Communication Services could be broadly classified as [1]",
+        "claims": [
+          {
+            "text": "The Satellite Communication Services could be broadly classified as",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-4",
+            "section": "4.1",
+            "heading": "4.1 SERVICE CLASSIFICATION",
+            "start_page": 13,
+            "end_page": 13,
+            "start_offset": 30178,
+            "end_offset": 31178,
+            "quote": "4.1 SERVICE CLASSIFICATION \n \nThe Satellite Communication Services could be broadly classified as \n \n1. International (i.e., trans-bo rder) communications services \n2. Domestic communication services \n \n4.2 INTERNATIONAL COMMUNICATION SERVICES \n \nIn so far as International communication is concerned the existing practice of \nusing International Inter-Governmental Systems shall continue.  Private sector off-shoots, \nwhich retain their international character and include Indian equity will also be …",
+            "distance": 0.47774673609023144
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "The Satellite Communication Services could be broadly classified as",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+            "start_offset": 30208,
+            "end_offset": 30275
+          },
+          {
+            "text": "In so far as International communication is concerned the existing practice of \nusing International Inter-Governmental Systems shall continue.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+            "start_offset": 30425,
+            "end_offset": 30567
+          },
+          {
+            "text": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+            "start_offset": 32783,
+            "end_offset": 32850
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The Satellite Communication Services could be broadly classified as\", \"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 1977.11,
+        "errors": [],
+        "metadata": {
+          "eval_count": 26,
+          "prompt_eval_count": 261,
+          "done_reason": "stop",
+          "total_duration_ns": 1971427900
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 1.0,
+        "min_cited_coverage": 1.0,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.0909,
+        "word_count": 10,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The Satellite Communication Services could be broadly classified as",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_13::chunk_0::off30178"
+            ],
+            "cited_coverage": 1.0,
+            "all_selected_coverage": 1.0,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "expected_answer": "Broadcasting; Public Switched Telephone Network (domestic); Value Added Services (domestic); Land Mobile Satellite Services (domestic and coastal waters).",
+      "relevant_clause_ids": [
+        "4.3.1",
+        "4.3.2",
+        "4.3.3",
+        "4.3.4"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What are the categories of domestic satellite communication services?",
+        "text": "The categories of domestic satellite communication services include Land Mobile Satellite Services, Public Switched Telephone Network, and Value Added Services. [1] [2]",
+        "claims": [
+          {
+            "text": "The categories of domestic satellite communication services include Land Mobile Satellite Services, Public Switched Telephone Network, and Value Added Services.",
+            "source_ids": [
+              1,
+              2,
+              3
+            ],
+            "markers": [
+              "[1]",
+              "[2]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-4",
+            "section": "4.3.4",
+            "heading": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):",
+            "start_page": 14,
+            "end_page": 14,
+            "start_offset": 32496,
+            "end_offset": 33496,
+            "quote": "This includes VSATs for closed user groups , Private VSAT servi ce with shared hub, \nCellular and Paging services  interconnection, Video Teleconferencing, Audio/Video \nProgramme exchange, data broadcasting, Conput er networking, Intern et services, Multi-\nmedia communications, etc. \n \n4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters): \n \nThis includes communications to and from moving vehicles, hand-held personal \nterminals and portable small terminals. \n \n4.4 NORMS, GUIDELINES …",
+            "distance": 0.7184899781982012
+          },
+          {
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-4",
+            "section": "4.3.2",
+            "heading": "4.3.2 Public Switched Telephone Network (domestic)",
+            "start_page": 13,
+            "end_page": 13,
+            "start_offset": 31778,
+            "end_offset": 32494,
+            "quote": ".3.1 Broadcasting (moving images (TV) a nd associated sound; and audio (radio)) \n \n(h) Free to air satellite broadcasting – digital or analogue \n(i) Broadcasting meant for reception by subscribers \n \nThe receivers may be fixed, portable or mobile as the case may be. Audio-video \nteleconferncing, data transfer (one way or duplex) and computer networking are not part \nof this category. \n \n4.3.2 Public Switched Telephone Network (domestic) \n \nThis will have two sub-divisions namely, the network pro …",
+            "distance": 0.7186364707122692
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "4.3.4 Land Mobile Satellite Services (Domestic and Coastal Waters):",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+            "start_offset": 32783,
+            "end_offset": 32850
+          },
+          {
+            "text": "4.3.2 Public Switched Telephone Network (domestic)",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+            "start_offset": 32168,
+            "end_offset": 32218
+          },
+          {
+            "text": "4.3.3 Value Added Services (domestic) \n 13",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+            "start_offset": 32452,
+            "end_offset": 32494
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The categories of domestic satellite communication services include Land Mobile Satellite Services, Public Switched Telephone Network, and Value Added Services.\", \"sources\": [1, 2, 3]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 2920.3,
+        "errors": [],
+        "metadata": {
+          "eval_count": 47,
+          "prompt_eval_count": 263,
+          "done_reason": "stop",
+          "total_duration_ns": 2915421100
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 0,
+        "claim_grounding_rate": 0.0,
+        "mean_cited_coverage": 0.7857,
+        "min_cited_coverage": 0.7857,
+        "verbatim_claim_count": 0,
+        "citation_count": 2,
+        "evidence_overlapping_citation_count": 2,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.7857,
+        "word_count": 22,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The categories of domestic satellite communication services include Land Mobile Satellite Services, Public Switched Telephone Network, and Value Added Services.",
+            "source_ids": [
+              1,
+              2,
+              3
+            ],
+            "markers": [
+              "[1]",
+              "[2]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_13::chunk_2::off31778",
+              "satcom-ngp::page_14::chunk_0::off32496"
+            ],
+            "cited_coverage": 0.7857,
+            "all_selected_coverage": 0.7857,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "expected_answer": "The services shall be authorised only on Indian satellites; if capacity or capability is lacking, operations through foreign satellites may be authorised with permission to shift to Indian satellites when capacity becomes available.",
+      "relevant_clause_ids": [
+        "4.4.3"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+        "text": "If for lack of capacity or capability reason, operations and foreign satellites are authorised, the permission or license should stipulate that the operations should shift to Indian satellites as soon as the capacity and capability is available. [1]",
+        "claims": [
+          {
+            "text": "If for lack of capacity or capability reason, operations and foreign satellites are authorised, the permission or license should stipulate that the operations should shift to Indian satellites as soon as the capacity and capability is available.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-4",
+            "section": "4.4.4",
+            "heading": "4.4.4 While examining a propoasl for permitti ng a service to operate through a foreign",
+            "start_page": 14,
+            "end_page": 14,
+            "start_offset": 34096,
+            "end_offset": 35096,
+            "quote": "ly on Indian Satellites. If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift to Indian satellites \nas soon as the capacity and capability is availa ble. To that extent the initial permission \nshould be issued only for a limited period and must be reviewed before renewal. \n \n4.4.4 While examining a propoasl for permitti ng a service to operate through a foreign \nsatellite, th …",
+            "distance": 0.4417938770457151
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "If for lack \nof capacity or capability reason, operations and foreign satellites are authorised, the \npermission or license should stipulate that th e operations should shift to Indian satellites \nas soon as the capacity and capability is availa ble.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+            "start_offset": 34121,
+            "end_offset": 34371
+          },
+          {
+            "text": "4.4.3 For services listed from 4.4.2 to 4.4.4 wherever capacity and capability exists in \nthe Indian Satellites, the services shall be auth orised only on Indian Satellites.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+            "start_offset": 33947,
+            "end_offset": 34120
+          },
+          {
+            "text": "However, wherever Indian Satellites provide capacity and capability for international \ncommunications, the use of the same sha ll be allowed subject to International \nAgreements.",
+            "marker": "[3]",
+            "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+            "start_offset": 30690,
+            "end_offset": 30868
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\":\"If for lack of capacity or capability reason, operations and foreign satellites are authorised, the permission or license should stipulate that the operations should shift to Indian satellites as soon as the capacity and capability is available.\",\"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 4092.13,
+        "errors": [],
+        "metadata": {
+          "eval_count": 55,
+          "prompt_eval_count": 350,
+          "done_reason": "stop",
+          "total_duration_ns": 4084854600
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.9333,
+        "min_cited_coverage": 0.9333,
+        "verbatim_claim_count": 1,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.7692,
+        "word_count": 38,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "If for lack of capacity or capability reason, operations and foreign satellites are authorised, the permission or license should stipulate that the operations should shift to Indian satellites as soon as the capacity and capability is available.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_14::chunk_2::off34096"
+            ],
+            "cited_coverage": 0.9333,
+            "all_selected_coverage": 0.9333,
+            "verbatim_span_match": true
+          }
+        ]
+      }
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "expected_answer": "The system must be internationally coordinated for frequency and orbit and security concerns must be fully addressed.",
+      "relevant_clause_ids": [
+        "4.4.6"
+      ],
+      "generator": {
+        "status": "answered",
+        "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+        "text": "The process of giving operating license must ensure that the system is internationally coordinated for frequency and orbit. [1]",
+        "claims": [
+          {
+            "text": "The process of giving operating license must ensure that the system is internationally coordinated for frequency and orbit.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": []
+          }
+        ],
+        "citations": [
+          {
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_15::chunk_0::off35187",
+            "source": "satcom-ngp.pdf",
+            "article": "ARTICLE-4",
+            "section": "4.4.6",
+            "heading": "4.4.6 The process of giving operating license  must ensure that the system is",
+            "start_page": 15,
+            "end_page": 15,
+            "start_offset": 35187,
+            "end_offset": 35406,
+            "quote": "15\n \n4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it. It should also ensure that the security \nconcerns are fully addressed. \n \n \n*****",
+            "distance": 0.6167944433951558
+          }
+        ],
+        "evidence_statements": [
+          {
+            "text": "4.4.6 The process of giving operating license  must ensure that the system is \ninternationally coordinated for frequency and orb it.",
+            "marker": "[1]",
+            "chunk_id": "satcom-ngp::page_15::chunk_0::off35187",
+            "start_offset": 35192,
+            "end_offset": 35324
+          },
+          {
+            "text": "3.7.2.2 Department of Space may charge a re asonable fee for issuing a license for \nestablishing and operating an Indian Satellite System.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+            "start_offset": 23345,
+            "end_offset": 23483
+          },
+          {
+            "text": "3.7.2.3 Issue of the above Space Station Oper ating License does not imply granting of \nservice Operating License or Frequency/Siting clearances for ground stations.",
+            "marker": "[2]",
+            "chunk_id": "satcom-ngp::page_10::chunk_0::off22860",
+            "start_offset": 23487,
+            "end_offset": 23652
+          }
+        ],
+        "raw_response": "{\"sentences\": [{\"text\": \"The process of giving operating license must ensure that the system is internationally coordinated for frequency and orbit.\", \"sources\": [1]}]}",
+        "model": "qwen2.5:1.5b",
+        "latency_ms": 2959.63,
+        "errors": [],
+        "metadata": {
+          "eval_count": 35,
+          "prompt_eval_count": 319,
+          "done_reason": "stop",
+          "total_duration_ns": 2952750500
+        }
+      },
+      "evaluation": {
+        "status": "answered",
+        "claim_count": 1,
+        "cited_claim_count": 1,
+        "uncited_claim_count": 0,
+        "invalid_source_count": 0,
+        "duplicate_claim_count": 0,
+        "claims_with_coverage_ge_0_8": 1,
+        "claim_grounding_rate": 1.0,
+        "mean_cited_coverage": 0.9,
+        "min_cited_coverage": 0.9,
+        "verbatim_claim_count": 0,
+        "citation_count": 1,
+        "evidence_overlapping_citation_count": 1,
+        "citation_evidence_rate": 1.0,
+        "expected_token_recall": 0.5556,
+        "word_count": 19,
+        "truncated": false,
+        "errors": [],
+        "claims": [
+          {
+            "claim_index": 1,
+            "text": "The process of giving operating license must ensure that the system is internationally coordinated for frequency and orbit.",
+            "source_ids": [
+              1
+            ],
+            "markers": [
+              "[1]"
+            ],
+            "invalid_source_ids": [],
+            "cited_chunk_ids": [
+              "satcom-ngp::page_15::chunk_0::off35187"
+            ],
+            "cited_coverage": 0.9,
+            "all_selected_coverage": 0.9,
+            "verbatim_span_match": false
+          }
+        ]
+      }
+    }
+  ]
+}

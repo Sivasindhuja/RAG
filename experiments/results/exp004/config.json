@@ -1,0 +1,74 @@
+{
+  "experiment_id": "EXP-004",
+  "pdf_path": "C:\\Users\\sindh\\RAG\\data\\satcom-ngp.pdf",
+  "questions_csv": "C:\\Users\\sindh\\RAG\\experiments\\exp001_questions.csv",
+  "ground_truth": "C:\\Users\\sindh\\RAG\\experiments\\exp001_ground_truth.json",
+  "unanswerable_csv": "C:\\Users\\sindh\\RAG\\experiments\\unanswerable_questions.csv",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "chunking": {
+    "strategy": "fixed_character",
+    "chunk_size": 1000,
+    "overlap": 200,
+    "step": 800,
+    "per_page": true,
+    "chunk_count": 49
+  },
+  "retrieval": {
+    "method": "dense_vector_similarity",
+    "top_k": 5,
+    "changed": false
+  },
+  "selection": {
+    "method": "accepted_extractive_pipeline",
+    "sibling_score_ratio": 0.5,
+    "max_answer_sentences": 3,
+    "changed": false
+  },
+  "generator": {
+    "backend": "ollama",
+    "model": "qwen2.5:1.5b",
+    "options": {
+      "temperature": 0,
+      "top_p": 0.9,
+      "num_ctx": 4096,
+      "num_predict": 220,
+      "repeat_penalty": 1.1
+    },
+    "input": "selected_verbatim_evidence_only",
+    "contract": {
+      "format": "json",
+      "schema": {
+        "sentences": [
+          {
+            "text": "string",
+            "sources": [
+              "evidence number"
+            ]
+          }
+        ]
+      }
+    },
+    "changed": true
+  },
+  "answering_policy": {
+    "hard_max_distance": 1.3,
+    "soft_max_distance": 1.1,
+    "min_token_support": 0.5,
+    "strict_min_token_support": 0.7
+  },
+  "decision_rule": {
+    "negative_abstention": "12/12",
+    "generation_errors": 0,
+    "invalid_source_ids": 0,
+    "uncited_claims": 0,
+    "claim_grounding_threshold": 0.8,
+    "claim_grounding_rate_min": 0.9,
+    "minimum_answered_positives": 12,
+    "manual_audit_required": true
+  },
+  "vector_db": {
+    "backend": "chroma",
+    "collection_name": "satcom_ngp_exp004_constrained_generator",
+    "persist_directory": "C:\\Users\\sindh\\RAG\\chroma_db_exp004"
+  }
+}

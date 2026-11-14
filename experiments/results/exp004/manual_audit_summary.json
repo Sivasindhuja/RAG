@@ -1,0 +1,51 @@
+{
+  "experiment_id": "EXP-004",
+  "reviewer": "single reviewer (agent)",
+  "reviewed_at": "2026-11-14",
+  "question_count": 15,
+  "baseline": {
+    "correctness": {
+      "correct": 0,
+      "partial": 11,
+      "incorrect": 4
+    },
+    "faithfulness": {
+      "grounded": 15,
+      "partially_grounded": 0,
+      "ungrounded": 0
+    }
+  },
+  "generator": {
+    "correctness": {
+      "correct": 5,
+      "partial": 6,
+      "incorrect": 4
+    },
+    "faithfulness": {
+      "grounded": 14,
+      "partially_grounded": 1,
+      "ungrounded": 0
+    }
+  },
+  "mechanical_decision": {
+    "mechanical_pass": false,
+    "checks": {
+      "negative_abstention_12_of_12": true,
+      "no_generation_errors": true,
+      "all_positives_parse": true,
+      "zero_invalid_sources": true,
+      "zero_uncited_claims": true,
+      "claim_grounding_rate_ge_0_9": false,
+      "at_least_12_positives_answered": true
+    },
+    "manual_audit_required": true,
+    "note": "Passing the mechanical gate does not establish correctness or faithfulness."
+  },
+  "production_ready": false,
+  "decision": "reject_production_default",
+  "reasons": [
+    "pre-registered mechanical gate failed: claim_grounding_rate_ge_0_9",
+    "4/15 generated answers were judged incorrect"
+  ],
+  "note": "The production default remains the accepted extractive pipeline. This experiment did not establish a correctness or faithfulness gain large enough to justify changing it."
+}

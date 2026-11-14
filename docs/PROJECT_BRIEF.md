@@ -2,7 +2,7 @@
 
 Status: living document. Last updated 2026-11-14.
 Owner: engineering. Companion documents: `docs/ENGINEERING_LOG.md`,
-`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
+`docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`,
 `docs/PRODUCTION_SLICE.md`, `docs/CHUNKING_STRATEGY.md`.
 
 ---
@@ -73,10 +73,11 @@ silently "fix". Ground-truth excerpts must match the extracted bytes exactly.
 ## 4. Definition of quality (acceptance criteria)
 
 The system is acceptable only when all of the following are demonstrated. As of
-PROD-001 plus EXP-003, retrieval parity, document integrity, answer traceability
-and the abstention smoke test are met; Q13 multi-clause coverage is met, but Q08
-multi-clause completeness and overall answer relevance are **not** met (see
-`docs/PRODUCTION_SLICE.md` §9).
+PROD-001, EXP-003 and EXP-004, retrieval parity, document integrity, extractive
+answer traceability and the abstention smoke test are met; Q13 multi-clause
+coverage is met. Q08 multi-clause completeness, overall answer relevance and
+generation faithfulness are **not** met (see `docs/PRODUCTION_SLICE.md` §9 and
+`docs/EXP-004.md`).
 
 ### 4.1 Retrieval
 - Evidence-level Recall@K, Precision@K and MRR@K are reported against the verified
@@ -129,7 +130,8 @@ Every chunk set must satisfy the audit in `src/rag_core/chunker.py`
 | `chunker.py` | `StructureAwareChunker` and `FixedCharacterChunker`; page-aware heading detection; conservative clause-ID normalisation; unique chunk IDs; `audit_source_coverage`. |
 | `index.py` | `DenseIndex` over Chroma; `DenseIndexConfig`; `RetrievedChunk`; `chunk_to_metadata`. |
 | `evaluation.py` | `Question` / `EvidenceUnit`; verified EXP-001 manifest loading into global offsets; metric functions; coverage summary. |
-| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional unevaluated generator hook. |
+| `pipeline.py` | `GroundedPipeline`; extractive verbatim answers; sibling-clause selection (EXP-003); sentence-level provenance; citations only from contributing chunks; `AbstentionPolicy`; optional generator hook (not the production default). |
+| `generation.py` | Experimental selected-evidence JSON generator used by EXP-004; source-ID mapping and citation attachment. Not wired into the production answer path. |
 
 Design constraints:
 
@@ -153,6 +155,8 @@ experiments/
   exp001_ground_truth.json   # 20 verified evidence units (immutable)
   exp002.py                  # structure-aware chunking experiment
   exp003.py                  # answer-layer sibling-clause selection experiment
+  exp004.py                  # constrained local-generator evaluation (rejected)
+  exp004_audit.py            # validates the EXP-004 manual audit
   production_slice.py        # accepted baseline + grounded extractive answers
   unanswerable_questions.csv # 8 calibration + 4 held-out abstention questions
   results/
@@ -161,6 +165,7 @@ experiments/
     exp001_v3/               # ACCEPTED fixed-character baseline
     exp002/                  # structure-aware run + comparison + failure analysis
     exp003/                  # ACCEPTED sibling-clause answer-selection comparison
+    exp004/                  # rejected constrained-generator run + manual audit
     production_slice/        # PROD-001 config, chunks, answers, audit, metrics
 ```
 
@@ -185,8 +190,10 @@ experiments/
 - `backend/main.py` and `frontend/` remain the legacy application shell. They
   still point at legacy collections and an unvalidated pipeline and are **not**
   the validated production path.
-- The optional generator hook is not evaluated. No fluency, synthesis or LLM
-  faithfulness claim is made.
+- EXP-004 evaluated a constrained local generator over the selected evidence and
+  rejected it for the production default. The extractive path remains the only
+  production answer path; no fluency, synthesis or LLM-faithfulness claim is made.
+  Full-context generation was piloted but not run as a complete experiment.
 
 See `docs/PRODUCTION_SLICE.md` for the full result and failure analysis.
 
@@ -228,9 +235,10 @@ A chunk is relevant only when it overlaps an **actual supporting evidence span**
 | EXP-002 | chunking → structure-aware | **Rejected** as default | 0.8833 / 0.1867 / 0.6244 |
 | PROD-001 | production slice over accepted baseline | **Accepted retrieval; limited answer layer** | 0.8889 / 0.2533 / 0.7944 |
 | EXP-003 | answer selection → sibling clauses | **Accepted** | retrieval unchanged; statement support 0.2889 → 0.3333 |
+| EXP-004 | answer synthesis → local generator over selected evidence | **Rejected** for production default | retrieval unchanged; 14/16 claims grounded (0.875 < 0.90 gate); manual correctness 5/6/4 |
 
 Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
-`docs/PRODUCTION_SLICE.md`, `docs/ENGINEERING_LOG.md`.
+`docs/EXP-004.md`, `docs/PRODUCTION_SLICE.md`, `docs/ENGINEERING_LOG.md`.
 
 ---
 
@@ -249,8 +257,12 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
 - Phase 6 (partial): EXP-003 controlled answer-layer experiment — sibling-clause
   selection accepted. Statement support improved from 13/45 (0.2889) to 15/45
   (0.3333); Q13 evidence coverage improved from 1/3 to 3/3.
-- Test suite: **82 passed** (`python -m pytest tests -q`), including core,
-  evaluation, fixed-chunker and grounded-answer tests.
+- Phase 6 (generation): EXP-004 constrained local-generator evaluation —
+  rejected. Mechanical gate failed on grounding rate (0.875 < 0.90); manual audit
+  found 5 correct / 6 partial / 4 incorrect, no ungrounded claim and one partial
+  grounding. Production remains extractive.
+- Test suite: **89 passed** (`python -m pytest tests -q`), including core,
+  evaluation, fixed-chunker, grounded-answer and generation-contract tests.
 
 ### Next
 - Run a controlled answer-layer experiment for Q10, whose evidence sits inside a
@@ -259,9 +271,13 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
 - Decide from evidence whether retrieval expansion is justified for Q05 (recall
   0.0) and Q08 (0.3333); do not add hybrid retrieval/reranking without an
   experiment.
+- Fix Q04/Q12 answer units: the selected evidence is a heading; the following
+  list or definition is needed. This is a sentence-unit problem, not a generator
+  problem.
 - Expand the verified question/evidence set before broader quality claims.
-- Add and evaluate generation separately for faithfulness, citation validity and
-  answer correctness.
+- Revisit generation only after upstream Q05/Q08/Q10/Q04/Q12 coverage improves,
+  with an independent audit and a grounding metric that is not satisfied by
+  relevant-looking wrong evidence.
 - Fix the legacy backend defect and retire or isolate unvalidated legacy paths
   before exposing the app.
 
@@ -292,10 +308,12 @@ Details: `docs/EXP-001.md`, `docs/EXP-002.md`, `docs/EXP-003.md`,
   out-of-corpus questions and checked on 4 held-out questions (12/12 abstained).
   They do not detect in-corpus retrieval failures such as Q05, and no adversarial
   or partially answerable set has been evaluated.
-- **Generation is not validated.** Only the extractive path is evaluated. No
-  faithfulness or citation-validity result exists for an LLM generator; README
-  performance claims predate and are not produced by the validated pipeline in
-  this brief.
+- **Generation is not production-validated.** EXP-004 evaluated constrained
+  synthesis over selected evidence and rejected it: the mechanical grounding gate
+  failed, four answers remained incorrect, and the generator inherited upstream
+  retrieval/selection failures. Full-context generation was piloted but not run
+  as a complete experiment. README performance claims predate and are not
+  produced by the validated pipeline in this brief.
 - **Chroma telemetry warnings.** Harmless
   `Failed to send telemetry event … capture() takes 1 positional argument`
   messages may appear; they do not affect results.
@@ -318,6 +336,12 @@ python -m experiments.production_slice
 
 # Reproduce EXP-003 (writes to experiments/results/exp003/)
 python -m experiments.exp003
+
+# Reproduce EXP-004 (requires local Ollama + qwen2.5:1.5b)
+python -m experiments.exp004
+
+# Validate the EXP-004 manual audit and write its summary
+python -m experiments.exp004_audit
 ```
 
 The accepted EXP-001 baseline is reproduced only from its frozen runner and
@@ -335,5 +359,6 @@ fixed-character equivalence and retrieval parity against the frozen artifacts.
 | `docs/EXP-001.md` | Accepted fixed-character baseline. |
 | `docs/EXP-002.md` | Structure-aware chunking experiment report. |
 | `docs/EXP-003.md` | Sibling-clause answer-selection experiment, decision rule and results. |
+| `docs/EXP-004.md` | Constrained local-generator evaluation, mechanical gate, manual audit and rejection. |
 | `docs/PRODUCTION_SLICE.md` | PROD-001 architecture, integrity, retrieval parity, answer/citation metrics, abstention and failure analysis. |
 | `docs/CHUNKING_STRATEGY.md` | Earlier chunking design analysis (context only; EXP-002 supersedes its unvalidated assumptions). |

@@ -1,0 +1,245 @@
+{
+  "experiment_id": "EXP-004",
+  "reviewer": "single reviewer (agent)",
+  "reviewed_at": "2026-11-14",
+  "criteria": {
+    "correctness": {
+      "correct": "Contains all key facts in the expected answer and no material contradiction.",
+      "partial": "Contains some key facts but misses at least one, or adds material irrelevant content.",
+      "incorrect": "Fails to answer the question or contradicts the expected policy facts."
+    },
+    "faithfulness": {
+      "grounded": "Every material claim is supported by the cited selected evidence.",
+      "partially_grounded": "At least one material generalization or completion is not directly supported by the cited evidence.",
+      "ungrounded": "Contains a fabricated material claim not supported by the cited evidence."
+    },
+    "note": "The extractive baseline is verbatim by construction, so it is normally grounded even when it is irrelevant or incomplete. Grounding is not correctness."
+  },
+  "questions": [
+    {
+      "question_id": "EXP001-Q01",
+      "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+      "expected_answer": "Proposals using Indian satellites are given preferential treatment over foreign satellites.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the correct preferential-treatment clause, but also an unrelated 4.4.5 preference clause and a norms clause."
+      },
+      "generator": {
+        "correctness": "correct",
+        "faithfulness": "grounded",
+        "notes": "Directly answers with the 2.2 preferential-treatment clause."
+      }
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+      "expected_answer": "The INSAT capacity should be made available to the commercial sector on the basis of sound business lines, i.e. on a for-profit basis.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the correct 2.3.1 clause plus an unrelated 2.6.4 operations clause."
+      },
+      "generator": {
+        "correctness": "correct",
+        "faithfulness": "grounded",
+        "notes": "Correct 2.3.1 paraphrase."
+      }
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "question": "Who determines policies regarding the INSAT system?",
+      "expected_answer": "The INSAT Coordination Committee (ICC).",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the correct 2.3.2 clause plus unrelated 2.3.1 and 2.6.4 clauses."
+      },
+      "generator": {
+        "correctness": "correct",
+        "faithfulness": "grounded",
+        "notes": "Correct ICC answer."
+      }
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "question": "What are the broad classifications of INSAT user sectors?",
+      "expected_answer": "Telecommunications, broadcasting, education and developmental communications, and security communications.",
+      "baseline": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Returns only the 2.4.1 heading and unrelated clauses; the four sectors are missing."
+      },
+      "generator": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Returns only the 2.4.1 heading; the four sectors are missing."
+      }
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+      "expected_answer": "The Party which has taken the capacity on lease.",
+      "baseline": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Answers a licensing-renewal question instead of identifying the responsible party; retrieval recall for this question is 0."
+      },
+      "generator": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Repeats the wrong licensing-renewal clause; the generator cannot fix the upstream retrieval miss."
+      }
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+      "expected_answer": "A formal lease agreement signed between the Department of Space/INSAT and the Party.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the correct 2.6.5 clause plus unrelated 2.6.3 and 2.6.2 clauses."
+      },
+      "generator": {
+        "correctness": "correct",
+        "faithfulness": "grounded",
+        "notes": "Correct formal-lease-agreement answer."
+      }
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "question": "How is an Indian Satellite defined in the policy?",
+      "expected_answer": "The satellites which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations, for the actions of which Government of India shall be internationally responsible.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the full definition plus an unrelated authorisation clause and a 3.1 framework clause."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Definition omits the clause making the Government of India internationally responsible."
+      }
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+      "expected_answer": "Three authorizations/licenses are required: an authorisation from the Department of Space, an authorisation by the Wireless Planning and Coordination Wing, and operating licenses for the services.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Says three distinct authorisations are required but does not list them; also includes unrelated clauses."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Says three distinct authorisations are required but does not list them."
+      }
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "question": "Where should the Satellite Control Centre (SCC) be located?",
+      "expected_answer": "Within the territory of India, or at another location authorised by CAISS based on technical requirements.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains the correct 3.6.4 location clause plus unrelated 3.6.5 and 3.6.6 clauses."
+      },
+      "generator": {
+        "correctness": "correct",
+        "faithfulness": "grounded",
+        "notes": "Correct location answer; the expected-answer alternative authorised by CAISS is not present in the selected sentence."
+      }
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+      "expected_answer": "First come first served when other conditions are fulfilled, with priority to government-owned systems in case of conflict; discussions between non-governmental applicants and the Administration to resolve conflicts; if unresolved, a common API is filed and the decision is taken at the AP S4 filing stage or later, depending on progress.",
+      "baseline": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Returns an orbit-spectrum availability announcement and a satellite-licence clause; it does not state the first-come-first-served or conflict procedure."
+      },
+      "generator": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Rewrites the same wrong selected evidence; the conflict procedure is not present in the selected sentences."
+      }
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "question": "What financial information must an applicant provide?",
+      "expected_answer": "Evidence that the Applicant has current financial ability to meet the cost of construction and launch, plus a broad business plan showing intended sources of funding and estimated revenues.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains a truncated financial-ability fragment plus unrelated management and licensing items; the business plan is missing."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "partially_grounded",
+        "notes": "States the core financial-ability claim but completes the truncated source with the generic word 'requirements'; the business plan, construction and launch costs are missing."
+      }
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "question": "How are international satellite communication services defined?",
+      "expected_answer": "International communications include PSTN, GMPCS, Value Added Services, Programme Exchange, where one end of the link terminates in a foreign country; the Maritime Mobile Satellite Service and the Aeronautical Mobile Satellite Service may be treated as international communications.",
+      "baseline": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Returns only a classification heading and unrelated clauses; the definition is missing."
+      },
+      "generator": {
+        "correctness": "incorrect",
+        "faithfulness": "grounded",
+        "notes": "Returns only the classification heading; the definition is missing."
+      }
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "question": "What are the categories of domestic satellite communication services?",
+      "expected_answer": "Broadcasting; Public Switched Telephone Network (domestic); Value Added Services (domestic); Land Mobile Satellite Services (domestic and coastal waters).",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Lists three of the four categories; Broadcasting is missing."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Lists three of the four categories; Broadcasting is missing, and the domestic/coastal qualifiers are dropped."
+      }
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+      "expected_answer": "The services shall be authorised only on Indian satellites; if capacity or capability is lacking, operations through foreign satellites may be authorised with permission to shift to Indian satellites when capacity becomes available.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Contains both the shift clause and the Indian-satellite-only clause, plus an unrelated international-communications clause."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Gives only the shift clause; it omits the primary rule that the service shall be authorised only on Indian satellites."
+      }
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+      "expected_answer": "The system must be internationally coordinated for frequency and orbit and security concerns must be fully addressed.",
+      "baseline": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Covers international coordination for frequency and orbit only; security concerns are missing."
+      },
+      "generator": {
+        "correctness": "partial",
+        "faithfulness": "grounded",
+        "notes": "Covers international coordination for frequency and orbit only; security concerns are missing."
+      }
+    }
+  ]
+}
