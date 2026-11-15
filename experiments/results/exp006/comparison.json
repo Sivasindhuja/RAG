@@ -1,0 +1,360 @@
+{
+  "experiment_id": "EXP-006",
+  "baseline_summary": {
+    "question_count": 15,
+    "answered": 15,
+    "abstained": 0,
+    "supported_answers": 12,
+    "statement_count": 45,
+    "supported_statement_count": 15,
+    "statement_support_rate": 0.3333333333333333,
+    "citation_count": 31,
+    "supported_citation_count": 16,
+    "citation_support_rate": 0.5161290322580645
+  },
+  "candidate_summary": {
+    "question_count": 15,
+    "answered": 15,
+    "abstained": 0,
+    "supported_answers": 13,
+    "statement_count": 45,
+    "supported_statement_count": 16,
+    "statement_support_rate": 0.35555555555555557,
+    "citation_count": 32,
+    "supported_citation_count": 17,
+    "citation_support_rate": 0.53125
+  },
+  "decision": {
+    "accepted": false,
+    "checks": {
+      "q10_evidence_covered": true,
+      "q10_supported_statement_present": true,
+      "q10_cites_clause_chunk": true,
+      "q10_all_key_phrases_present": false,
+      "no_non_q10_regressions": true,
+      "supported_answers_not_lower": true,
+      "statement_support_not_lower": true,
+      "citation_support_delta_ge_minus_0_02": true,
+      "abstention_unchanged": true
+    },
+    "q10": {
+      "evidence_covered": true,
+      "supported_statement_present": true,
+      "cites_q10_chunk": true,
+      "key_phrase_hits": {
+        "first come first served": true,
+        "government owned system": true,
+        "priority": false,
+        "discussions with the applicants": true,
+        "common advanced publication of information": true,
+        "ap s4 filing": true
+      },
+      "all_key_phrases_present": false
+    },
+    "regressions": [],
+    "statement_support_delta": 0.0222,
+    "citation_support_delta": 0.0151,
+    "supported_answer_delta": 1
+  },
+  "per_question": [
+    {
+      "question_id": "EXP001-Q01",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "recall@5": 0.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 0,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 0,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 0,
+      "candidate_supported_citations": 0,
+      "baseline_answer_supported": false,
+      "candidate_answer_supported": false,
+      "baseline_covered_evidence_ids": [],
+      "candidate_covered_evidence_ids": [],
+      "missing_evidence_ids": [
+        "EXP001-Q05-E01"
+      ]
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "recall@5": 0.3333,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 0,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 0,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": false,
+      "candidate_answer_supported": false,
+      "baseline_covered_evidence_ids": [],
+      "candidate_covered_evidence_ids": [],
+      "missing_evidence_ids": [
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ]
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "candidate_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 0,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 1,
+      "baseline_supported_citations": 0,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": false,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 3,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 3,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "candidate_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 2,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 2,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "candidate_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "missing_evidence_ids": []
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "recall@5": 1.0,
+      "baseline_statements": 3,
+      "baseline_supported_statements": 1,
+      "candidate_statements": 3,
+      "candidate_supported_statements": 1,
+      "supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "candidate_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "candidate_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "candidate_covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "missing_evidence_ids": []
+    }
+  ]
+}

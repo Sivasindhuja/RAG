@@ -1,0 +1,467 @@
+{
+  "baseline": {
+    "summary": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    },
+    "results": [
+      {
+        "question_id": "UNANS-01",
+        "question": "What is the capital of France?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7416 exceeds hard limit 1.3",
+        "best_distance": 1.7416058152987361,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-02",
+        "question": "Who won the 2022 FIFA World Cup?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7808 exceeds hard limit 1.3",
+        "best_distance": 1.780812719154762,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-03",
+        "question": "What is the current GST rate for restaurant services?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2000 is below 0.5",
+        "best_distance": 1.296390175819397,
+        "token_support": 0.2
+      },
+      {
+        "question_id": "UNANS-04",
+        "question": "How do I apply for an Indian passport?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.1968 needs support >= 0.7 (got 0.6667)",
+        "best_distance": 1.1968429804830043,
+        "token_support": 0.6667
+      },
+      {
+        "question_id": "UNANS-05",
+        "question": "What are the eligibility criteria for opening a bank account?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4218 exceeds hard limit 1.3",
+        "best_distance": 1.4218202364996269,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-06",
+        "question": "What is the boiling point of water at sea level?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.8221 exceeds hard limit 1.3",
+        "best_distance": 1.8221112753365722,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-07",
+        "question": "Which company manufactures the iPhone?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7089 exceeds hard limit 1.3",
+        "best_distance": 1.7088687419891357,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-08",
+        "question": "What is the procedure for filing income tax returns in India?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.2386 needs support >= 0.7 (got 0.5000)",
+        "best_distance": 1.2385502072104817,
+        "token_support": 0.5
+      },
+      {
+        "question_id": "UNANS-09",
+        "question": "What is the interest rate for a home loan?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7956 exceeds hard limit 1.3",
+        "best_distance": 1.79563851675862,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-10",
+        "question": "Which vaccine is recommended for travel to Brazil?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.6844 exceeds hard limit 1.3",
+        "best_distance": 1.6844253694331937,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-11",
+        "question": "What is the speed limit on Indian highways?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2500 is below 0.5",
+        "best_distance": 1.2800906896591187,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-12",
+        "question": "How do I renew a commercial vehicle registration?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4505 exceeds hard limit 1.3",
+        "best_distance": 1.4504731451847257,
+        "token_support": 0.25
+      }
+    ]
+  },
+  "exp007": {
+    "summary": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    },
+    "results": [
+      {
+        "question_id": "UNANS-01",
+        "question": "What is the capital of France?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7416 exceeds hard limit 1.3",
+        "best_distance": 1.7416058152987361,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-02",
+        "question": "Who won the 2022 FIFA World Cup?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7808 exceeds hard limit 1.3",
+        "best_distance": 1.780812719154762,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-03",
+        "question": "What is the current GST rate for restaurant services?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2000 is below 0.5",
+        "best_distance": 1.296390175819397,
+        "token_support": 0.2
+      },
+      {
+        "question_id": "UNANS-04",
+        "question": "How do I apply for an Indian passport?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.1968 needs support >= 0.7 (got 0.6667)",
+        "best_distance": 1.1968429804830043,
+        "token_support": 0.6667
+      },
+      {
+        "question_id": "UNANS-05",
+        "question": "What are the eligibility criteria for opening a bank account?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4218 exceeds hard limit 1.3",
+        "best_distance": 1.4218202364996269,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-06",
+        "question": "What is the boiling point of water at sea level?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.8221 exceeds hard limit 1.3",
+        "best_distance": 1.8221112753365722,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-07",
+        "question": "Which company manufactures the iPhone?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7089 exceeds hard limit 1.3",
+        "best_distance": 1.7088687419891357,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-08",
+        "question": "What is the procedure for filing income tax returns in India?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.2386 needs support >= 0.7 (got 0.5000)",
+        "best_distance": 1.2385502072104817,
+        "token_support": 0.5
+      },
+      {
+        "question_id": "UNANS-09",
+        "question": "What is the interest rate for a home loan?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7956 exceeds hard limit 1.3",
+        "best_distance": 1.79563851675862,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-10",
+        "question": "Which vaccine is recommended for travel to Brazil?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.6844 exceeds hard limit 1.3",
+        "best_distance": 1.6844253694331937,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-11",
+        "question": "What is the speed limit on Indian highways?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2500 is below 0.5",
+        "best_distance": 1.2800906896591187,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-12",
+        "question": "How do I renew a commercial vehicle registration?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4505 exceeds hard limit 1.3",
+        "best_distance": 1.4504731451847257,
+        "token_support": 0.25
+      }
+    ]
+  },
+  "exp006_only": {
+    "summary": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    },
+    "results": [
+      {
+        "question_id": "UNANS-01",
+        "question": "What is the capital of France?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7416 exceeds hard limit 1.3",
+        "best_distance": 1.7416058152987361,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-02",
+        "question": "Who won the 2022 FIFA World Cup?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7808 exceeds hard limit 1.3",
+        "best_distance": 1.780812719154762,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-03",
+        "question": "What is the current GST rate for restaurant services?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2000 is below 0.5",
+        "best_distance": 1.296390175819397,
+        "token_support": 0.2
+      },
+      {
+        "question_id": "UNANS-04",
+        "question": "How do I apply for an Indian passport?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.1968 needs support >= 0.7 (got 0.6667)",
+        "best_distance": 1.1968429804830043,
+        "token_support": 0.6667
+      },
+      {
+        "question_id": "UNANS-05",
+        "question": "What are the eligibility criteria for opening a bank account?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4218 exceeds hard limit 1.3",
+        "best_distance": 1.4218202364996269,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-06",
+        "question": "What is the boiling point of water at sea level?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.8221 exceeds hard limit 1.3",
+        "best_distance": 1.8221112753365722,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-07",
+        "question": "Which company manufactures the iPhone?",
+        "split": "calibration",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7089 exceeds hard limit 1.3",
+        "best_distance": 1.7088687419891357,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-08",
+        "question": "What is the procedure for filing income tax returns in India?",
+        "split": "calibration",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.2386 needs support >= 0.7 (got 0.5000)",
+        "best_distance": 1.2385502072104817,
+        "token_support": 0.5
+      },
+      {
+        "question_id": "UNANS-09",
+        "question": "What is the interest rate for a home loan?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.7956 exceeds hard limit 1.3",
+        "best_distance": 1.79563851675862,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-10",
+        "question": "Which vaccine is recommended for travel to Brazil?",
+        "split": "heldout",
+        "category": "clearly_out_of_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.6844 exceeds hard limit 1.3",
+        "best_distance": 1.6844253694331937,
+        "token_support": 0.0
+      },
+      {
+        "question_id": "UNANS-11",
+        "question": "What is the speed limit on Indian highways?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "lexical support 0.2500 is below 0.5",
+        "best_distance": 1.2800906896591187,
+        "token_support": 0.25
+      },
+      {
+        "question_id": "UNANS-12",
+        "question": "How do I renew a commercial vehicle registration?",
+        "split": "heldout",
+        "category": "near_domain",
+        "status": "abstained",
+        "abstained": true,
+        "reason": "best distance 1.4505 exceeds hard limit 1.3",
+        "best_distance": 1.4504731451847257,
+        "token_support": 0.25
+      }
+    ]
+  }
+}

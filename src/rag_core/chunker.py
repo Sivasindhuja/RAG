@@ -590,21 +590,47 @@ class FixedCharacterChunker:
         start: int,
         end: int,
     ) -> Tuple[Optional[str], Optional[str], Optional[Tuple[str, ...]], Optional[str]]:
+        """Return chunk-level context metadata.
+
+        Fixed-character windows may start mid-clause or span multiple clauses. Use
+        the governing heading at the chunk start (last heading with start <= chunk
+        start) when available; fall back to the first heading inside the chunk.
+        This avoids labeling a chunk by a later clause that appears only at its end.
+        """
         inside = [heading for heading in headings if start <= heading.start < end]
-        article_heading = next((heading for heading in inside if heading.kind == "article"), None)
-        section_heading = next((heading for heading in inside if heading.kind == "section"), None)
-        if section_heading is not None:
+        before_or_at = [heading for heading in headings if heading.start <= start]
+        governing = before_or_at[-1] if before_or_at else (inside[0] if inside else None)
+        if governing is None:
+            return (None, None, None, None)
+
+        # Prefer most specific governing section/clause; article heading provides
+        # article context when chunk starts at/past article and before any clause.
+        if governing.kind == "section":
             return (
-                section_heading.article_id,
-                section_heading.section_id,
-                section_heading.hierarchy,
-                section_heading.heading_text or None,
+                governing.article_id,
+                governing.section_id,
+                governing.hierarchy,
+                governing.heading_text or None,
             )
+
+        # Article governing: keep article, but if a clause starts inside the chunk,
+        # expose that clause as chunk metadata (common for chunks beginning at
+        # article boundary) only when chunk start is at/after article and before
+        # clause? No - clause inside is fine to mention if chunk starts at article.
+        first_section_inside = next((h for h in inside if h.kind == "section"), None)
+        if first_section_inside is not None and start <= first_section_inside.start:
+            return (
+                first_section_inside.article_id or governing.article_id,
+                first_section_inside.section_id,
+                first_section_inside.hierarchy,
+                first_section_inside.heading_text or None,
+            )
+
         return (
-            article_heading.article_id if article_heading else None,
+            governing.article_id,
             None,
             None,
-            article_heading.heading_text if article_heading else None,
+            governing.heading_text or None,
         )
 
     def chunk(self, document: SourceDocument) -> List[Chunk]:

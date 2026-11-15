@@ -1,0 +1,38 @@
+{
+  "experiment_id": "EXP-008",
+  "changed_variable": "selection/ranking only: definition_intent_boost",
+  "hypothesis": "For definitional-intent questions, boost candidates containing definitional/explanatory markers with query-content overlap.",
+  "arms": {
+    "baseline": {
+      "definition_intent_boost": false
+    },
+    "exp008": {
+      "definition_intent_boost": true
+    },
+    "exp006_only": {
+      "cross_reference_selection": true,
+      "note": "separate, not combined"
+    },
+    "exp007_only": {
+      "associated_heading_units": true,
+      "note": "separate, not combined"
+    }
+  },
+  "frozen": [
+    "pdf",
+    "questions",
+    "ground_truth",
+    "chunking",
+    "embeddings",
+    "retrieval_hits",
+    "top_k",
+    "answer_caps",
+    "citations",
+    "abstention",
+    "metrics",
+    "exp003_sibling_ratio"
+  ],
+  "build_stats": {
+    "chunks": 49
+  }
+}

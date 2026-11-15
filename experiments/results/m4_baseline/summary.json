@@ -1,0 +1,58 @@
+{
+  "config": {
+    "mode": "extractive",
+    "k": 5,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "collection": "satcom_ngp_production_fixed_char",
+    "defaults": {
+      "exp003_sibling_ratio": 0.5,
+      "answerability_threshold": 0.5,
+      "cross_reference_selection": false,
+      "associated_heading_units": false,
+      "definition_intent_boost": false
+    }
+  },
+  "answerable": {
+    "count": 15,
+    "answered": 14,
+    "abstained": 1,
+    "supported_answers": 12,
+    "supported_answer_rate": 0.8,
+    "statement_support_rate": 0.3333,
+    "citation_support_rate": 0.5161,
+    "retrieval": {
+      "mean_recall@5": 0.8889,
+      "mean_precision@5": 0.2533,
+      "mean_mrr@5": 0.7944
+    }
+  },
+  "unanswerable": {
+    "count": 12,
+    "correct_abstentions": 12,
+    "abstention_accuracy": 1.0
+  },
+  "latency_ms": {
+    "total": {
+      "count": 27,
+      "mean": 658.412,
+      "p50": 19.704,
+      "p95": 22.648,
+      "max": 17265.834
+    },
+    "retrieval": {
+      "count": 15,
+      "mean": 1168.481,
+      "p50": 18.911,
+      "p95": 5194.283,
+      "max": 17263.756
+    },
+    "selection_and_extractive": {
+      "count": 15,
+      "mean": 1.655,
+      "p50": 1.606,
+      "p95": 2.003,
+      "max": 2.078
+    }
+  },
+  "notes": "Baseline measured on preserved datasets; not a production-quality claim. Thresholds must be derived from measured baselines, not set arbitrarily."
+}

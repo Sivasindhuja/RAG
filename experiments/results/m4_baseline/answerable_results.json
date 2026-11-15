@@ -1,0 +1,1236 @@
+[
+  {
+    "id": "EXP001-Q01",
+    "question": "Which satellite systems receive preferential treatment for operations from Indian soil?",
+    "type": "answerable",
+    "expected_answer": "Proposals using Indian satellites are given preferential treatment over foreign satellites.",
+    "relevant_clause_ids": [
+      "ARTICLE-1"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.25,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        0,
+        300,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_1::chunk_0::off2",
+          "evidence_ids": [
+            "EXP001-Q01-E01"
+          ],
+          "overlap_chars": 300
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q01-E01": {
+          "covered": true,
+          "best_rank": 4,
+          "overlap_chars": 300,
+          "clause_id": "ARTICLE-1"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 17263.756,
+      "selection_and_extractive": 2.078
+    },
+    "total_ms": 17265.834,
+    "request_id": "e8daf3ac-ee4f-411c-8f8e-32198e824a06"
+  },
+  {
+    "id": "EXP001-Q02",
+    "question": "On what basis should INSAT capacity be made available to the commercial sector?",
+    "type": "answerable",
+    "expected_answer": "The INSAT capacity should be made available to the commercial sector on the basis of sound business lines, i.e. on a for-profit basis.",
+    "relevant_clause_ids": [
+      "2.3.1"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        266,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "evidence_ids": [
+            "EXP001-Q02-E01"
+          ],
+          "overlap_chars": 266
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q02-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 266,
+          "clause_id": "2.3.1"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 3,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 3,
+      "valid_citation_count": 3,
+      "statement_count": 3,
+      "selected_evidence_count": 3,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 18.911,
+      "selection_and_extractive": 1.606
+    },
+    "total_ms": 20.517,
+    "request_id": "4ca7ca19-8eeb-4f16-89f7-a5cc2d39bf16"
+  },
+  {
+    "id": "EXP001-Q03",
+    "question": "Who determines policies regarding the INSAT system?",
+    "type": "answerable",
+    "expected_answer": "The INSAT Coordination Committee (ICC).",
+    "relevant_clause_ids": [
+      "2.3.2"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        178,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_2::chunk_2::off4117",
+          "evidence_ids": [
+            "EXP001-Q03-E01"
+          ],
+          "overlap_chars": 178
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q03-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 178,
+          "clause_id": "2.3.2"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 17.641,
+      "selection_and_extractive": 1.575
+    },
+    "total_ms": 19.216,
+    "request_id": "d1e67961-a3ed-46c7-84f2-70c488ddfbc9"
+  },
+  {
+    "id": "EXP001-Q04",
+    "question": "What are the broad classifications of INSAT user sectors?",
+    "type": "answerable",
+    "expected_answer": "Telecommunications, broadcasting, education and developmental communications, and security communications.",
+    "relevant_clause_ids": [
+      "2.4.1"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        198,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_3::chunk_0::off4699",
+          "evidence_ids": [
+            "EXP001-Q04-E01"
+          ],
+          "overlap_chars": 198
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q04-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 198,
+          "clause_id": "2.4.1"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 18.558,
+      "selection_and_extractive": 1.528
+    },
+    "total_ms": 20.086,
+    "request_id": "c64be947-d129-4087-a963-b42d2f40e909"
+  },
+  {
+    "id": "EXP001-Q05",
+    "question": "Who is responsible for obtaining licenses to offer services in a territory?",
+    "type": "answerable",
+    "expected_answer": "The Party which has taken the capacity on lease.",
+    "relevant_clause_ids": [
+      "2.5.6"
+    ],
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "insufficient_selected_evidence:selected_lexical_support=0.3333<threshold=0.5",
+    "retrieval": {
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr@5": 0.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [],
+      "required_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "covered_evidence_ids": [],
+      "missing_evidence_ids": [
+        "EXP001-Q05-E01"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q05-E01": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "2.5.6"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": false,
+      "statement_count": 3,
+      "supported_statement_count": 0,
+      "citation_count": 2,
+      "supported_citation_count": 0
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 18.369,
+      "selection_and_extractive": 1.415
+    },
+    "total_ms": 19.784,
+    "request_id": "864df0f1-3b09-453a-939c-3781778c5214"
+  },
+  {
+    "id": "EXP001-Q06",
+    "question": "What agreement governs the use of INSAT capacity by non-governmental parties?",
+    "type": "answerable",
+    "expected_answer": "A formal lease agreement signed between the Department of Space/INSAT and the Party.",
+    "relevant_clause_ids": [
+      "2.6.5"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        241,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_4::chunk_2::off8465",
+          "evidence_ids": [
+            "EXP001-Q06-E01"
+          ],
+          "overlap_chars": 241
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q06-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 241,
+          "clause_id": "2.6.5"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 19.876,
+      "selection_and_extractive": 1.357
+    },
+    "total_ms": 21.233,
+    "request_id": "b5b3ae52-6c36-48c0-b49a-9cfbcf030d4f"
+  },
+  {
+    "id": "EXP001-Q07",
+    "question": "How is an Indian Satellite defined in the policy?",
+    "type": "answerable",
+    "expected_answer": "The satellites which are informed, coordinated, registered and notified by the Indian Administration following the International Telecommunications Union (ITU) Radio Regulations, for the actions of which Government of India shall be internationally responsible.",
+    "relevant_clause_ids": [
+      "3.2"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        447,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_5::chunk_1::off10388",
+          "evidence_ids": [
+            "EXP001-Q07-E01"
+          ],
+          "overlap_chars": 447
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q07-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 447,
+          "clause_id": "3.2"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 16.81,
+      "selection_and_extractive": 1.971
+    },
+    "total_ms": 18.781,
+    "request_id": "2583a4d5-6578-4bda-be98-78fd92fa7d85"
+  },
+  {
+    "id": "EXP001-Q08",
+    "question": "What authorisations or licenses are required to establish an Indian Satellite System?",
+    "type": "answerable",
+    "expected_answer": "Three authorizations/licenses are required: an authorisation from the Department of Space, an authorisation by the Wireless Planning and Coordination Wing, and operating licenses for the services.",
+    "relevant_clause_ids": [
+      "3.4.1",
+      "3.4.2",
+      "3.4.3"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 0.3333,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        139,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_5::chunk_2::off11188",
+          "evidence_ids": [
+            "EXP001-Q08-E01"
+          ],
+          "overlap_chars": 139
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q08-E01",
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q08-E01"
+      ],
+      "missing_evidence_ids": [
+        "EXP001-Q08-E02",
+        "EXP001-Q08-E03"
+      ],
+      "evidence_coverage": {
+        "EXP001-Q08-E01": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 139,
+          "clause_id": "3.4.1"
+        },
+        "EXP001-Q08-E02": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.2"
+        },
+        "EXP001-Q08-E03": {
+          "covered": false,
+          "best_rank": null,
+          "overlap_chars": 0,
+          "clause_id": "3.4.3"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": false,
+      "statement_count": 3,
+      "supported_statement_count": 0,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 17.89,
+      "selection_and_extractive": 1.787
+    },
+    "total_ms": 19.677,
+    "request_id": "31c1b6ad-6f63-4f4a-831c-96b858165efd"
+  },
+  {
+    "id": "EXP001-Q09",
+    "question": "Where should the Satellite Control Centre (SCC) be located?",
+    "type": "answerable",
+    "expected_answer": "Within the territory of India, or at another location authorised by CAISS based on technical requirements.",
+    "relevant_clause_ids": [
+      "3.6.4"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        280,
+        295,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_7::chunk_2::off16530",
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "overlap_chars": 280
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_7::chunk_1::off15730",
+          "evidence_ids": [
+            "EXP001-Q09-E01"
+          ],
+          "overlap_chars": 295
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q09-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 575,
+          "clause_id": "3.6.4"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 2
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 17.895,
+      "selection_and_extractive": 1.792
+    },
+    "total_ms": 19.687,
+    "request_id": "598c88cb-bd40-4cb8-a981-dea6e972db77"
+  },
+  {
+    "id": "EXP001-Q10",
+    "question": "What is the procedure when multiple applicants request the same orbit-spectrum in new or unplanned bands?",
+    "type": "answerable",
+    "expected_answer": "First come first served when other conditions are fulfilled, with priority to government-owned systems in case of conflict; discussions between non-governmental applicants and the Administration to resolve conflicts; if unresolved, a common API is filed and the decision is taken at the AP S4 filing stage or later, depending on progress.",
+    "relevant_clause_ids": [
+      "3.6.8"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 0.3333,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        0,
+        0,
+        720,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_8::chunk_0::off17796",
+          "evidence_ids": [
+            "EXP001-Q10-E01"
+          ],
+          "overlap_chars": 720
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q10-E01": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 720,
+          "clause_id": "3.6.8"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": false,
+      "statement_count": 3,
+      "supported_statement_count": 0,
+      "citation_count": 2,
+      "supported_citation_count": 0
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 21.652,
+      "selection_and_extractive": 1.376
+    },
+    "total_ms": 23.028,
+    "request_id": "886aec2b-f804-4599-9bbc-f5076c81d908"
+  },
+  {
+    "id": "EXP001-Q11",
+    "question": "What financial information must an applicant provide?",
+    "type": "answerable",
+    "expected_answer": "Evidence that the Applicant has current financial ability to meet the cost of construction and launch, plus a broad business plan showing intended sources of funding and estimated revenues.",
+    "relevant_clause_ids": [
+      "3.7.1.5"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        69,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_9::chunk_0::off20403",
+          "evidence_ids": [
+            "EXP001-Q11-E01"
+          ],
+          "overlap_chars": 69
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q11-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 69,
+          "clause_id": "3.7.1.5"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 1,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 1,
+      "valid_citation_count": 1,
+      "statement_count": 3,
+      "selected_evidence_count": 1,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 18.977,
+      "selection_and_extractive": 1.642
+    },
+    "total_ms": 20.619,
+    "request_id": "3b217db3-1f85-45f4-936e-b8681665398a"
+  },
+  {
+    "id": "EXP001-Q12",
+    "question": "How are international satellite communication services defined?",
+    "type": "answerable",
+    "expected_answer": "International communications include PSTN, GMPCS, Value Added Services, Programme Exchange, where one end of the link terminates in a foreign country; the Maritime Mobile Satellite Service and the Aeronautical Mobile Satellite Service may be treated as international communications.",
+    "relevant_clause_ids": [
+      "4.2"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        529,
+        753,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "overlap_chars": 529
+        },
+        {
+          "rank": 2,
+          "chunk_id": "satcom-ngp::page_13::chunk_0::off30178",
+          "evidence_ids": [
+            "EXP001-Q12-E01"
+          ],
+          "overlap_chars": 753
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q12-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 1282,
+          "clause_id": "4.2"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 17.968,
+      "selection_and_extractive": 1.785
+    },
+    "total_ms": 19.753,
+    "request_id": "9e18f014-7394-47a6-9b69-d0c5f279fac5"
+  },
+  {
+    "id": "EXP001-Q13",
+    "question": "What are the categories of domestic satellite communication services?",
+    "type": "answerable",
+    "expected_answer": "Broadcasting; Public Switched Telephone Network (domestic); Value Added Services (domestic); Land Mobile Satellite Services (domestic and coastal waters).",
+    "relevant_clause_ids": [
+      "4.3.1",
+      "4.3.2",
+      "4.3.3",
+      "4.3.4"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        true,
+        true,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        195,
+        0,
+        183,
+        701,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_13::chunk_1::off30978",
+          "evidence_ids": [
+            "EXP001-Q13-E01"
+          ],
+          "overlap_chars": 195
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_0::off32496",
+          "evidence_ids": [
+            "EXP001-Q13-E04"
+          ],
+          "overlap_chars": 183
+        },
+        {
+          "rank": 4,
+          "chunk_id": "satcom-ngp::page_13::chunk_2::off31778",
+          "evidence_ids": [
+            "EXP001-Q13-E01",
+            "EXP001-Q13-E02",
+            "EXP001-Q13-E03"
+          ],
+          "overlap_chars": 701
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q13-E01",
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q13-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 577,
+          "clause_id": "4.3.1"
+        },
+        "EXP001-Q13-E02": {
+          "covered": true,
+          "best_rank": 4,
+          "overlap_chars": 281,
+          "clause_id": "4.3.2"
+        },
+        "EXP001-Q13-E03": {
+          "covered": true,
+          "best_rank": 4,
+          "overlap_chars": 38,
+          "clause_id": "4.3.3"
+        },
+        "EXP001-Q13-E04": {
+          "covered": true,
+          "best_rank": 3,
+          "overlap_chars": 183,
+          "clause_id": "4.3.4"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 3,
+      "citation_count": 2,
+      "supported_citation_count": 2
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 19.145,
+      "selection_and_extractive": 1.593
+    },
+    "total_ms": 20.738,
+    "request_id": "0f921f93-b1be-4ffd-a8ad-0eb5cde2bab7"
+  },
+  {
+    "id": "EXP001-Q14",
+    "question": "What happens when Indian satellites have the capacity and capability to provide a domestic service proposed through a foreign satellite?",
+    "type": "answerable",
+    "expected_answer": "The services shall be authorised only on Indian satellites; if capacity or capability is lacking, operations through foreign satellites may be authorised with permission to shift to Indian satellites when capacity becomes available.",
+    "relevant_clause_ids": [
+      "4.4.3"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        true,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        395,
+        0,
+        343,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_14::chunk_2::off34096",
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "overlap_chars": 395
+        },
+        {
+          "rank": 3,
+          "chunk_id": "satcom-ngp::page_14::chunk_1::off33296",
+          "evidence_ids": [
+            "EXP001-Q14-E01"
+          ],
+          "overlap_chars": 343
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q14-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 738,
+          "clause_id": "4.4.3"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 2,
+      "citation_count": 3,
+      "supported_citation_count": 2
+    },
+    "citation_structural": {
+      "citation_count": 3,
+      "valid_citation_count": 3,
+      "statement_count": 3,
+      "selected_evidence_count": 3,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 19.436,
+      "selection_and_extractive": 1.889
+    },
+    "total_ms": 21.325,
+    "request_id": "32ee6a62-7c66-49e1-9326-10f4d135acb7"
+  },
+  {
+    "id": "EXP001-Q15",
+    "question": "What must be ensured before an operating license is issued for a foreign satellite system?",
+    "type": "answerable",
+    "expected_answer": "The system must be internationally coordinated for frequency and orbit and security concerns must be fully addressed.",
+    "relevant_clause_ids": [
+      "4.4.6"
+    ],
+    "response_status": "answered",
+    "abstained": false,
+    "abstention_reason": null,
+    "retrieval": {
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr@5": 1.0,
+      "retrieved_count": 5,
+      "relevant_flags": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "overlap_chars_by_rank": [
+        198,
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence_overlaps": [
+        {
+          "rank": 1,
+          "chunk_id": "satcom-ngp::page_15::chunk_0::off35187",
+          "evidence_ids": [
+            "EXP001-Q15-E01"
+          ],
+          "overlap_chars": 198
+        }
+      ],
+      "required_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "missing_evidence_ids": [],
+      "evidence_coverage": {
+        "EXP001-Q15-E01": {
+          "covered": true,
+          "best_rank": 1,
+          "overlap_chars": 198,
+          "clause_id": "4.4.6"
+        }
+      }
+    },
+    "answer_support": {
+      "answer_supported": true,
+      "statement_count": 3,
+      "supported_statement_count": 1,
+      "citation_count": 2,
+      "supported_citation_count": 1
+    },
+    "citation_structural": {
+      "citation_count": 2,
+      "valid_citation_count": 2,
+      "statement_count": 3,
+      "selected_evidence_count": 2,
+      "citation_structural_valid_rate": 1.0
+    },
+    "timings_ms": {
+      "retrieval": 20.33,
+      "selection_and_extractive": 1.43
+    },
+    "total_ms": 21.76,
+    "request_id": "33d2ded9-ba71-4a7c-a8ad-1576a26833f8"
+  }
+]

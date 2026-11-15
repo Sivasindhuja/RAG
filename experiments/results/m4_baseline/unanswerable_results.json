@@ -1,0 +1,218 @@
+[
+  {
+    "id": "UNANS-01",
+    "question": "What is the capital of France?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.7416 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 18.176,
+      "selection_and_extractive": 0.251
+    },
+    "total_ms": 18.427,
+    "request_id": "a3e14840-c147-4e7c-96f2-56b028ba5e3b"
+  },
+  {
+    "id": "UNANS-02",
+    "question": "Who won the 2022 FIFA World Cup?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.7808 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 18.92,
+      "selection_and_extractive": 0.325
+    },
+    "total_ms": 19.245,
+    "request_id": "2b3b19d3-b793-4ece-9c2b-a5acc2450403"
+  },
+  {
+    "id": "UNANS-03",
+    "question": "What is the current GST rate for restaurant services?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "near_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "lexical support 0.2000 is below 0.5",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 16.954,
+      "selection_and_extractive": 0.258
+    },
+    "total_ms": 17.212,
+    "request_id": "cc621448-e127-48aa-832e-fa701e1c7378"
+  },
+  {
+    "id": "UNANS-04",
+    "question": "How do I apply for an Indian passport?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "near_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.1968 needs support >= 0.7 (got 0.6667)",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 17.632,
+      "selection_and_extractive": 0.319
+    },
+    "total_ms": 17.951,
+    "request_id": "bb119a48-3082-40b1-8270-49b1ffc36d74"
+  },
+  {
+    "id": "UNANS-05",
+    "question": "What are the eligibility criteria for opening a bank account?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.4218 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 18.347,
+      "selection_and_extractive": 0.267
+    },
+    "total_ms": 18.614,
+    "request_id": "a02f3d2d-e321-4a11-9171-9a79ac6fd8fb"
+  },
+  {
+    "id": "UNANS-06",
+    "question": "What is the boiling point of water at sea level?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.8221 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 19.468,
+      "selection_and_extractive": 0.236
+    },
+    "total_ms": 19.704,
+    "request_id": "e7fabc69-05ea-437f-ac22-74ab024484c5"
+  },
+  {
+    "id": "UNANS-07",
+    "question": "Which company manufactures the iPhone?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.7089 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 19.123,
+      "selection_and_extractive": 0.285
+    },
+    "total_ms": 19.408,
+    "request_id": "873e082c-efba-49fd-a402-c03c9e4db2b2"
+  },
+  {
+    "id": "UNANS-08",
+    "question": "What is the procedure for filing income tax returns in India?",
+    "type": "unanswerable_out_of_scope",
+    "split": "calibration",
+    "category": "near_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.2386 needs support >= 0.7 (got 0.5000)",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 21.101,
+      "selection_and_extractive": 0.272
+    },
+    "total_ms": 21.373,
+    "request_id": "98d9e2df-96b4-40f4-953a-9322fd665bb1"
+  },
+  {
+    "id": "UNANS-09",
+    "question": "What is the interest rate for a home loan?",
+    "type": "unanswerable_out_of_scope",
+    "split": "heldout",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.7956 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 19.771,
+      "selection_and_extractive": 0.267
+    },
+    "total_ms": 20.038,
+    "request_id": "198de6a4-7ea2-46b9-82c7-0bbffd55c4a5"
+  },
+  {
+    "id": "UNANS-10",
+    "question": "Which vaccine is recommended for travel to Brazil?",
+    "type": "unanswerable_out_of_scope",
+    "split": "heldout",
+    "category": "clearly_out_of_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.6844 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 17.745,
+      "selection_and_extractive": 0.233
+    },
+    "total_ms": 17.978,
+    "request_id": "3abcda88-2cd5-4d12-bd4b-36d3761a2301"
+  },
+  {
+    "id": "UNANS-11",
+    "question": "What is the speed limit on Indian highways?",
+    "type": "unanswerable_out_of_scope",
+    "split": "heldout",
+    "category": "near_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "lexical support 0.2500 is below 0.5",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 17.203,
+      "selection_and_extractive": 0.299
+    },
+    "total_ms": 17.502,
+    "request_id": "d1f7565e-3cc0-475c-8423-856f148ce9fa"
+  },
+  {
+    "id": "UNANS-12",
+    "question": "How do I renew a commercial vehicle registration?",
+    "type": "unanswerable_out_of_scope",
+    "split": "heldout",
+    "category": "near_domain",
+    "abstention_expected": true,
+    "response_status": "abstained",
+    "abstained": true,
+    "abstention_reason": "best distance 1.4505 exceeds hard limit 1.3",
+    "correct_abstention": true,
+    "timings_ms": {
+      "retrieval": 17.361,
+      "selection_and_extractive": 0.278
+    },
+    "total_ms": 17.639,
+    "request_id": "d8344bd5-ddbf-47a6-9237-6ca401766b8b"
+  }
+]

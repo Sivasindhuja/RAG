@@ -1,0 +1,17 @@
+{
+  "normalized_q10_checks": {
+    "evidence_covered": true,
+    "supported_statement_present": true,
+    "cites_q10_chunk": true,
+    "key_phrase_hits": {
+      "first come first served": true,
+      "government owned system": true,
+      "priority": true,
+      "discussions with the applicants": true,
+      "common advanced publication of information": true,
+      "ap s4 filing": true
+    },
+    "all_key_phrases_present": true
+  },
+  "note": "Evaluator normalization updated to tolerate PDF whitespace artifacts (e.g. prio rity). Original exp006 comparison/summary preserved as decision history."
+}

@@ -1,0 +1,55 @@
+{
+  "experiment_id": "EXP-006",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "chunking": {
+    "strategy": "fixed_character",
+    "chunk_size": 1000,
+    "overlap": 200,
+    "chunk_count": 49
+  },
+  "retrieval": {
+    "method": "dense_vector_similarity",
+    "top_k": 5,
+    "changed": false
+  },
+  "selection": {
+    "sibling_score_ratio": 0.5,
+    "policy": {
+      "hard_max_distance": 1.3,
+      "soft_max_distance": 1.1,
+      "min_token_support": 0.5,
+      "strict_min_token_support": 0.7
+    }
+  },
+  "arms": {
+    "baseline": {
+      "cross_reference_selection": false
+    },
+    "candidate": {
+      "cross_reference_selection": true
+    }
+  },
+  "frozen": [
+    "pdf",
+    "questions",
+    "ground_truth",
+    "chunking",
+    "embeddings",
+    "retrieval_hits",
+    "top_k",
+    "citations",
+    "abstention",
+    "metrics"
+  ],
+  "decision_rule": {
+    "q10_evidence_covered": true,
+    "q10_supported_statement_present": true,
+    "q10_cites_clause_chunk": true,
+    "q10_all_key_phrases_present": false,
+    "no_non_q10_regressions": true,
+    "supported_answers_not_lower": true,
+    "statement_support_not_lower": true,
+    "citation_support_delta_ge_minus_0_02": true,
+    "abstention_unchanged": true
+  }
+}

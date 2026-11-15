@@ -944,6 +944,107 @@ remained covered by a merged 4.4.3+body statement.
 it creates the required unit but lexical/context ranking still does not select it.
 Production remains EXP-003. See `docs/EXP-005.md` and `experiments/results/exp005/`.
 
+
+### DR-016 — Cross-reference applicability selection investigated; accepted as opt-in candidate (EXP-006)
+
+**Date.** 2026-11-14 (investigation/run), 2026-11-15 (review/evaluator normalization).
+
+**Review decision (2026-11-15).** Accepted as successful opt-in candidate; **EXP-003 remains production default** and `cross_reference_selection` not promoted globally. Before EXP-007: fixed Q10 phrase-check normalization in `experiments/exp006.py` evaluator to tolerate PDF whitespace artifacts (e.g. `prio rity`) while preserving original source text and ground truth; added `experiments/results/exp006/normalized_review.json` (`all_key_phrases_present=true` under normalization). Original EXP-006 artifacts/decision history preserved (`comparison.json`/`summary.md` unchanged). Complete test suite on working tree: **97 passed, 27 warnings** (`python -m pytest tests -q`, ~83s, 2026-11-15).
+
+**Date.** 2026-11-14.
+
+**Context.** Live M1 (DR-015) left BL-003/Q10 open: retrieval fixed (`Recall@5 = 1.0`, 3.6.8 at rank 3) but selected evidence wrong; EXP-003 selector returned 0/3 supported statements and M1 Gemini abstained. User requested one controlled investigation, selection-only.
+
+**Root cause (established before implementation).**
+1. Q10 asks for procedure when multiple applicants request same orbit-spectrum in new or unplanned bands. Required procedure is 3.6.8 (`EXP001-Q10-E01`, `satcom-ngp::page_8::chunk_0::off17796`, offsets 17802–18522).
+2. Highest lexical evidence is 3.6.7(a)-(e) list (rank 1, score 11.323) containing “(a) for new orbit-spectrum…” and “(b) in the unplanned bands…”. Clause 3.6.8 states “For 3.6.7(a) and 3.6.7(b)…” and gives the procedure but does not repeat those terms.
+3. Sentence units fragmented 3.6.8; its body procedure sentences scored low (best ~3.414) and were outranked by 3.6.7 list, 3.6.10 (6.790), 3.6.11 (3.375) etc. 3.6.8 chunk not cited; 0 evidence covered.
+
+**Hypothesis.** Document-grounded applicability cross-references (`^(\d+(?:\.\d+)+)\s+For\s+\d+(?:\.\d+)+` with subclause refs such as `(a),(b)`) link to query-relevant conditions present in retrieved segments (e.g. 3.6.7(a)/(b) list items matching new/unplanned bands). Promote matching applicability clause together with contiguous body as one verbatim answer unit (general rule, no Q10-specific logic).
+
+**Controlled variable.** Selection only: EXP-003 baseline (`cross_reference_selection=False`, default) vs candidate (`cross_reference_selection=True`, opt-in). Frozen: PDF, questions, 20 evidence units, fixed-character 1000/200 chunks, MiniLM embeddings, dense top-5 retrieval/precomputed hits, sibling ratio 0.5, answer caps, citations, abstention, metrics. No Gemini evaluation.
+
+**Implementation.** `src/rag_core/pipeline.py`: added `cross_reference_selection` parameter (default `False`) and `_apply_cross_reference_selection`. Candidate identifies query-relevant submarkers from retrieved segments (meaningful overlap: >=2 query tokens or weighted segment score >=4.0), finds numbered applicability clauses whose referenced submarkers intersect them, merges clause start + contiguous body (until next clause start) into a single exact source span, suppresses components, promotes unit near top score (0.95 * top direct score). `experiments/exp006.py` and `experiments/results/exp006/*` record config, audit, retrieval, answers, abstention, comparison, CSV, summary.
+
+**Results.**
+| Measure | Baseline | Candidate | Delta |
+|---|---:|---:|---:|
+| Supported answers | 12/15 | 13/15 | +1 |
+| Supported statements | 15/45 (0.3333) | 16/45 (0.3556) | +1 |
+| Supported citations | 16/31 (0.5161) | 17/32 (0.5312) | +1 |
+| Abstention (12/12) | 12/12 | 12/12 | 0 |
+
+Q10: baseline 0/3 supported, no evidence covered, 3.6.8 not cited. Candidate 1/3 supported, covers `EXP001-Q10-E01`, cites `satcom-ngp::page_8::chunk_0::off17796` (3.6.8, offsets 17802–18522), and selects full merged 3.6.8 procedure including first come first served, government-owned-system priority, discussions with applicants, common Advanced Publication of Information, and AP S4 filing/later decision. Automated key-phrase check flagged `priority` as missing because extracted text contains `prio rity` (PDF whitespace artifact); procedure element is present. Only Q10 changed; no non-Q10 regressions in supported statements/citations/answer support/covered evidence.
+
+**Decision.** **Accepted as opt-in candidate; not promoted to production default.** Substantive acceptance criteria met (required evidence covered, supported statement/citation correct, full procedure traceable, no regressions, abstention unchanged, aggregate improved). Automated script marked REJECTED on formatting-artifact phrase check; recorded as evaluation-note, not a content failure. **EXP-003 remains production default** pending explicit promotion review/sign-off on the 15-question set (BL-017). See `docs/EXP-006.md`.
+
+**Trade-offs/limits.** Lexical/heuristic submarker relevance and promotion thresholds; merges applicability body into one unit (granularity/count effects possible elsewhere); small evaluation set; does not fix retrieval misses (BL-001/002) or heading-only units (BL-004/005).
+
+### EXP-006 — Cross-reference applicability selection for Q10 (accepted as opt-in candidate)
+
+**Role.** Controlled selection-only experiment addressing Q10 evidence-selection failure (retrieval correct, EXP-003 selection wrong).
+
+**Acceptance.** Substantive checks passed: Q10 evidence covered/supported/correct citation/full procedure present; no non-Q10 regressions; supported answers and statement support not lower; citation delta +0.0151 (>= -0.02); abstention 12/12 unchanged. Automated `all_key_phrases_present` failed only on `priority` vs extracted `prio rity` artifact. Kept opt-in; production default unchanged.
+
+**Not fixed by EXP-006.** BL-001 (Q05 retrieval), BL-002 (Q08 retrieval), BL-004 (Q04 heading+list), BL-005 (Q12 heading+definition), BL-017 (small set). Gemini not rerun.
+
+
+
+
+### DR-017 — Heading-introduced associated answer units investigated; rejected for promotion (EXP-007)
+
+**Date.** 2026-11-15.
+
+**Context.** M1/EXP-006 left BL-004 (Q04 heading-only, omitted four classifications) and BL-005 (Q12 missing international-services definition elements) open. Controlled investigation requested: selection/answer-unit only, frozen retrieval/embeddings/chunking/ground truth/precomputed hits/top-k/EXP-003 settings/evaluation; full 15q regression + 12q abstention; EXP-006 kept separate (not combined); no Gemini.
+
+**Diagnosis (recorded before implementation).**
+- **Q04 (Recall@5 1.0, rank 1 `satcom-ngp::page_3::chunk_0::off4699`, E01 4740–4938):** heading `2.4.1 ... broadly classified as:` (global 4734–4786) selected with high score, but immediately following list span `(a)-(d)` (4790–4937) not selected due low lexical overlap; answer omitted four classifications.
+- **Q12 (Recall@5 1.0, ranks 1–2 overlap E01 30425–31507):** key definition elements split across chunks/spans (4.2 body/definition start in chunk 0; `International Communications Services will include PSTN, GMPCS, Value Added Services, Programme Exchange... foreign country...` and MMSS/AMSS treatment in chunk 1). Baseline selected introductory/non-definitional units (4.1 classification, 4.2 practice sentence supported, 4.3.4) and missed required definition elements.
+
+**Hypothesis.** Introductory spans ending with `:` signal an immediately associated enumeration/definition block in the same chunk; grouping intro span with contiguous following spans until next numbered clause start preserves heading-associated lists/definitions as one verbatim unit (general, document-grounded).
+
+**Implementation.** `src/rag_core/pipeline.py`: opt-in `associated_heading_units` (default `False`) groups colon-ending intro spans with contiguous associated content until next numbered clause start. `experiments/exp007.py`, `experiments/results/exp007/*`.
+
+**Results (frozen 15q + 12q abstention).** Baseline vs EXP-007: supported answers 12→12, statements 15/45→15/45 (0.3333), citations 16/31→16/32 (0.5161→0.5000, delta -0.0161), abstention 12/12 unchanged, no non-target regressions, offsets/citation traceability valid 15/15. **Q04:** all four classifications present (4/4), evidence covered/cited, supported 1/3; selected merged unit `2.4.1 ... (a)-(d)` offsets 4734–4937 (verbatim, traceable). **Q12:** required definition elements present 0/7 in answer text despite evidence covered by supported non-definitional statement; key retrieved definition sentences not selected/ranked. **Q10 separate comparison:** EXP-006-only still supported/covers E01/cites 3.6.8; EXP-007-only unchanged from baseline (no combination).
+
+**Decision.** **Rejected for promotion; EXP-003 remains default; EXP-006 remains separate opt-in.** Q04 content/traceability improved but Q12 primary target unmet and no aggregate gain.
+
+**Limitations.** Colon-intro rule does not capture Q12 definition sentences (not led by selected colon-intro in constructed/selected units); supported-statement count unchanged for Q04 despite content completeness (metric granularity). Next: controlled Q12 selection/ranking experiment targeting retrieved definition sentences.
+
+### EXP-007 — Heading-introduced associated answer units (Q04/Q12, rejected for promotion)
+
+Controlled answer-unit construction/selection only (`associated_heading_units`, opt-in). Q04 includes all four classifications in one verbatim supported/cited unit; Q12 required definition elements not selected. No regressions, abstention unchanged, traceability valid. Not promoted/combined. See `docs/EXP-007.md`, `experiments/results/exp007/`.
+
+### DR-018 — Q12 definitional evidence selection investigated; accepted as opt-in candidate (EXP-008)
+
+**Date.** 2026-11-15 (experiment/review), 2026-11-15 (post-review citation metadata correction).
+
+**Context.** Q12 retrieval correct (Recall@5 1.0, E01 ranks 1–2) but baseline EXP-003 selection missed required definition elements (PSTN, GMPCS, Value Added Services, Programme Exchange, foreign-country origination/termination, MMSS/AMSS treatment). EXP-007 did not fix Q12.
+
+**Diagnosis (established before implementation).** Key definitional sentences were present but scored 2.962 and outranked (top 4.049/3.751/3.674): chunk 1 spans 31006–31254 (PSTN/GMPCS/VAS/Programme Exchange + foreign origination/termination) and 31255–31506 (MMSS/AMSS treated as international), chunk 0 span 31006–31178 (partial definition start). Query intent token `defined` not in definition text; definition expressed via patterns (`will include`, `treated as`, `where...`) with partial query-content overlap.
+
+**Hypothesis.** For definitional-intent questions, boost candidates containing document-grounded definitional/explanatory markers with query-content overlap (general, not Q12-specific).
+
+**Controlled variable.** Selection/ranking only: `definition_intent_boost` off vs on (opt-in). Frozen: PDF, questions/evidence/unanswerable, chunking, embeddings, retrieval/precomputed hits, top-k, EXP-003 sibling ratio, caps, citations, abstention, metrics. EXP-006/EXP-007 kept separate.
+
+**Implementation.** `src/rag_core/pipeline.py` opt-in `definition_intent_boost` (+1.5 when definitional intent, marker, and query-content overlap present). `experiments/exp008.py`, `experiments/results/exp008/*`.
+
+**Results.** Checks all passed. Baseline→EXP-008: supported answers 12→12, statements 15/45 (0.3333)→17/45 (0.3778, +0.0444), citations 16/31 (0.5161)→17/32 (0.5312), abstention 12/12 unchanged, no regressions. **Q12:** all 7 required elements present, evidence covered (`EXP001-Q12-E01`), answer supported, 3/3 supported statements, valid offsets/pages/traceability. EXP-008 result artifacts preserved as executed history (`experiments/results/exp008/*`). **Separate checks:** Q04 EXP-008 baseline-like (not combined with EXP-007); Q10 EXP-008 baseline-like while EXP-006-only still fixes Q10.
+
+**Post-review citation metadata correction (separate, 2026-11-15).** Audit against original PDF verified Q12 statement offsets 31006–31254, 31255–31506, 31006–31178 are page 13, verbatim 4.2 content (4.2 starts 30381, 4.3 starts 31512); ground truth unchanged. Recorded EXP-008 citations labeled 4.2 statements as 4.3/4.1 due to **chunk metadata assignment issue with fixed-character windowing**: chunk `...off30978` starts inside 4.2 but contained later 4.3 heading and was labeled 4.3; chunk `...off30178` starts at 4.1 but cited statement is in 4.2 region. Correction (smallest justified): `FixedCharacterChunker` now assigns start-governing clause metadata; pipeline resolves citation section/heading from governing clause of first selected statement offset (preferring in-chunk clause at/before offset; retaining start-governing metadata when statement precedes first in-chunk clause). Production index `chroma_db_production/satcom_ngp_production_fixed_char` rebuilt (49 chunks). Corrected Q12 citations resolve to **4.2 / “4.2 INTERNATIONAL COMMUNICATION SERVICES”** with unchanged chunk ranges/pages/offsets. See `docs/EXP-008-citation-metadata-correction.md`, `tests/test_citation_metadata.py`.
+
+**Decision.** **Accepted for promotion consideration as opt-in candidate; not promoted. EXP-003 remains production default.** EXP-006/EXP-007/EXP-008 remain separate.
+
+**Limitations.** Heuristic marker/intent boost **validated only on the current 15-question evaluation set** (BL-017). Possible redundant overlapping selected spans. Fixed-char chunks may span multiple clauses; citation now reflects governing clause of first selected statement per chunk while offsets/pages/text remain traceability anchors. No retrieval-miss fix.
+
+### EXP-008 — Q12 definitional evidence selection (accepted as opt-in candidate)
+
+Controlled selection/ranking only (`definition_intent_boost`, opt-in). Q12 all required elements selected/cited with traceability; no regressions; abstention unchanged. Not promoted/combined. See `docs/EXP-008.md`, `experiments/results/exp008/`.
+
+**Verification note (2026-11-15, post-EXP-008 correction):** complete test suite `python -m pytest tests -q` → **101 passed, 29 warnings** (~15.09s) after adding citation-metadata regression tests and rebuilding production index. `tests/test_pipeline.py` restored from HEAD (accidentally emptied during audit session) before final run.
+
+
+
 ---
 
 ## E. Rejected approaches
@@ -970,10 +1071,7 @@ Production remains EXP-003. See `docs/EXP-005.md` and `experiments/results/exp00
 
 Command: `python -m pytest tests -q`
 
-Result (executed 2026-11-14, after EXP-005): **91 passed, 25 warnings** in
-~10.7 s. The earlier Phase-2/3 suite result was 57 passed; PROD-001 added 21
-tests, EXP-003 added 4, EXP-004 added 7 generation-contract tests, and EXP-005
-added 2 pipeline segmentation tests.
+Latest full run (executed 2026-11-14, after M1 live validation / EXP-006 code changes): **97 passed, 27 warnings** (`python -m pytest tests -q`). Prior milestones: 91 passed after EXP-005 (+2 segmentation tests); 97 after M1 generation-contract tests (+6). EXP-006 added opt-in selection logic without changing default behavior; existing pipeline tests remained compatible. Warnings include existing Chroma/Pydantic notices and google-api-core/grpc deprecation/future warnings (non-fatal).
 
 Warnings are non-fatal Pydantic deprecation notices raised by Chroma
 (`Accessing the 'model_fields' attribute on the instance is deprecated`).
@@ -1202,3 +1300,189 @@ no retrieval/chunking changes). Do not start M2 or add untested RAG techniques.
 | 4 | Justified chunking refinement (if pursued) | Superseded by milestone roadmap/backlog (evidence-gated) |
 | 5 | Validated production ingestion | Done for accepted extractive baseline (PROD-001, EXP-003) |
 | 6 | Application: generation, citations, abstention | Partial: extractive citations + abstention validated; local generator rejected (EXP-004); Gemini path, enforcement, UI, eval, deployment pending (M1–M5) |
+
+---
+
+## I. Strategy pivot — prioritize end-to-end application completion (2026-11-15)
+
+**Decision (user-directed, 2026-11-15):** Pause component-level retrieval/selection/chunking/reranking experiments and prioritize completing the full production-quality RAG application for `data/satcom-ngp.pdf`.
+
+| Item | Decision |
+|---|---|
+| EXP-009 (Q05 retrieval investigation) | **Planning authorized earlier but implementation postponed.** No implementation started. |
+| BL-001 (Q05), BL-002 (Q08) | Kept in backlog as known retrieval limitations; do not run new component experiments unless required to resolve a demonstrated integration or production-quality blocker. |
+| EXP-003 | **Remains production default.** |
+| EXP-006 (Q10), EXP-008 (Q12) | **Remain separate opt-in candidates** (validated on current 15-question set only); not promoted, not combined. |
+| EXP-007 | **Rejected for promotion** (Q04 content finding only). |
+| Historical artifacts/decisions | **Preserved intact** (EXP-001–008, M1, correction records, results). |
+| M1 status | **Still not accepted** (grounded generation quality/completeness and broader evaluation insufficient); progress on selection/citation correctness/abstention does not substitute for project quality requirements. |
+
+**Rationale:** Sufficient component diagnosis exists (EXP-006/007/008, citation metadata correction). Continuing isolated optimization on the 15-question set delays delivery of a demonstrable, observable, deployable end-to-end system. Future optimization must be driven by measured end-to-end/integration evidence.
+
+**Immediate next workstream (authorized):** repository audit and architecture/integration report, then incremental implementation toward complete backend, React/FastAPI integration, end-to-end local validation, observability/metrics, evaluation expansion + CI quality gates, and Vercel Hobby-compatible deployment (reusing validated modules; no duplicate implementations).
+
+---
+
+## J. WP0/WP1 — Backend integration on validated core (2026-11-15)
+
+**Objective (authorized):** run validated RAG core through a clean FastAPI endpoint; extractive end-to-end first (Gemini optional/controlled), no EXP-009, no new retrieval/chunking/reranking, no promotion/combination of EXP-006/008, preserve unrelated work/history.
+
+### J.1 What already existed / reused
+- **Reused (validated):** `src/rag_core/document.py`, `chunker.py` (corrected fixed-char 1000/200, start-governing metadata), `index.py` (DenseIndex/Chroma, MiniLM), `pipeline.py` (GroundedPipeline, **EXP-003 default** `sibling_score_ratio=0.5`, opt-ins off, statement-governing citation resolution), `generation.py` (`GeminiGenerator`, m1-v1 contract, app-validated citation IDs/resolution), `evaluation.py`, corrected production index `chroma_db_production/satcom_ngp_production_fixed_char`.
+- **Replaced for API path:** legacy `backend/main.py` (KNOWN-001 `status_status`, legacy `satcom_ngp_clauses`, `gemini-1.5-pro`, unvalidated Cohere/chat/metrics flow) rewritten as thin FastAPI app over new service; legacy parallel stacks (`src/generation/models.py`, `src/retrieval/*`, `src/chunking/structure.py`, `src/config/prompts.yaml` RAG flow) **not integrated**.
+- **Preserved:** unrelated working-tree changes, legacy experiment artifacts/results/decisions, git history.
+
+### J.2 Implemented (files changed/added)
+- **Added `src/rag_app/`** (single application service layer):
+  - `config.py`: `AppConfig` (env-driven; defaults: corrected prod index/collection, top_k=5, EXP-003 defaults, opt-ins false, extractive default mode, Gemini config/sufficiency threshold 0.5, allow_gemini).
+  - `schemas.py`: Pydantic API contract (`QueryRequest`, `QueryResponse`, citations/statements/retrieved, `CitationValidationModel`, `GenerationModel`, `HealthResponse`).
+  - `observability.py`: lightweight per-request trace (`request_id`, stage timings, events/errors) — stages include `retrieval`, `selection_and_extractive`, `gemini_generation` when attempted.
+  - `service.py`: `RAGService` composing DenseIndex + GroundedPipeline(EXP-003) + optional GeminiGenerator. Flow: retrieve → extractive select/cite/abstain → (if `mode=gemini`) sufficiency gate (pipeline abstain/no statements/selected lexical support < threshold) then Gemini with `evidence_sufficient=True`; **app-side citation validation/resolution preserved**, extractive evidence retained, safe fallback to extractive grounded result on Gemini abstain/error/insufficiency. Exposes retrieved/selected IDs, citation validation, timings, reasons.
+- **Modified `backend/main.py`**: clean FastAPI app (`/`, `/health`, `POST /query`, compat `/ask`), env/config via `AppConfig.from_env()`, optional dotenv load, CORS, lazy cached service, response schema from `RAGService`.
+- **Added tests:** `tests/test_api.py` (4 fast contract tests + 1 representative real-index smoke test).
+- **Added docs:** `docs/RUN_LOCAL.md` (run/config/endpoints/smoke/tests/limitations). `docs/ENGINEERING_LOG.md` appended (this entry).
+
+### J.3 Architecture (WP1)
+`Client -> FastAPI (/query) -> RAGService -> DenseIndex.search (corrected prod Chroma, MiniLM) -> GroundedPipeline.answer_from_hits (EXP-003, verbatim statements, statement-governing app-resolved citations, abstention) -> [optional sufficiency gate + GeminiGenerator over selected evidence + app citation ID validation/resolution + safe fallback] -> structured response + trace (request_id, timings, retrieved/selected IDs, citation validation, abstention/errors)`.
+
+### J.4 Commands/tests executed and actual results (2026-11-15)
+- `python -m py_compile src/rag_app/*.py backend/main.py` → **OK**.
+- `python -m pytest tests/test_api.py -q -k "not real_index"` → **4 passed, 1 deselected** (1.52s). (Initial run had 1 failure due test cache-clear after monkeypatch; fixed; rerun passed.)
+- `python -m pytest tests/test_api.py -q -k "real_index"` → **1 passed, 4 deselected, 4 warnings** (11.27s) against `chroma_db_production` (chroma.sqlite3, collection count 49).
+  - **Q05 extractive (representative):** `status=answered`, `abstained=False`, `token_support=0.5`, `selected_lexical_support=0.3333`, `best_distance=0.8424`; retrieved top-5 = `['satcom-ngp::page_12::chunk_2::off29601','satcom-ngp::page_14::chunk_1::off33296','satcom-ngp::page_10::chunk_0::off22860','satcom-ngp::page_12::chunk_1::off28801','satcom-ngp::page_5::chunk_2::off11188']`; **required `satcom-ngp::page_3::chunk_2::off6299` not retrieved** (BL-001 persists). Response was traceable/cited to retrieved wrong evidence (BL-007 semantic gap: pipeline distance/token thresholds satisfied). Gemini mode would apply additional sufficiency gate (<0.5 selected support) before generation.
+  - **Q12 extractive (representative, EXP-003 default):** `status=answered`, 3 statements / 2 app-resolved citations (`4.1` @ chunk `...off30178` p13, `4.3.4` @ chunk `...off32496` p14), offsets valid and consistent (`[30208,30275],[30346,30377],[32783,32850]`), `citation_validation.app_resolved=True`, timings recorded. (Under EXP-003 default, Q12 does not select full 4.2 definition set; EXP-008 candidate not promoted — known BL-005 state preserved.)
+- `python -m pytest tests -q` → **106 passed, 33 warnings** (19.21s). New: 5 API tests. Warnings non-fatal (Chroma/Pydantic deprecation, google-api-core/grpc/Python 3.11 future warnings as previously observed).
+
+### J.5 Known limitations / blockers after WP1
+- **M1 not accepted:** Gemini path integrated but quality/completeness/model suitability unproven; extractive is grounded baseline. Do not claim M1 complete.
+- **BL-001/Q05:** retrieval miss remains; extractive pipeline can answer with wrong evidence (threshold-based abstention only). Needs evidenced fix in later work if prioritized as blocker.
+- **BL-002/Q08:** incomplete retrieval. **BL-003/004/005:** opt-in candidates separate, not default/promoted/combined.
+- **Index/deployment:** local Chroma + local embedding model load not Vercel Hobby-ready (M3/BL-009/BL-015).
+- **Frontend:** not integrated to new contract (WP2). **Eval/CI/observability depth:** WP4/WP5 pending (lightweight tracing added in-service).
+- **KNOWN-001:** legacy defective behavior removed from active API implementation; legacy history preserved in git.
+
+### J.6 Next work package
+**WP2 — Complete frontend/backend integration:** connect React UI to `/health`+`/query`, render answer/citations (page/section/offset/chunk/quote), abstention reasons and errors/loading states; remove dependence on legacy `/chat`/`/metrics` contract; validate full local UI→API flow (extractive default).
+
+---
+
+## K. WP1.1 — Conservative answerability/abstention guard (2026-11-15)
+
+**Trigger:** WP1 real-index smoke showed Q05 (`2.5.6` evidence not retrieved, BL-001) returned `answered` with selected lexical support 0.3333 and traceable-but-wrong citations (BL-007 semantic/answerability gap). Traceability alone is insufficient for a policy-document chatbot.
+
+### K.1 Investigation (no retrieval/chunking/selection changes)
+- Extractive path: `GroundedPipeline.answer_from_hits` answered because retrieval distance/token-support thresholds were satisfied (`token_support=0.5`, `best_distance=0.8424`) even though required evidence chunk `satcom-ngp::page_3::chunk_2::off6299` was absent and selected statements weakly supported the question (`selected_lexical_support=0.3333`).
+- Existing sufficiency signal already computed in service and used for Gemini precheck: selected lexical support vs `RAG_GEMINI_SUFFICIENCY_THRESHOLD` (default 0.5) and selected-statement presence.
+
+### K.2 Implementation (general-purpose, conservative)
+- **`src/rag_app/service.py`:** added application-level answerability guard after extractive selection (before authoritative response/generation):
+  - If pipeline answered but `no selected statements` or `selected_lexical_support < threshold` → abstain with explicit reason (`insufficient_selected_evidence:*`), return `ABSTENTION_MESSAGE`, preserve statements/citations/retrieved/selected IDs for inspection, record `answerability_guard_applied/reason` and pipeline status in debug.
+  - Gemini path reconciled to same authoritative abstention/sufficiency state (no call when insufficient; reports `abstained_insufficient_evidence` fallback metadata).
+- **No changes** to retrieval, chunking, index, EXP-003 defaults, or experimental opt-ins. No Q05/question-specific logic.
+
+### K.3 Tests added/updated (`tests/test_api.py`, 7 tests total)
+- Added `test_service_extractive_abstains_on_insufficient_selected_evidence` and `test_service_extractive_keeps_supported_answer`.
+- Updated Gemini insufficient-evidence test to expect authoritative abstention + reason.
+- Updated real-index smoke: Q05 now must abstain with `insufficient_selected_evidence` reason, selected support < 0.5, guard applied, BL-001 chunk still absent, evidence preserved for inspection; Q12 still answered with valid app-resolved citations/offsets/timings.
+
+### K.4 Results (executed 2026-11-15)
+- `python -m pytest tests/test_api.py -q` → **7 passed, 4 warnings** (34.40s).
+- `python -m pytest tests -q` → **108 passed, 33 warnings** (47.65s). Warnings non-fatal (known Chroma/Pydantic, google-api-core/grpc/Python 3.11).
+- **15-question extractive regression (RAGService, EXP-003 defaults, corrected prod index):**
+  - **Q05:** `abstained=true`, `selected_support=0.3333`, reason `insufficient_selected_evidence:selected_lexical_support=0.3333<threshold=0.5`, guard applied. Retrieval miss unchanged.
+  - **Q01–Q04, Q06–Q15:** `answered`, guard not applied. Selected supports: Q01 0.75, Q02 1.0, Q03 0.6, Q04 0.6, Q06 0.875, Q07 1.0, Q08 1.0, Q09 1.0, Q10 0.7778, Q11 0.75, Q12 0.8, Q13 0.6, Q14 0.5455, Q15 0.5 (boundary, passes `<0.5`).
+  - **No additional abstentions/regressions** on current 15-question set. Q12 citation metadata/behavior unchanged under defaults.
+
+### K.5 Trade-offs / remaining limitations
+- Heuristic lexical-overlap guard, **not semantic proof** of answerability/correctness/completeness; can still allow weak-but-above-threshold or semantically wrong answers (e.g. Q08 incomplete retrieval, Q10 selection issues remain under defaults).
+- Threshold boundary behavior (0.5 passes) is intentional/conservative relative to current signal; may need evidence-driven calibration on larger labeled set (M4), not tuned here.
+- BL-001 retrieval remains open (guard mitigates unsafe answering, not retrieval). BL-007 improved but not solved.
+
+### K.6 Next
+Proceed to **WP2 — frontend integration** with new `/query` API (extractive default), inspectable citations/abstention/errors/loading states, validated local UI→API flow.
+
+---
+
+## L. WP2 — Frontend integration with validated `/query` API (2026-11-15)
+
+**Objective:** connect React frontend to WP1 backend, display grounded answers with inspectable citations, abstention/error/loading states; extractive default.
+
+### L.1 Implemented
+- **Replaced `frontend/src/App.jsx`** with clean UI integrated to `POST ${VITE_API_BASE_URL||http://localhost:8000}/query` (`mode:"extractive"` default):
+  - Query input, loading state, request error handling, sample questions (Q05/Q12), response history.
+  - Result rendering: status (answered/abstained/error), answer text, abstention reason, **app-resolved inspectable citations** (marker, section/heading, page range, chunk ID, source, offsets, distance, quote), selected evidence statements, retrieved chunks, request ID/timings, guard/debug diagnostics.
+  - Health check button (`GET /health`), guide tab with run instructions.
+  - Removed dependency on legacy `/chat` and `/metrics` contracts and prior IndexedDB token/session logic from active UI.
+- **Reused:** existing Vite/React/Tailwind/UI component structure (`frontend/src/components/ui/*`, styles, config).
+
+### L.2 Verification (executed / not executed)
+- **Executed (backend):** `python -m pytest tests/test_api.py -q` → **7 passed** (incl. real-index smoke Q05 abstain/Q12 traceable citations); `python -m pytest tests -q` → **108 passed, 33 warnings** after WP1.1. Backend contract supports frontend fields.
+- **Not executed:** `cd frontend && npm run build` failed in this environment (`vite` not found / dependencies not installed). Frontend source updated but build/runtime not verified here; requires `npm install` + local dev/build with backend running.
+
+### L.3 Limitations / next
+- Gemini UI toggle not exposed (extractive default; M1 not accepted). No automated browser E2E tests added.
+- Next: **WP3** end-to-end local validation runbook/smoke (API+UI), integration hardening; **WP4** observability depth; **WP5** eval expansion/CI; **WP6** Vercel Hobby deployment feasibility/implementation.
+
+---
+
+## M. WP2 verification and WP3 end-to-end local validation (2026-11-15)
+
+**Objective:** verify actual frontend integration/build and complete local E2E validation without modifying retrieval/chunking/EXP-003/opt-ins, without EXP-009, and without threshold tuning.
+
+### M.1 Frontend package/install/build (executed)
+- **Package manager/lockfile:** `frontend/package.json` + `frontend/package-lock.json` (npm). Reproducible install: `npm ci`.
+- `cd frontend && npm ci` → **success** (170 packages added, audited 171; vulnerabilities reported by npm audit, not remediated in this pass).
+- `cd frontend && npm run build` → **success** (Vite 8.1.3, 36 modules, `dist/index.html`, `dist/assets/index-BVkQV0Vb.css` 24.64 kB gzip 5.60 kB, `dist/assets/index-J4qS0Kjf.js` 256.36 kB gzip 79.34 kB; built 223ms initial / 275ms final).
+
+### M.2 Running application checks (executed)
+- Started **backend:** `PYTHONPATH=. python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000` (background). Health ready: `{"status":"ok","default_mode":"extractive","collection_name":"satcom_ngp_production_fixed_char","top_k":5,"index_available":true,"gemini_configured":true}`.
+- Started **frontend:** `npm run dev -- --host 127.0.0.1 --port 5173` (Vite dev served app at 127.0.0.1:5173).
+- **Browser-equivalent HTTP/CORS flow tested** (requests matching frontend `fetch` with `Origin: http://127.0.0.1:5173`, JSON POST to `/query`, GET `/health`):
+  - **CORS preflight:** `OPTIONS /query` → 200 with `access-control-allow-origin: http://127.0.0.1:5173`, allow POST/content-type.
+  - **Health-check:** `GET /health` → ok, index available, extractive default.
+  - **Q12 (answered, inspectable citations):** `POST /query {"question":"What satellite communication services are classified as domestic services?","mode":"extractive"}` → `status=answered`, `abstained=false`, 3 statements, 2 app-resolved citations with markers/sections/pages/offsets/chunk IDs/quotes (`[1] sec 4.1 heading 4.1 SERVICE CLASSIFICATION p13 30178–31178 chunk satcom-ngp::page_13::chunk_0::off30178`; `[2] sec 4.3.4 p14 32496–33496 chunk satcom-ngp::page_14::chunk_0::off32496`), timings recorded. (EXP-003 default selection preserved; not EXP-008-promoted answer.)
+  - **Q05 (abstention, clear explanation, inspectable retrieved evidence):** → `status=abstained`, reason `insufficient_selected_evidence:selected_lexical_support=0.3333<threshold=0.5`, guard applied, preserved citations/statements/retrieved evidence and debug (BL-001 retrieval miss remains, required chunk not present).
+  - **Normal supported question:** `"Who can allot capacity in INSAT/GSAT satellites to non-government users?"` → `status=answered`, citations to `2.6.2` and `2.6.4` (p4) with timings.
+  - **Repeated requests:** same supported question twice → consistent answers, different `request_id`s, both answered.
+  - **Backend unavailable:** backend stopped; `POST /query` → connection failure (`curl exit 7`, could not connect), consistent with frontend `fetch` error/catch UI path. Frontend dev server remained reachable.
+- **Not executed (limitation):** no headless browser automation; in-browser DOM rendering, visual loading/disabled states, and manual click-through UX were not directly observed. Frontend code implements these states; API-level browser-flow behavior verified.
+
+### M.3 Automated validation and runbook
+- **Python:** `python -m pytest tests -q` → **108 passed, 33 warnings** (19.99s). Existing integration/contract coverage: `tests/test_api.py` (mocked + real-index smoke, Q05/Q12 representative cases).
+- **Frontend:** `npm run build` → **success** (275ms final run).
+- **Runbook:** `docs/RUN_LOCAL.md` updated (prereqs, reproducible npm ci, backend/frontend start, build, smoke, WP2/WP3 verification record, limitations).
+
+### M.4 Boundaries respected
+No retrieval/chunking/EXP-003/opt-in changes, no EXP-009, no sufficiency-threshold tuning, extractive default preserved, experiment history/unrelated working-tree changes preserved. No internal debug/sensitive config added for public exposure.
+
+### M.5 Next
+Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion (WP4)**, and **evaluation/CI planning (M4/M5)** per roadmap; targeted optimization only with measured evidence.
+
+---
+
+## N. M3 — Deployment feasibility & architecture assessment (2026-11-15, evidence-based, zero-cost strict)
+
+**Objective:** assess genuinely zero-cost deployment options for the current RAG application (preserve fixed-char/EXP-003/citations/abstention behavior; extractive default; optional Gemini M1 not accepted) without consequential infrastructure changes.
+
+### N.1 Evidence gathered (repo + authoritative/public sources)
+- **Repo baseline:** FastAPI+`rag_app`+`rag_core`; React/Vite frontend (dist ~296 KB, build pass); `data/satcom-ngp.pdf` 68 KB; corrected Chroma prod index `chroma_db_production/` ~3.89 MB (49 chunks); query embeddings via `sentence-transformers/all-MiniLM-L6-v2`; local persistent Chroma; heavy deps in `requirements.txt` (`torch 2.12.0`, `sentence-transformers 3.0.1`, `chromadb 0.5.23`, `onnxruntime 1.24.4` + eval/legacy libs). WP2/WP3 validated locally (**108 passed**, frontend build pass, running API/CORS scenarios exercised). Bundle/RSS/cold-start not measured on targets.
+- **Vercel (docs/search, incl. fetched limits):** Hobby $0 allotments (e.g. 4 active CPU-hrs, 360 GB-hrs, 1M invocations), 300s max, 2 GB/1 vCPU (Hobby), Python 500 MB uncompressed bundle (standard; large functions beta exists with conditions), ephemeral serverless FS; compatibility of current ML stack **unverified/likely constrained**.
+- **Hugging Face Spaces (official docs/search evidence):** “Gradio and Docker Spaces run on compute and require a paid plan to create: PRO for personal accounts, Team or Enterprise for organizations. Free personal accounts in good standing can still host up to 2 Gradio Spaces running on ZeroGPU.” CPU Basic listed $0/hr but Docker/Gradio compute creation gated on free accounts; 50 GB non-persistent disk, sleep on free hardware. **Docker Spaces not zero-cost eligible** for personal free accounts; ZeroGPU Gradio-only unsuitable for preserving current stack.
+- **Gemini (ai.google.dev pricing/rate-limits):** Free tier available for eligible models with project/model RPM/TPM/RPD quotas (AI Studio), RPD midnight PT reset, no spend-based limit for Free tier, no billing required to remain on Free tier; free-tier content may be used to improve products and some features unavailable. Must avoid paid billing/paid features and handle quotas/429.
+- **Render (official-doc excerpts via search):** free web services (512 MB/0.1 CPU, 750 instance hrs/mo, 15 min spin-down, ephemeral FS, bandwidth/build limits/suspension risks) — likely insufficient for ML stack; terms require dashboard confirmation.
+
+### N.2 Comparison and decision
+- **Vercel Hobby:** monetarily plausible within limits but **not claimed compatible** (bundle/memory/cold-start/model+Chroma untested for heavy deps). **HF Docker Spaces:** **rejected** (requires PRO $9/mo, violates strict zero-cost). **Render free:** likely resource-incompatible. **Oracle Always Free VM:** technically closest to local with minimal change but tenant/eligibility/ops caveats prevent confident guaranteed-$0 claim without verification.
+- **Recommendation:** no consequential deployment now. Preserve local validated app; provide reproducible $0 demo/runbook; if public hosting mandatory, only after tenant-verified Oracle Always Free (or other verified $0) confirmation. No DB/embedding/RAG rewrites.
+
+### N.3 Deliverables and next
+- **Report:** `docs/M3_DEPLOYMENT_FEASIBILITY.md` (detailed comparison, risks, conditional implementation steps, alongside-work: M4 eval planning, M5 observability/CI/hardening, minimal runtime packaging/measurement).
+- **Status:** awaiting user review/approval before any infrastructure changes or deployment attempts.
+
+### J. 2026-11-15 — M4 evaluation expansion foundation and M5 observability (parallel, no prod-behavior changes)
+
+**M4 (foundation + baseline measured, no retrieval/chunking/EXP-003/threshold tuning):** Added `docs/M4_EVALUATION_PLAN.md`, `experiments/m4_eval_harness.py`, and `docs/M4_PROGRESS.md`. Preserved existing datasets/ground truth (`exp001_questions.csv`, `exp001_ground_truth.json`, `unanswerable_questions.csv`). Executed baseline on local validated `RAGService` (extractive, EXP-003, corrected prod index, k=5): **answerable 15** — answered 14, abstained 1 (Q05 guard), supported_answer_rate 0.80, statement support 0.3333, citation support 0.5161, mean recall@5 0.8889 / precision@5 0.2533 / MRR@5 0.7944; **unanswerable 12** — abstention accuracy 1.00. Latency (includes cold first-call outlier): total p50 19.704 ms / p95 22.648 ms / max 17265.834 ms. Artifacts: `experiments/results/m4_baseline/`. Thresholds not set (must be derived from measured expanded baselines). Pending: manual curation/verification of 35–85 additional questions (50–100 initial, path to 200) covering all four articles and required types/tags/evidence/citation/abstention labels.
+
+**M5 (lightweight, $0, exportable):** Extended `src/rag_app/observability.py` (trace details/total), added `src/rag_app/metrics.py` (in-memory aggregated collector: totals/rates, p50/p95 latency for total/retrieval/selection/generation, recent records), instrumented `src/rag_app/service.py` (retrieval/selection/abstention/citation-validation/generation details; metrics recording), added `GET /metrics` in `backend/main.py`, and documented in `docs/M5_OBSERVABILITY.md`. Token/cost fields recorded when available (Gemini cost not computed). **Tests:** `tests/test_api.py` 8 passed (incl. metrics endpoint), `tests -q -k "not real_index"` 108 passed / 1 deselected.
+
+**Deployment investigation (separate, no provisioning):** Added `docs/ORACLE_ALWAYS_FREE_INVESTIGATION.md`. Direct authoritative OCI page retrieval blocked in-session (websearch unavailable; oracle docs fetch transport/403) — findings marked best-effort and **UNVERIFIED pending current official verification**. Conclusion: Oracle Always Free plausibly closest VM path for current stack but **not confidently guaranteed $0/obtainable** without tenant-specific eligibility/quota/capacity/payment/idle-reclamation verification and resource measurement; **no account created, no resources/billing/deployment**. Local app remains validated source of truth.

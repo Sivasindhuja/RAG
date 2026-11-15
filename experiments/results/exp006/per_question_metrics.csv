@@ -1,0 +1,16 @@
+question_id,recall@5,baseline_supported_statements,candidate_supported_statements,delta,baseline_supported_citations,candidate_supported_citations,baseline_answer_supported,candidate_answer_supported
+EXP001-Q01,1.0,1,1,0,1,1,True,True
+EXP001-Q02,1.0,1,1,0,1,1,True,True
+EXP001-Q03,1.0,1,1,0,1,1,True,True
+EXP001-Q04,1.0,1,1,0,1,1,True,True
+EXP001-Q05,0.0,0,0,0,0,0,False,False
+EXP001-Q06,1.0,1,1,0,1,1,True,True
+EXP001-Q07,1.0,1,1,0,1,1,True,True
+EXP001-Q08,0.3333,0,0,0,1,1,False,False
+EXP001-Q09,1.0,1,1,0,2,2,True,True
+EXP001-Q10,1.0,0,1,1,0,1,False,True
+EXP001-Q11,1.0,1,1,0,1,1,True,True
+EXP001-Q12,1.0,1,1,0,1,1,True,True
+EXP001-Q13,1.0,3,3,0,2,2,True,True
+EXP001-Q14,1.0,2,2,0,2,2,True,True
+EXP001-Q15,1.0,1,1,0,1,1,True,True

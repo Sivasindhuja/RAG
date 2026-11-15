@@ -1,0 +1,524 @@
+{
+  "experiment_id": "EXP-007",
+  "summaries": {
+    "baseline": {
+      "question_count": 15,
+      "answered": 15,
+      "abstained": 0,
+      "supported_answers": 12,
+      "statement_count": 45,
+      "supported_statement_count": 15,
+      "statement_support_rate": 0.3333333333333333,
+      "citation_count": 31,
+      "supported_citation_count": 16,
+      "citation_support_rate": 0.5161290322580645
+    },
+    "exp007": {
+      "question_count": 15,
+      "answered": 15,
+      "abstained": 0,
+      "supported_answers": 12,
+      "statement_count": 45,
+      "supported_statement_count": 15,
+      "statement_support_rate": 0.3333333333333333,
+      "citation_count": 32,
+      "supported_citation_count": 16,
+      "citation_support_rate": 0.5
+    },
+    "exp006_only": {
+      "question_count": 15,
+      "answered": 15,
+      "abstained": 0,
+      "supported_answers": 13,
+      "statement_count": 45,
+      "supported_statement_count": 16,
+      "statement_support_rate": 0.35555555555555557,
+      "citation_count": 32,
+      "supported_citation_count": 17,
+      "citation_support_rate": 0.53125
+    }
+  },
+  "abstention_summaries": {
+    "baseline": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    },
+    "exp007": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    },
+    "exp006_only": {
+      "by_split": {
+        "calibration": {
+          "count": 8,
+          "abstained": 8,
+          "abstention_rate": 1.0
+        },
+        "heldout": {
+          "count": 4,
+          "abstained": 4,
+          "abstention_rate": 1.0
+        }
+      },
+      "overall": {
+        "count": 12,
+        "abstained": 12,
+        "abstention_rate": 1.0
+      }
+    }
+  },
+  "decision": {
+    "accepted_for_promotion_consideration": false,
+    "checks": {
+      "q04_all_four_classifications_present": true,
+      "q04_evidence_covered": true,
+      "q12_all_required_definition_elements_present": false,
+      "q12_evidence_covered": true,
+      "no_non_target_regressions_vs_baseline": true,
+      "no_regressions_vs_baseline_any": true,
+      "supported_answers_not_lower": true,
+      "statement_support_not_lower": true,
+      "citation_support_delta_ge_minus_0_02": true,
+      "abstention_unchanged": true,
+      "all_offsets_valid_exp007": true
+    },
+    "regressions": [],
+    "q04": {
+      "evidence_covered": true,
+      "answer_supported": true,
+      "supported_statement_count": 1,
+      "statement_count": 3,
+      "supported_citation_count": 1,
+      "q04": {
+        "term_hits": {
+          "telecommunications": true,
+          "broadcasting": true,
+          "education and developmental communications": true,
+          "security communications": true
+        },
+        "all_terms_present": true,
+        "present_count": 4,
+        "required_count": 4
+      }
+    },
+    "q12": {
+      "evidence_covered": true,
+      "answer_supported": true,
+      "supported_statement_count": 1,
+      "statement_count": 3,
+      "supported_citation_count": 1,
+      "q12": {
+        "term_hits": {
+          "pstn": false,
+          "gmpcs": false,
+          "value added services": false,
+          "programme exchange": false,
+          "foreign country": false,
+          "maritime mobile": false,
+          "aeronautical mobile": false
+        },
+        "all_terms_present": false,
+        "present_count": 0,
+        "required_count": 7
+      }
+    },
+    "q10_exp006_only_comparison": {
+      "answer_supported": true,
+      "supported_statement_count": 1,
+      "covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "cites_q10_chunk": true
+    },
+    "q10_exp007_comparison": {
+      "answer_supported": false,
+      "supported_statement_count": 0,
+      "covered_evidence_ids": []
+    },
+    "statement_support_delta": 0.0,
+    "citation_support_delta": -0.0161,
+    "supported_answer_delta": 0
+  },
+  "per_question": [
+    {
+      "question_id": "EXP001-Q01",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q01-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q02",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q02-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q03",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q03-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q04",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q04-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q05",
+      "recall@5": 0.0,
+      "baseline_supported_statements": 0,
+      "exp007_supported_statements": 0,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 0,
+      "exp007_supported_citations": 0,
+      "baseline_answer_supported": false,
+      "exp007_answer_supported": false,
+      "baseline_covered_evidence_ids": [],
+      "exp007_covered_evidence_ids": [],
+      "exp006_only_supported_statements": 0,
+      "exp006_only_answer_supported": false,
+      "exp006_only_covered_evidence_ids": [],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q06",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q06-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q07",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q07-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q08",
+      "recall@5": 0.3333,
+      "baseline_supported_statements": 0,
+      "exp007_supported_statements": 0,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": false,
+      "exp007_answer_supported": false,
+      "baseline_covered_evidence_ids": [],
+      "exp007_covered_evidence_ids": [],
+      "exp006_only_supported_statements": 0,
+      "exp006_only_answer_supported": false,
+      "exp006_only_covered_evidence_ids": [],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q09",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "exp007_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q09-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q10",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 0,
+      "exp007_supported_statements": 0,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 0,
+      "exp007_supported_citations": 0,
+      "baseline_answer_supported": false,
+      "exp007_answer_supported": false,
+      "baseline_covered_evidence_ids": [],
+      "exp007_covered_evidence_ids": [],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q10-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q11",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q11-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q12",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q12-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q13",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 3,
+      "exp007_supported_statements": 3,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "exp007_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "exp006_only_supported_statements": 3,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q13-E02",
+        "EXP001-Q13-E03",
+        "EXP001-Q13-E04"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q14",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 2,
+      "exp007_supported_statements": 2,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 2,
+      "exp007_supported_citations": 2,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "exp006_only_supported_statements": 2,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q14-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    },
+    {
+      "question_id": "EXP001-Q15",
+      "recall@5": 1.0,
+      "baseline_supported_statements": 1,
+      "exp007_supported_statements": 1,
+      "exp007_supported_statement_delta": 0,
+      "baseline_supported_citations": 1,
+      "exp007_supported_citations": 1,
+      "baseline_answer_supported": true,
+      "exp007_answer_supported": true,
+      "baseline_covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "exp007_covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "exp006_only_supported_statements": 1,
+      "exp006_only_answer_supported": true,
+      "exp006_only_covered_evidence_ids": [
+        "EXP001-Q15-E01"
+      ],
+      "offsets_ok_baseline": true,
+      "offsets_ok_exp007": true
+    }
+  ]
+}

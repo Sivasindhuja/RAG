@@ -1,0 +1,40 @@
+{
+  "experiment_id": "EXP-007",
+  "hypothesis": "Introductory spans ending with ':' grouped with contiguous associated content until next numbered clause start preserve heading-associated lists/definitions.",
+  "changed_variable": "answer-unit construction/selection only (associated_heading_units)",
+  "arms": {
+    "baseline": {
+      "sibling_score_ratio": 0.5,
+      "cross_reference_selection": false,
+      "associated_heading_units": false
+    },
+    "exp007": {
+      "sibling_score_ratio": 0.5,
+      "cross_reference_selection": false,
+      "associated_heading_units": true
+    },
+    "exp006_only": {
+      "sibling_score_ratio": 0.5,
+      "cross_reference_selection": true,
+      "associated_heading_units": false,
+      "note": "separate opt-in comparison, not combined"
+    }
+  },
+  "frozen": [
+    "pdf",
+    "questions",
+    "ground_truth",
+    "chunking",
+    "embeddings",
+    "retrieval_hits",
+    "top_k",
+    "answer_caps",
+    "citations",
+    "abstention",
+    "metrics",
+    "exp003_sibling_ratio"
+  ],
+  "build_stats": {
+    "chunks": 49
+  }
+}
