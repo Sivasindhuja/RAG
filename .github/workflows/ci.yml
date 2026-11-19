@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      RAG_GENERATION_MODE: extractive
+      RAG_RETRIEVAL_MODE: dense
+      LANGFUSE_ENABLED: "false"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run unit/integration tests (deterministic)
+        run: |
+          python -m pytest tests -q -k "not real_index" --maxfail=5
+
+      - name: Build/verify index and ingestion integrity (if production index missing)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          from src.rag_app.config import AppConfig
+          from src.rag_core import extract_source_document, FixedCharacterChunker, audit_source_coverage, DenseIndex, DenseIndexConfig
+          cfg = AppConfig.from_env()
+          idx = cfg.persist_dir / "chroma.sqlite3"
+          if idx.exists():
+              print("production index present")
+              sys.exit(0)
+          print("production index missing; building from PDF")
+          doc = extract_source_document(cfg.pdf_path)
+          chunker = FixedCharacterChunker(chunk_size=cfg.chunk_size, overlap=cfg.chunk_overlap)
+          chunks = chunker.chunk(doc)
+          audit = audit_source_coverage(doc, chunks, max_chars=cfg.chunk_size, allow_overlap=True)
+          if not audit['ok']:
+              raise SystemExit(f"ingestion audit failed: {audit['issues']}")
+          index = DenseIndex(DenseIndexConfig(collection_name=cfg.collection_name, persist_dir=cfg.persist_dir, embedding_model=cfg.embedding_model))
+          stats = index.build(chunks, reset=True)
+          print(stats)
+          PY
+
+      - name: Run fixed 15-question CI evaluation (dense baseline, deterministic)
+        run: |
+          python -m evaluation.ci_eval \
+            --dataset evaluation/ci_golden_dataset.json \
+            --out evaluation/results/ci \
+            --retrieval-modes dense \
+            --generation-mode extractive \
+            --k 5 \
+            --baseline evaluation/baseline_metrics.json \
+            --check-regression
+
+      - name: Upload evaluation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evaluation
+          path: evaluation/results/ci
+
+      - name: Optional retrieval comparison (dense vs hybrid, no rerank/live APIs)
+        if: ${{ always() }}
+        continue-on-error: true
+        run: |
+          python -m evaluation.ci_eval \
+            --dataset evaluation/ci_golden_dataset.json \
+            --out evaluation/results/ci_compare \
+            --retrieval-modes dense,hybrid \
+            --generation-mode extractive \
+            --k 5
+
+      - name: Upload comparison artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evaluation-compare
+          path: evaluation/results/ci_compare

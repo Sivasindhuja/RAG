@@ -1486,3 +1486,95 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 **M5 (lightweight, $0, exportable):** Extended `src/rag_app/observability.py` (trace details/total), added `src/rag_app/metrics.py` (in-memory aggregated collector: totals/rates, p50/p95 latency for total/retrieval/selection/generation, recent records), instrumented `src/rag_app/service.py` (retrieval/selection/abstention/citation-validation/generation details; metrics recording), added `GET /metrics` in `backend/main.py`, and documented in `docs/M5_OBSERVABILITY.md`. Token/cost fields recorded when available (Gemini cost not computed). **Tests:** `tests/test_api.py` 8 passed (incl. metrics endpoint), `tests -q -k "not real_index"` 108 passed / 1 deselected.
 
 **Deployment investigation (separate, no provisioning):** Added `docs/ORACLE_ALWAYS_FREE_INVESTIGATION.md`. Direct authoritative OCI page retrieval blocked in-session (websearch unavailable; oracle docs fetch transport/403) — findings marked best-effort and **UNVERIFIED pending current official verification**. Conclusion: Oracle Always Free plausibly closest VM path for current stack but **not confidently guaranteed $0/obtainable** without tenant-specific eligibility/quota/capacity/payment/idle-reclamation verification and resource measurement; **no account created, no resources/billing/deployment**. Local app remains validated source of truth.
+
+### K. 2026-11-15 — Post-commit verification (commit `03c79d4`, no additional commit created)
+
+**Commit/remote sync (verified):** `03c79d4cd920206ff092bdcc1d772ca956f05d42` on `main`, synchronized with `origin/main` (`https://github.com/Sivasindhuja/RAG`); `git fetch` clean, `git status -sb` shows only pre-existing unrelated unstaged deletions.
+
+**1) Dedicated secret scan (entire history / repository):**
+- **Gitleaks:** not installed/available in environment.
+- **History pattern scan (all refs, full history):** no matches for `AIza*`, GitHub/cloud token patterns, private key blocks, or non-placeholder `GEMINI_API_KEY=<value>` assignments. (Prior audit noted old commit `2b814b` contains env-var name/placeholder usage only, not real credentials.)
+- **detect-secrets v1.5.0 (installed for this pass):** scanned repository files (`package.json`, `frontend/package.json`, `backend`, `docs`, `src`, `experiments`, `tests`; large generated artifacts/caches excluded). **1 finding:** `tests/test_generation.py:230` flagged as `Secret Keyword` (unverified, hashed). Manual inspection: line contains a **test fixture/dummy value assignment** (`"sk-or-v1-placeholder"`) used for unit-test construction, **not an actual credential**. Classified as **false positive/test placeholder**; no rotation/history rewrite required. **No actual credentials discovered.**
+- **Limitation:** no dedicated full-history secret scanner (e.g. gitleaks) executed over all historical blobs; pattern scans + detect-secrets provide additional assurance but not proof of absence.
+
+**2) Frontend build (clean dependency environment, no package-version changes):**
+- Performed `cd frontend && rm -rf node_modules && npm ci && npm run build` (lockfile-resolved install).
+- **Result:** `npm ci` completed (170 packages), **`vite build` succeeded** (Vite 8.1.3, 36 modules, `dist/index.html` 0.47 kB gzip 0.30 kB, `dist/assets/index-BVkQV0Vb.css` 24.64 kB gzip 5.60 kB, `dist/assets/index-J4qS0Kjf.js` 256.36 kB gzip 79.34 kB, built in 188 ms).
+
+**3) `npm audit` (inspected; no `npm audit fix --force` run):**
+- `npm audit` (registry reachable in this pass) reported **11 vulnerabilities: 4 moderate, 7 high** (fixes available via `npm audit fix`, not applied).
+- **Classification (by package/dependency role):**
+  - **Dev/build toolchain (not shipped in production bundle):** `eslint`/`@eslint/config-array`/`minimatch` (moderate/chain), `brace-expansion` (high, via eslint minimatch chain), `zod` (high advisory; present via eslint plugin/tooling chain), `vite` (high advisories incl. dev-server/path/middleware issues), `browserslist` (high), `baseline-browser-mapping` (moderate, via browserslist), `@vitejs/plugin-react` chain — used for lint/build/dev only.
+  - **Build-time CSS/asset processing deps (not runtime app logic shipped to users, but affect build pipeline):** `postcss` (high; devDependency) and transitive `nanoid` (high advisories), `source-map-js` (high). `@tailwindcss/vite` is declared in `dependencies` but functions as a Vite/build plugin; production artifact is static `dist/`.
+  - **Direct production runtime dependencies (`react`, `react-dom`, Radix UI, `clsx`, `tailwind-merge`, `class-variance-authority`, `uuid`):** **no vulnerabilities reported** in this audit output for these direct runtime packages.
+- **Risk note:** dev-server/build-chain vulnerabilities can matter in local/CI/dev contexts (e.g. malicious project content, untrusted inputs in dev tooling) and supply-chain/build integrity; they do not by themselves indicate exploitation in the deployed static frontend bundle. Remediation should be evaluated via normal dependency updates (respecting compatibility/lockfile), not `--force`.
+
+**4) Necessary corrections:** none identified requiring a new commit. Current commit and accepted history preserved (no force-push, no rewrite). No credentials discovered; no rotation/history rewriting performed.
+
+**Status:** post-commit verification completed with noted limitations (no gitleaks over full history; detect-secrets finding reviewed as test placeholder). Returned to M4 dataset expansion work.
+
+### DR-017 — Final delivery implementation: chunking selection, hybrid retrieval, prompts, CI eval, tracing, and deployment artifacts
+
+**Date.** 2026-11-19
+
+**Context.** Final project delivery required completing ingestion-to-answer pipeline, chunking experiment, hybrid retrieval + Cohere reranking integration, externalized/versioned prompts, RAGAS-integrated evaluation on fixed 15-question CI suite, PR CI with regression gates, Langfuse tracing, metrics dashboard, and public deployment compatibility.
+
+**Decisions and evidence.**
+- **Chunking (measured):** controlled experiment (`experiments/chunking_experiment.py`, `experiments/results/chunking_experiment/`) compared fixed-character 500/100, 800/160, 1000/200, 1200/240 on CI answerable subset (same PDF/embedding/dense k=5). Selected **800/160** (61 chunks) for highest recall@5 (0.9236) and MRR@5 (0.8611), audit ok. Q05 (2.5.6) became retrievable at 800/160 (and other tested sizes except 1000/200). Default config and ingestion/index rebuild updated to 800/160; collection `satcom_ngp_production_fixed_char_800_160` built. Historical 1000/200 artifacts/baselines preserved.
+- **Hybrid retrieval (measured):** implemented BM25+RRF fusion and configurable retriever (`src/rag_core/retrieval.py`, `HybridRetriever`, modes dense/hybrid/hybrid_rerank). On 800/160 CI set, hybrid improved supported_answer_rate 0.5833→0.8333 and citation_support_rate 0.4828→0.5484 vs dense with same recall/evidence coverage (0.9236) and precision 0.3333 (`evaluation/results/ci_compare_800_160/report.json`). Hybrid adopted as default retrieval mode. Q08 remains partial retrieval; Q10 remains selection-limited despite evidence retrieval.
+- **Cohere reranking:** integrated (`cohere_rerank`, mode `hybrid_rerank`, default `rerank-english-v3.0`) with mocked tests (`tests/test_cohere_reranker.py`). Live credentialed comparison not completed because `CO_API_KEY`/`COHERE_API_KEY` unavailable (empty in `.env`); fallback runs not evidence of reranker quality. Pending valid key for live latency/usage/cost/quality measurement.
+- **Prompts:** externalized to `prompts/` with manifest and versioned template (`prompts/generation_grounded_v1.txt`, `grounded_json_v1`), loader (`src/rag_app/prompts.py`) and generation integration; prompt version recorded in responses/trace metadata.
+- **CI fixed 15-question suite:** `evaluation/ci_golden_dataset.json` (ci_golden_v1, draft_not_independently_verified) composed as 12 preserved answerable EXP-001 questions + 3 preserved unanswerable/out-of-scope questions to satisfy 15-question limit and required coverage; historical artifacts unchanged. Evaluation harness `evaluation/ci_eval.py` computes retrieval/answer/citation/abstention/latency metrics, retrieval comparisons, and regression gates against measured baseline (`evaluation/baseline_metrics.json`, 800/160 dense). Workflow `.github/workflows/ci.yml` runs on PR/push with deterministic tests/eval and regression check.
+- **RAGAS:** integrated in `evaluation/ci_eval.py` (`--enable-ragas`); live run attempted (`evaluation/results/ci_ragas_dense_800_160/`) but failed in this environment due to ragas/langchain/pydantic dependency incompatibility. Metrics not measured; integration retained.
+- **Langfuse tracing:** implemented best-effort/no-op tracer (`src/rag_app/langfuse_tracing.py`) instrumented across request, retrieval, selection, evidence sufficiency, generation, citation validation stages with metadata capture (request/question/mode/retrieval, prompt/model info, chunk IDs/ranks/scores, errors). Live tracing unavailable because Langfuse credentials empty in `.env`; mock/no-op behavior tested (`tests/test_observability_langfuse.py`).
+- **Dashboard/API:** `/metrics`, `/dashboard` (live + offline artifacts), `/ingest`, `/query` with retrieval_mode/generation mode, trace IDs/timings/debug. Frontend remains integrated to backend API.
+- **Deployment:** Vercel-oriented artifacts added (`vercel.json`, `api/index.py`) with documented Hobby/serverless constraints (bundle/model/cold start, no persistent local Chroma). No paid infrastructure used; public deployment not completed due to external hosting/provisioning/account constraints. Precise remaining steps documented in `docs/DEPLOYMENT.md`.
+
+**Test evidence (2026-11-19).**
+- `python -m pytest tests -q -k "not real_index"`: **118 passed, 1 deselected, 29 warnings**
+- `python -m pytest tests/test_api.py::test_real_index_extractive_smoke_q05_and_q12_representative -q`: **1 passed, 4 warnings** (hybrid, 800/160 index)
+- New tests: prompts, hybrid RRF/tokenization, Cohere reranker mocks, Langfuse no-op tracer.
+
+**Known limitations (honest).** Cohere live rerank and Langfuse live traces pending credentials; RAGAS metrics pending compatible runtime; public deployment pending verified free-tier hosting/provisioning; Gemini quality limitations remain (extractive grounded path default); Q08 partial retrieval and Q10 selection issues persist; CI dataset draft/not independently verified.
+
+---
+
+### DR-018 — Final gap closure: Langfuse skill/v4 tracing, RAGAS execution, live evals, CI verification, metrics/dashboard, and deployment status (2026-11-19)
+
+**Scope.** Closed remaining delivery gaps without starting new RAG experiments or rebuilding completed components. Preserved pre-existing unrelated working-tree deletions and historical artifacts.
+
+**Langfuse (skill + implementation).**
+- Installed Langfuse AI skill from `github.com/langfuse/skills` into `.agents/skills/langfuse` (SKILL.md + references) and followed skill guidance (documentation-first, v4 SDK/manual instrumentation, meaningful trace/span names, input/output/metadata capture, flush, no-op safety).
+- Rewrote tracing integration for Langfuse Python SDK v4 (OTEL-based, 4.2.0) in `src/rag_app/langfuse_tracing.py` (root request observation + child observations with stage-appropriate types: retriever/chain/evaluator/generation), added generation usage details capture in `src/rag_app/service.py`, maintained no-op behavior when disabled/unconfigured. Tests: `tests/test_observability_langfuse.py` and API tests passed.
+- **Live Langfuse tracing:** blocked in-session (`LANGFUSE_PUBLIC_KEY`/`LANGFUSE_SECRET_KEY` empty in `.env`); integration is credential-ready but actual cloud traces/pipeline-stage visibility could not be verified without valid credentials.
+
+**RAGAS / evaluation pipeline.**
+- Resolved RAGAS/Pydantic compatibility by upgrading `ragas` to 0.2.15 and updating `evaluation/ci_eval.py` (Gemini key mapping for LangChain wrappers, explicit API keys, configurable metrics/models/embedding, serialized `RunConfig`, `raise_exceptions=False`).
+- Successfully executed RAGAS-enabled evaluation pipeline (not left unexecuted): final artifact `evaluation/results/ci_ragas_dense_800_160_final/report.json` with metrics `context_precision=0.3333333333041667`, `context_recall=0.4166666666666667`, `faithfulness=0.8605442176870749`, `answer_relevancy=null`, `answer_correctness=null` (12 rows, `gemini-flash-lite-latest`; embedding recorded as `models/text-embedding-004`, null metrics indicate partial computation issues/quota/runtime effects). Earlier failures recorded in `ci_ragas_dense_800_160*` artifacts.
+
+**Frontend and production configuration (Gemini path).**
+- Verified backend/default production config retains Gemini provider/model path (`google_generativeai` / `gemini-flash-lite-latest`, configurable via env; `RAG_ALLOW_GEMINI`, `GEMINI_API_KEY`/`GOOGLE_API_KEY`). No alternative LLM provider/model searched or introduced.
+- Updated frontend (`frontend/src/App.jsx`) to support selectable generation mode (`extractive` default, `gemini` available) against existing `/query` API and clarified UI messaging; frontend build passed (`npm run build`).
+
+**Live Gemini evaluation (measured, honest).**
+- Artifacts: `evaluation/results/gemini_live_eval/{responses.json,summary.json,analysis.json,analysis_summary.json}` (15-question CI set, hybrid retrieval, mode gemini).
+- Aggregate: 15 requests, 12 answered, 3 abstained, 0 errors. Request latency mean 3766.529 ms, p50 3162.029 ms, p95 5231.978 ms. Generation latency 926.8–10151.6 ms (answered cases). Tokens (12 requests with usage): prompt 4613, completion 673, total 5286. Estimated cost USD not computed (pricing/SKU not auto-fetched).
+- Quality issues (automated review): all unanswerables correctly abstained; no invalid source IDs/uncited claims detected; **incomplete/quality-deficient answerable responses** observed for `EXP001-Q04`, `EXP001-Q08`, `EXP001-Q10`, `EXP001-Q15` (missing expected details/categories/components/procedural specificity). Not production-accepted.
+
+**Live Cohere reranker validation (measured).**
+- `CO_API_KEY` available; live rerank applied (`rerank-english-v3.0`, observed scores/latency). Comparison: `evaluation/results/ci_compare_800_160_rerank_live_final/report.json` (dense/hybrid/hybrid_rerank, extractive, k=5, 15-question CI).
+- Results: dense recall@5 0.9236/mrr@5 0.8611/supported 0.5833/citation 0.4828; hybrid recall@5 0.9236/mrr@5 0.8472/supported 0.8333/citation 0.5484; hybrid_rerank recall@5 0.9236/mrr@5 0.9028/supported 0.6667/citation 0.4839 (latency much higher). **Mixed evidence; no overall improvement claimed** (ranking improved vs hybrid but answer/citation support decreased).
+
+**CI dataset and workflow validation.**
+- Fixed 15-question suite preserved (`evaluation/ci_golden_dataset.json`, draft_not_independently_verified). Performed separate **automated** verification pass: `evaluation/results/ci_dataset_verification.json` (pass: count/split/IDs/evidence-span-to-PDF mapping/field consistency). Independent human verification **not claimed**.
+- GitHub Actions workflow `.github/workflows/ci.yml` reviewed and locally validated with CI-equivalent commands including regression gate: `evaluation/results/ci_local_validation/report.json` → `regression.passed=true` against measured baseline. Actual remote PR/push execution not performed (no authenticated `gh`/push credentials in environment).
+
+**Dashboard/metrics and live verification.**
+- Enhanced `src/rag_app/metrics.py` and `backend/main.py` dashboard to aggregate/report P50/P95/mean latency, token consumption, cost-per-request, citation coverage, failure/abstention rates; **null used for unavailable metrics (not zero)** with explicit notes. Generated actual request/evaluation data and snapshot: `evaluation/results/live_metrics_snapshot.json` (4 requests: 3 extractive + 1 Gemini, failure_rate 0.0, citation_coverage 1.0, latency p50 1603.017 ms/p95 12112.304 ms, token mean 516 where available, cost mean null).
+
+**Deployment.**
+- Deployment artifacts/config remain in place (`vercel.json`, `api/index.py`, env-driven config, CORS). Architecture documented as Vercel frontend + separate free-tier backend host with persistent storage/model cache (or equivalent) due to Hobby/serverless constraints for local Chroma + embedding model. **Public deployment not completed** (no verified free-tier backend provisioning/account access/Vercel deployment credentials in-session); no public URL. Remaining steps and constraints recorded in `docs/DEPLOYMENT.md`.
+
+**Test results (executed).** `python -m pytest tests -q` → **120 passed, 42 warnings**. `cd frontend && npm run build` → **passed**. Local CI regression eval passed.
+
+**Blockers (external).** Missing Langfuse API credentials (live trace verification in Langfuse UI/cloud). No authenticated GitHub access to create/run actual remote PR/push workflow run. No verified free-tier backend hosting/account provisioning/Vercel deployment access for public URL. RAGAS metrics partially null in executed run (quota/runtime/evaluator constraints). Gemini cost not auto-priced.

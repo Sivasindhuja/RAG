@@ -96,28 +96,55 @@ class MetricsCollector:
         retrieval = [r.stage_timings_ms.get("retrieval") for r in records if r.stage_timings_ms.get("retrieval") is not None]
         selection = [r.stage_timings_ms.get("selection_and_extractive") for r in records if r.stage_timings_ms.get("selection_and_extractive") is not None]
         generation = [r.stage_timings_ms.get("gemini_generation") for r in records if r.stage_timings_ms.get("gemini_generation") is not None]
+        prompt_tokens = [float(r.prompt_tokens) for r in records if r.prompt_tokens is not None]
+        completion_tokens = [float(r.completion_tokens) for r in records if r.completion_tokens is not None]
+        total_tokens = [float(r.total_tokens) for r in records if r.total_tokens is not None]
+        costs = [float(r.estimated_cost_usd) for r in records if r.estimated_cost_usd is not None]
         citation_coverages = []
         for r in records:
             # citation coverage proxy: answered requests with >=1 citation/statement
             if r.status == "answered" and not r.abstained:
                 citation_coverages.append(1.0 if r.citation_count > 0 else 0.0)
-        abstention_rate = (totals["abstentions_total"] / totals["requests_total"]) if totals["requests_total"] else 0.0
-        failure_rate = (totals["failures_total"] / totals["requests_total"]) if totals["requests_total"] else 0.0
+        abstention_rate = (totals["abstentions_total"] / totals["requests_total"]) if totals["requests_total"] else None
+        failure_rate = (totals["failures_total"] / totals["requests_total"]) if totals["requests_total"] else None
+        citation_cov = (sum(citation_coverages) / len(citation_coverages)) if citation_coverages else None
+
+        def _agg(vals: List[float]) -> Dict[str, Any]:
+            if not vals:
+                return {"count": 0, "total": None, "mean": None, "p50": None, "p95": None}
+            return {
+                "count": len(vals),
+                "total": round(sum(vals), 6),
+                "mean": round(sum(vals) / len(vals), 6),
+                "p50": _percentile(vals, 0.5),
+                "p95": _percentile(vals, 0.95),
+            }
+
         return {
             "started_at": self._started_at,
             "uptime_s": round(time.time() - self._started_at, 3),
             "window_size": n,
             "totals": totals,
             "rates": {
-                "abstention_rate": round(abstention_rate, 4),
-                "failure_rate": round(failure_rate, 4),
-                "answered_citation_coverage_rate": round(sum(citation_coverages) / len(citation_coverages), 4) if citation_coverages else None,
+                "abstention_rate": round(abstention_rate, 4) if abstention_rate is not None else None,
+                "failure_rate": round(failure_rate, 4) if failure_rate is not None else None,
+                "answered_citation_coverage_rate": round(citation_cov, 4) if citation_cov is not None else None,
             },
             "latency_ms": {
                 "total": {"count": len(latencies), "p50": _percentile(latencies, 0.5), "p95": _percentile(latencies, 0.95), "mean": round(sum(latencies)/len(latencies), 3) if latencies else None},
                 "retrieval": {"count": len(retrieval), "p50": _percentile(retrieval, 0.5), "p95": _percentile(retrieval, 0.95)},
                 "selection_and_extractive": {"count": len(selection), "p50": _percentile(selection, 0.5), "p95": _percentile(selection, 0.95)},
                 "gemini_generation": {"count": len(generation), "p50": _percentile(generation, 0.5), "p95": _percentile(generation, 0.95)},
+            },
+            "token_consumption": {
+                "prompt_tokens": _agg(prompt_tokens),
+                "completion_tokens": _agg(completion_tokens),
+                "total_tokens": _agg(total_tokens),
+                "note": "Aggregated from requests reporting usage (typically Gemini). Null totals/means indicate unavailable usage data, not zero.",
+            },
+            "cost_per_request_usd": {
+                **_agg(costs),
+                "note": "Estimated cost is null when pricing/usage is unavailable; null does not mean free.",
             },
             "recent": [r.__dict__ for r in list(records)[-20:]],
         }

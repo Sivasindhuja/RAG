@@ -1,0 +1,42 @@
+{
+  "retrieval_mode": "dense",
+  "k": 5,
+  "chunk_config": {"chunk_size": 1000, "chunk_overlap": 200, "collection": "satcom_ngp_production_fixed_char"},
+  "summary": {
+    "total_questions": 15,
+    "answerable": {
+      "count": 12,
+      "answered": 11,
+      "abstained": 1,
+      "supported_answers": 9,
+      "supported_answer_rate": 0.75,
+      "statement_support_rate": 0.3333,
+      "citation_support_rate": 0.52,
+      "invalid_citation_count": 0
+    },
+    "unanswerable": {
+      "count": 3,
+      "correct_abstentions": 3,
+      "abstention_accuracy": 1.0,
+      "incorrect_non_abstentions": 0
+    },
+    "retrieval": {
+      "recall@5": 0.8611,
+      "precision@5": 0.2667,
+      "mrr@5": 0.743,
+      "evidence_coverage": 0.8611
+    },
+    "quality": {
+      "invalid_citation_count_total": 0,
+      "failure_count": 0,
+      "failure_rate": 0.0
+    },
+    "latency_ms": {
+      "count": 15,
+      "mean": 1626.4986,
+      "p50": 21.423,
+      "p95": 7244.3339
+    }
+  },
+  "notes": "Measured on CI golden set before chunking experiment selection; preserved for comparison."
+}

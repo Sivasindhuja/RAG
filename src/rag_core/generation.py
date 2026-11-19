@@ -21,6 +21,7 @@ import json
 import re
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from .pipeline import AnswerStatement, Citation
@@ -33,7 +34,7 @@ INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
 EVIDENCE_INSUFFICIENT = "evidence_insufficient"
 DEFAULT_GENERATOR_MODEL = "qwen2.5:1.5b"
 
-GEMINI_PROMPT_VERSION = "m1-v1"
+GEMINI_PROMPT_VERSION = "grounded_json_v1"
 DEFAULT_GEMINI_MODEL = "gemini-2.0-flash"
 DEFAULT_GEMINI_TEMPERATURE = 0.0
 DEFAULT_GEMINI_MAX_OUTPUT_TOKENS = 512
@@ -46,6 +47,19 @@ DEFAULT_GENERATOR_OPTIONS: Dict[str, Any] = {
 }
 
 _FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+PROMPTS_DIR = ROOT_DIR / "prompts"
+
+
+def _load_prompt_template(name: str = "generation_grounded_v1.txt") -> str:
+    path = PROMPTS_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"Prompt template not found: {path}")
+    text = path.read_text(encoding="utf-8")
+    if not text.strip():
+        raise ValueError(f"Prompt template is empty: {path}")
+    return text
 
 
 class GenerationContractError(ValueError):
@@ -147,8 +161,9 @@ def build_gemini_evidence_prompt(
     question: str,
     statements: Sequence[AnswerStatement],
     prompt_version: str = GEMINI_PROMPT_VERSION,
+    template_name: str = "generation_grounded_v1.txt",
 ) -> str:
-    """Build the versioned Gemini prompt for supplied-evidence-only answering.
+    """Build the versioned Gemini prompt from configurable prompt templates.
 
     Evidence is identified only by opaque numeric IDs [1..N]. The application
     validates cited IDs and resolves them to actual source metadata; the model
@@ -158,28 +173,19 @@ def build_gemini_evidence_prompt(
         raise ValueError("at least one selected evidence statement is required")
     evidence = "\n".join(f"[{index}] {statement.text}" for index, statement in enumerate(statements, 1))
     maximum = len(statements)
-    return f"""You are a careful policy analyst for the ISRO SATCOM NGP document.
-Prompt version: {prompt_version}
-
-Task: answer the question using ONLY the evidence items below. Do not use outside knowledge, general world knowledge, or assumptions about policy not stated in the evidence.
-
-Return valid JSON only with exactly this shape:
-{{"sentences": [{{"text": "...", "sources": [1]}}]}}
-
-Rules:
-- Use only evidence IDs from 1 to {maximum}. Do not invent IDs.
-- Every sentence must be a factual claim supported by the cited evidence ID(s). Cite every evidence ID that supports the sentence.
-- Do not include page numbers, section numbers, clause labels, chunk IDs, or source metadata in your text.
-- Do not include background, interpretation, or facts not explicitly present in the cited evidence.
-- Do not repeat claims. Use at most 3 sentences.
-- If the evidence is insufficient or does not answer the question, return {{"sentences": []}}.
-- Preserve the policy meaning; do not paraphrase into a different claim.
-
-Evidence:
-{evidence}
-
-Question: {question}
-"""
+    template = _load_prompt_template(template_name)
+    rendered = (
+        template.replace("{{prompt_version}}", str(prompt_version))
+        .replace("{{max_source_id}}", str(maximum))
+        .replace("{{evidence}}", evidence)
+        .replace("{{question}}", question)
+    )
+    # Ensure placeholders resolved (ignore JSON braces).
+    import re as _re
+    unresolved = _re.findall(r"\{\{[^}]+\}\}", rendered)
+    if unresolved:
+        raise ValueError(f"Unresolved prompt placeholders: {sorted(set(unresolved))}")
+    return rendered
 
 
 def _strip_fence(raw: str) -> str:

@@ -48,6 +48,7 @@ from .index import (
     RetrievedChunk,
     chunk_to_metadata,
 )
+from .retrieval import CorpusIndex, HybridRetriever, RetrievalResult, cohere_rerank, rrf_fuse, tokenize
 from .pipeline import (
     ABSTAINED,
     ANSWERED,
@@ -90,6 +91,7 @@ __all__ = [
     "CLAUSE_RE",
     "AnswerStatement",
     "Citation",
+    "CorpusIndex",
     "DEFAULT_EMBEDDING_MODEL",
     "DEFAULT_GEMINI_MODEL",
     "DEFAULT_GENERATOR_MODEL",
@@ -115,9 +117,11 @@ __all__ = [
     "GroundedAnswer",
     "GroundedPipeline",
     "Heading",
+    "HybridRetriever",
     "OllamaGenerator",
     "Page",
     "Question",
+    "RetrievalResult",
     "RetrievedChunk",
     "SourceDocument",
     "StructureAwareChunker",
@@ -127,6 +131,7 @@ __all__ = [
     "build_gemini_evidence_prompt",
     "build_selected_evidence_prompt",
     "chunk_to_metadata",
+    "cohere_rerank",
     "compute_retrieval_metrics",
     "evaluate_answer_support",
     "evidence_coverage_summary",
@@ -136,4 +141,6 @@ __all__ = [
     "load_questions",
     "overlap_chars",
     "parse_generated_claims",
+    "rrf_fuse",
+    "tokenize",
 ]

@@ -9,6 +9,7 @@ class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, description="User question about satcom-ngp.pdf")
     mode: Literal["extractive", "gemini"] = "extractive"
     top_k: Optional[int] = Field(default=None, ge=1, le=20)
+    retrieval_mode: Optional[Literal["dense", "hybrid", "hybrid_rerank"]] = None
 
 
 class CitationModel(BaseModel):
@@ -71,6 +72,7 @@ class QueryResponse(BaseModel):
     request_id: str
     status: Literal["answered", "abstained", "error"]
     mode: Literal["extractive", "gemini"]
+    retrieval_mode: Literal["dense", "hybrid", "hybrid_rerank"] = "dense"
     question: str
     answer: str
     abstained: bool
@@ -89,7 +91,9 @@ class QueryResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     default_mode: str
+    retrieval_mode: str
     collection_name: str
     top_k: int
     index_available: bool
     gemini_configured: bool
+    langfuse: Dict[str, Any] = Field(default_factory=dict)

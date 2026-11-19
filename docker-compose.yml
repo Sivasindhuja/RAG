@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - RAG_PERSIST_DIR=/app/chroma_db_production
+      - RAG_COLLECTION_NAME=satcom_ngp_production_fixed_char_800_160
+      - RAG_RETRIEVAL_MODE=hybrid
+      - RAG_GENERATION_MODE=extractive
+      - RAG_ALLOW_GEMINI=true
+      - RAG_CORS_ORIGINS=*
+      - LANGFUSE_ENABLED=false
+      # Set secrets via env file or platform secrets (do not commit):
+      # - GEMINI_API_KEY=...
+      # - CO_API_KEY=...
+      # - LANGFUSE_PUBLIC_KEY=...
+      # - LANGFUSE_SECRET_KEY=...
+      # - LANGFUSE_HOST=https://cloud.langfuse.com
+    volumes:
+      # Mount prebuilt index for persistence across container restarts/recreates
+      - ./chroma_db_production:/app/chroma_db_production
+      # Optional: persist model cache to reduce cold starts
+      - rag_model_cache:/app/.cache
+    restart: unless-stopped
+
+volumes:
+  rag_model_cache:

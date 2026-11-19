@@ -631,3 +631,30 @@ EXP-001 v3 is reproduced only from its frozen runner/artifacts.
 | `docs/EXP-001.md` … `docs/EXP-005.md` | Experiment reports. |
 | `docs/PRODUCTION_SLICE.md` | Validated extractive slice. |
 | `docs/CHUNKING_STRATEGY.md` | Historical design analysis (context only). |
+
+---
+
+## 11. Final implementation update (2026-11-19)
+
+This update reflects the implemented system as of 2026-11-19. Historical sections above are preserved for project history; where they conflict, this update and linked artifacts are authoritative for current implementation.
+
+### Implemented architecture (current)
+PDF (`data/satcom-ngp.pdf`) → extraction/metadata (`src/rag_core/document.py`) → configurable chunking (`FixedCharacterChunker`/`StructureAwareChunker`, `scripts/ingest.py`, `POST /ingest`) → embeddings (`sentence-transformers/all-MiniLM-L6-v2`) → ChromaDB indexing (`src/rag_core/index.py`, persisted collection) → query (`POST /query`, `src/rag_app/service.py`) → dense retrieval + BM25 hybrid retrieval with RRF (`src/rag_core/retrieval.py`) → optional Cohere reranking (integrated, credential-gated) → evidence selection/sufficiency & abstention (`GroundedPipeline`, app guard) → Gemini generation (optional, controlled, externalized prompts) → citation validation/grounding checks (app-resolved IDs/offsets/pages) → response with trace IDs/timings and inspectable citations.
+
+### Selected configurations (measured)
+- **Chunking:** fixed-character 800/160 selected by controlled experiment (`docs/CHUNKING_EXPERIMENT.md`, `experiments/results/chunking_experiment/`), 61 chunks, complete coverage audit.
+- **Index/embeddings:** ChromaDB collection `satcom_ngp_production_fixed_char_800_160` in `chroma_db_production`, embedding `sentence-transformers/all-MiniLM-L6-v2`.
+- **Retrieval:** hybrid dense+BM25 RRF default (evidence-backed on CI set; `docs/RETRIEVAL_COMPARISON.md`). Dense-only retained for comparison. Cohere rerank integrated/mocked-tested; live quality/latency/usage not yet measured (no valid key).
+- **Prompts:** versioned external templates in `prompts/` (`prompts/manifest.json`, `grounded_json_v1`) loaded via `src/rag_app/prompts.py`; prompt version recorded in responses/traces.
+- **Generation:** Gemini retained (`gemini-flash-lite-latest` default config), evidence-only JSON contract, sufficiency gate, app-side citation validation/fallback; quality limitations remain and are reported (not claimed production-grade).
+- **Tracing/observability:** in-app traces/metrics (`src/rag_app/observability.py`, `src/rag_app/metrics.py`, `/metrics`, `/dashboard`) plus Langfuse integration (`src/rag_app/langfuse_tracing.py`) with no-op/mock behavior when credentials unavailable; live Langfuse pending valid credentials.
+- **Evaluation/CI:** fixed 15-question CI suite `evaluation/ci_golden_dataset.json` (draft, not independently verified), `evaluation/ci_eval.py` with deterministic checks and RAGAS integration hook, regression gates against measured baseline `evaluation/baseline_metrics.json`, PR workflow `.github/workflows/ci.yml`.
+- **Deployment:** Vercel-oriented artifacts (`vercel.json`, `api/index.py`) and deployment docs added; public URL blocked by external hosting/provisioning constraints in this environment (see `docs/DEPLOYMENT.md`).
+
+### Validation summary (2026-11-19)
+- Tests: `118 passed, 1 deselected` (`pytest -k "not real_index"`), plus real-index smoke test passed.
+- CI dense baseline (800/160): recall@5 0.9236, mrr@5 0.8611, evidence_coverage 0.9236, supported_answer_rate 0.5833, citation_support_rate 0.4828, abstention_accuracy 1.0, invalid citations 0.
+- Hybrid vs dense (800/160): hybrid improved supported_answer_rate to 0.8333 and citation_support_rate to 0.5484 with same recall/evidence coverage.
+- RAGAS live metrics not produced (dependency incompatibility in environment); Cohere/Langfuse live runs pending credentials; Gemini limitations reported.
+
+See: `docs/CI_EVALUATION.md`, `docs/CHUNKING_EXPERIMENT.md`, `docs/RETRIEVAL_COMPARISON.md`, `docs/DEPLOYMENT.md`, `docs/ENGINEERING_LOG.md`, `docs/BACKLOG.md`.
