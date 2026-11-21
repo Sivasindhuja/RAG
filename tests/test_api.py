@@ -366,3 +366,131 @@ def test_dashboard_endpoint(monkeypatch):
     assert resp.status_code == 200
     assert "SATCOM NGP RAG" in resp.text
     assert "Live operational metrics" in resp.text
+
+
+def test_ingest_disabled_by_default_fails_closed(monkeypatch):
+    calls = {"build": 0}
+
+    class NoBuildIndex(FakeIndex):
+        def build(self, chunks, reset=True):
+            calls["build"] += 1
+            return {"count": 1}
+
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=NoBuildIndex([_hit()]),
+        pipeline=FakePipeline(FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])),
+    )
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    monkeypatch.delenv("RAG_INGEST_TOKEN", raising=False)
+
+    client = TestClient(backend_main.app)
+    resp = client.post("/ingest")
+    assert resp.status_code == 403
+    assert "disabled" in resp.json()["detail"].lower()
+    assert calls["build"] == 0
+
+
+def test_ingest_rejects_missing_or_wrong_token(monkeypatch):
+    calls = {"build": 0}
+
+    class NoBuildIndex(FakeIndex):
+        def build(self, chunks, reset=True):
+            calls["build"] += 1
+            return {"count": 1}
+
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=NoBuildIndex([_hit()]),
+        pipeline=FakePipeline(FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])),
+    )
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    monkeypatch.setenv("RAG_INGEST_TOKEN", "secret-token")
+
+    client = TestClient(backend_main.app)
+    resp_missing = client.post("/ingest")
+    resp_wrong = client.post("/ingest", headers={"X-Ingest-Token": "wrong"})
+    assert resp_missing.status_code == 403
+    assert resp_wrong.status_code == 403
+    assert "unauthorized" in resp_missing.json()["detail"].lower()
+    assert "unauthorized" in resp_wrong.json()["detail"].lower()
+    assert calls["build"] == 0
+
+
+def test_ingest_authorized_request_triggers_rebuild(monkeypatch):
+    import src.rag_core as rag_core
+
+    calls = {"build": 0, "reset": None}
+
+    class BuildIndex(FakeIndex):
+        def build(self, chunks, reset=True):
+            calls["build"] += 1
+            calls["reset"] = reset
+            return {"count": len(chunks), "status": "ok"}
+
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=BuildIndex([_hit()]),
+        pipeline=FakePipeline(FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])),
+    )
+    fake_service._retriever = object()
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    monkeypatch.setenv("RAG_INGEST_TOKEN", "secret-token")
+
+    class DummyDoc:
+        total_chars = 10
+
+    class DummyChunker:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def chunk(self, doc):
+            return [SimpleNamespace(text="chunk")]
+
+    monkeypatch.setattr(rag_core, "extract_source_document", lambda path: DummyDoc())
+    monkeypatch.setattr(rag_core, "FixedCharacterChunker", DummyChunker)
+    monkeypatch.setattr(rag_core, "StructureAwareChunker", DummyChunker)
+    monkeypatch.setattr(
+        rag_core,
+        "audit_source_coverage",
+        lambda doc, chunks, max_chars, allow_overlap: {"ok": True, "coverage_percent": 100.0, "overlap_chars": 0, "uncovered_non_whitespace_chars": 0, "total_chars": 10, "covered_chars": 10, "issues": []},
+    )
+
+    client = TestClient(backend_main.app)
+    resp = client.post("/ingest", headers={"X-Ingest-Token": "secret-token"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "ok"
+    assert data["chunk_count"] == 1
+    assert calls["build"] == 1
+    assert calls["reset"] is True
+    assert fake_service._retriever is None
+
+
+def test_ingest_protection_does_not_affect_health_or_query(monkeypatch):
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+    )
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    monkeypatch.delenv("RAG_INGEST_TOKEN", raising=False)
+
+    client = TestClient(backend_main.app)
+    ingest_resp = client.post("/ingest")
+    assert ingest_resp.status_code == 403
+
+    health = client.get("/health")
+    assert health.status_code == 200
+    query = client.post("/query", json={"question": "What is sample?", "mode": "extractive"})
+    assert query.status_code == 200
+    assert query.json()["status"] == "answered"

@@ -1675,3 +1675,132 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 **Q07 / Q12 verification.** Q12: original `tests/test_citation_metadata.py::test_q12_definition_statements_resolve_to_clause_4_2` assertions **pass unchanged** against isolated temp index; selected statements resolve to 4.2 and no longer include 3.2 fragment. Q07: synthetic Q07-style regression test passes (prefers Indian Satellites heading definition); temp-index sanity check with `definition_intent_boost=True` selected the 3.2-governed Indian Satellite definition sentence as top candidate. No dataset/ground-truth/baseline modifications.
 
 **CI/public deployment status.** Not executed/verified in this session (no commit/push/merge/deploy performed; GitHub Actions for pushed commits not verified; no Render/Vercel public deployment/smoke tests). Local deterministic verification only. Untracked local eval artifact `evaluation/results/ci_local_q12_heading_fix/` may exist from regression command; no baseline/dataset files changed.
+
+---
+
+### Deployment hardening (2026-11-21, post-merge Task 1, local implementation) — Protect public `POST /ingest`
+
+**Status/constraints.** Post-merge hardening on latest merged `main` (`4187f4d`, origin/main fast-forwarded locally) before this task. **No commit/push/merge/deploy.** No `git reset/clean/stash/discard`. Preserved pre-existing unrelated unstaged deletions (`experiments/rag.py`, `experiments/results/eval_report.json`, `src/memory/working.py`, `src/metrics/citation.py`, `src/restart.py`, `tests/eval_pipeline.py`, `todo.txt`) and unrelated untracked files (`.agents/`, `evaluation/results/`, `experiments/chunking_experiment.py`, `experiments/eval/`, `experiments/results/chunking_experiment.log`, `experiments/results/chunking_experiment.run.log`, `experiments/results/chunking_experiment/`, `nul`, `vercel.frontend.json`, `vercel.json`). No Gemini provider/model change; no RAG architecture/chunking/retrieval default redesign.
+
+**Security issue (before).** `POST /ingest` in `backend/main.py` was publicly reachable without authentication and triggered index rebuild from configured PDF (`extract_source_document` -> chunk -> audit -> `index.build(..., reset=True)` -> reset retriever). On a publicly deployed backend this allowed unauthorized callers to trigger expensive CPU/memory/disk work and index mutation/reset behavior.
+
+**Root cause.** The endpoint was exposed for reproducible ingestion convenience but had no access control, no disable-by-default guard, and no deployment secret/token requirement.
+
+**Decision.** Protect `POST /ingest` with a dedicated ingestion token (`RAG_INGEST_TOKEN`) and **fail closed** when token is missing/unconfigured. This preserves controlled HTTP ingestion for authorized operators while disabling public ingestion by default. Internal ingestion/recovery behavior remains internal: `src/rag_app/service.py::_ensure_index_ready` still rebuilds missing/empty index from the configured source PDF; `scripts/ingest.py` CLI remains available for local/controlled ingestion. No paid services/dependencies added.
+
+**Implementation.**
+- `src/rag_app/config.py`: added `ingest_token: Optional[str] = None` and `RAG_INGEST_TOKEN` env loading.
+- `backend/main.py`: `POST /ingest` now requires `X-Ingest-Token` header. If `RAG_INGEST_TOKEN` is unset/empty after strip -> **403** `"Ingestion endpoint is disabled. Configure RAG_INGEST_TOKEN to enable authorized ingestion."` (fail closed). If header missing/wrong -> **403** `"Unauthorized ingestion request."` Token compared with `secrets.compare_digest`; token not logged, not returned in response, not exposed in frontend. Authorized requests execute existing ingestion flow unchanged.
+- `tests/test_api.py`: added 4 tests covering disabled-by-default fail-closed, missing/wrong token rejection, authorized rebuild, and no impact on `/health`/`/query`.
+- Docs/config examples: `.env.example`, `render.yaml`, `docker-compose.yml`, `docs/DEPLOYMENT.md`, `docs/PROJECT_BRIEF.md`, `docs/CHUNKING_EXPERIMENT.md` updated to document protected ingestion.
+
+**Exact security behavior before/after.**
+- **Before:** `POST /ingest` unauthenticated; any caller could trigger ingestion/index rebuild. No token required.
+- **After (local implementation, verified):** `POST /ingest` fails closed by default. No `RAG_INGEST_TOKEN` configured -> 403 disabled, no rebuild. Wrong/missing `X-Ingest-Token` when configured -> 403 unauthorized, no rebuild. Correct `X-Ingest-Token` matching configured `RAG_INGEST_TOKEN` -> authorized ingestion executes (200 on successful build path), rebuild/reset behavior preserved. `/health`, `/healthz`, `/query`, `/ask`, `/metrics`, `/dashboard` behavior unaffected.
+
+**Tests executed and exact results (local).**
+- `PYTHONPATH=$PWD python -m pytest tests/test_api.py -q` → **13 passed, 4 warnings in 18.61s**.
+- `PYTHONPATH=$PWD python -m pytest tests -q -k "not real_index" --maxfail=5` → **131 passed, 1 deselected, 29 warnings in 19.37s**.
+
+**Limitations / remaining work.**
+- `/ingest` remains an operationally sensitive endpoint even when token-protected; deployers should set a strong `RAG_INGEST_TOKEN`, restrict CORS/network exposure as appropriate, and avoid exposing the endpoint unnecessarily. No rate limiting/WAF/authn layer added (no paid dependency introduced).
+- Public deployment verification **not executed** (no Render/Vercel deploy/smoke in this session). GitHub Actions/CI for this post-merge hardening commit not executed because **no commit/push performed**.
+- Internal auto-recovery in `service._ensure_index_ready` still performs rebuild on missing/empty index (by design for Render Free ephemeral FS); this is internal, not an unauthenticated HTTP control surface, but still has cold-start/resource implications on free tier.
+
+**CI/public deployment status.** Not executed/verified. Local deterministic verification only; no staging/commit/push/merge/deploy.
+
+---
+
+### Investigation (2026-11-21, post-merge Task 2, investigation-only) — `definition_intent_boost` / Q12 heading-alignment production effectiveness
+
+**Status/constraints.** Investigation-only; **no implementation/config change**. No commit/push/merge/deploy; no staging. Preserved Task 1 local changes and all pre-existing unrelated unstaged deletions/untracked files. No Gemini provider/model change; no chunking/retrieval default/RAG architecture changes.
+
+**1) Configuration trace / effective production default (exact code refs).**
+- `src/rag_app/config.py:33` — `AppConfig.definition_intent_boost: bool = False` (dataclass default; comment: “Defaults: EXP-003 production behavior, no opt-in experimental candidates”).
+- `src/rag_app/config.py:64-93` — `AppConfig.from_env()` does **not** read any env var for `definition_intent_boost` (no `RAG_DEFINITION_INTENT_BOOST`/similar). Effective runtime default from env/config is therefore **False**.
+- `src/rag_app/service.py:181-193` — `RAGService.pipeline` constructs `GroundedPipeline(..., definition_intent_boost=self.config.definition_intent_boost, ...)`.
+- `src/rag_app/service.py:454-460` — debug `selection_defaults` reports `definition_intent_boost`.
+- `src/rag_core/pipeline.py:530,551,656+` — `GroundedPipeline.__init__` stores `definition_intent_boost` (default False). In `_extractive_answer`, `definitional_intent = self.definition_intent_boost and bool(_DEFINITION_INTENT_RE.search(question))`; only then may marker boost apply, and only boosted definition candidates (`is_definition_candidate`) receive bounded governing-heading alignment bonus (`min(3.0, 1.0*alignment)`) when alignment is computable. If boost off, heading-alignment path is never entered.
+- Deployment/env exposure checked: `render.yaml`, `docker-compose.yml`, `.env.example`, `backend/main.py` contain no `RAG_DEFINITION_INTENT_BOOST`/`definition_intent_boost` control; no env var currently enables it.
+
+**2) Code paths depending on it.** Only extractive selection scoring in `GroundedPipeline._extractive_answer` (`src/rag_core/pipeline.py`): definition-intent marker boost gate, mid-sentence chunk-boundary fragment guard interaction, and heading-subject alignment bonus (Task 2-fix code). No retrieval (dense/hybrid/RRF/rerank), chunking, embedding, citation validation schema, or Gemini provider/model path depends on it. Service only passes config through and reports debug.
+
+**3) Q12 heading-alignment improvement dormancy.** **Yes, dormant under current effective production/default config.** The heading-alignment bonus is applied only when `definition_intent_boost` is active and a candidate is boosted (`is_definition_candidate=True`). With default `False`, the Q12 fix added in the prior PR does not affect production selection. Local read-only check on existing `chroma_db_production/` (800/160, `satcom_ngp_production_fixed_char_800_160`, no rebuild) with `AppConfig.from_env()` default pipeline settings (`sibling_score_ratio=0.5`) and `answer_from_hits` on same retrieved hits for EXP001-Q12:
+- `definition_intent_boost=False` (effective default): selected 3 statements — `satcom-ngp::page_13::chunk_0::off30178@30208` sec `4.1`, `satcom-ngp::page_5::chunk_2::off10868@10868` sec `3.2`, `satcom-ngp::page_14::chunk_0::off32496@32783` sec `4.3.4`.
+- `definition_intent_boost=True`: selected 3 statements — `satcom-ngp::page_13::chunk_1::off30818@31006` sec `4.2`, `satcom-ngp::page_13::chunk_1::off30818@31255` sec `4.2`, `satcom-ngp::page_13::chunk_0::off30178@30569` sec `4.2`.
+
+**4) Q12 regression test / evaluation dataset review.**
+- `tests/test_citation_metadata.py::test_q12_definition_statements_resolve_to_clause_4_2` explicitly constructs `GroundedPipeline(index, sibling_score_ratio=0.5, definition_intent_boost=True)` and asserts Q12 statements resolve to clause 4.2/page 13 and include offsets 31006/31255. It validates the **opt-in boosted path**, not default production config. It passes locally (Task 1: 13 passed in test_api.py; full suite 131 passed) but does not prove Q12 under default config.
+- CI evaluation (`evaluation/ci_eval.py`) uses `AppConfig.from_env()` -> `RAGService`; with no env override and no config field for boost, CI eval runs with **default boost=False**. The committed baseline `evaluation/baseline_metrics.json` / CI comparison artifacts were measured under default config; they do not provide evidence for boost-on behavior. The 15-question CI set includes Q12 but does not currently fail the regression gate because supported/citation metrics are aggregate and Q12’s default behavior has not been isolated as a gate failure in current baseline.
+
+**5) Risk of enabling by default.** **Unmeasured risk exists.** Benefit evidence is narrow (Q12/EXP-008 target + synthetic heading-alignment regressions). Risks: definition-intent queries may receive boosted/heading-aligned selection that changes answer composition for other definition-like questions (Q04,Q07,Q10,Q12,Q13 in EXP-001 category), possible over-weighting/misalignment where headings are ambiguous/missing/mismatched, and interaction with sibling selection/answerability guard. Current automated evidence does **not** show broad improvement; no boost-on CI eval/baseline comparison was executed in this investigation. Enabling by default now would change production behavior without measured CI-set evidence.
+
+**6) Env/deployment exposure.** **Not exposed.** No `RAG_DEFINITION_INTENT_BOOST` in `AppConfig.from_env()`, `.env.example`, `render.yaml`, `docker-compose.yml`, or docs deployment env lists. Enabling today requires code/config construction change.
+
+**Recommendation (investigation-only; no implementation).** **Expose an environment variable and keep the default unchanged (`False`)**. Rationale: preserves current measured/default behavior and avoids unmeasured production-wide change; provides controlled rollout/observability for deployment experiments; aligns with existing opt-in pattern and limited evidence. Before enabling by default in any environment, run a measured boost-on vs boost-off comparison on the fixed CI set (and review Q07/Q04/Q10/Q12/Q13 and unanswerables), capture regression impact on supported_answer_rate/citation_support_rate/abstention/invalid citations, and document a decision. “Enable by default” is **not recommended now** due to insufficient evidence. “Keep disabled with no env exposure” is safe but limits controlled validation.
+
+**Evidence (factual).** Code refs above; local read-only Q12 default-vs-boost behavior observed on existing production index; Task 1 local deterministic suite **131 passed, 1 deselected, 29 warnings** (default config paths); CI eval uses `AppConfig.from_env()`; no boost-on CI baseline artifact produced here. No new metrics invented.
+
+**Unresolved decision.** Whether/when to expose `RAG_DEFINITION_INTENT_BOOST` (or equivalent) and whether to enable it after measured CI comparison. No config change made.
+
+**CI/public deployment status.** Not executed/verified. Investigation-only documentation change; no staging/commit/push/merge/deploy.
+
+---
+
+### Deployment hardening (2026-11-21, post-merge Task 3, local implementation) — Expose `definition_intent_boost` env var
+
+**Status/constraints.** Implements Task 2 recommendation (expose env var, keep default unchanged). No commit/push/merge/deploy; no staging. Preserved Task 1/Task 2 local changes and all pre-existing unrelated unstaged deletions/untracked files. No Gemini provider/model change; no chunking defaults, hybrid retrieval defaults, or RAG architecture changes. No retrieval algorithm/heading-alignment bonus changes.
+
+**Implementation.**
+- `src/rag_app/config.py`: added `_env_bool_strict(name, default)` (accepts true/false,1/0,yes/no,on/off; raises `ValueError` on invalid values). `AppConfig.from_env()` now reads `RAG_DEFINITION_INTENT_BOOST` via strict parsing; **default remains `False`** when unset. Direct `AppConfig(...)` construction behavior/default unchanged.
+- Propagation verified by code/tests: `AppConfig.definition_intent_boost` -> `RAGService.pipeline` (`GroundedPipeline(..., definition_intent_boost=self.config.definition_intent_boost)`) -> `GroundedPipeline._extractive_answer` gating/bonus path; debug `selection_defaults` already reports it.
+- Config/docs exposure: `.env.example`, `render.yaml` (value `"false"`), `docker-compose.yml`, `docs/DEPLOYMENT.md` updated with `RAG_DEFINITION_INTENT_BOOST` (default false, opt-in only; not promoted baseline).
+- Tests: `tests/test_config.py` added (15 tests) covering unset default False, explicit true/false, alternative boolean representations, invalid value raises clear `ValueError`, and propagation to service/pipeline.
+
+**Tests executed and exact results (local).**
+- `PYTHONPATH=$PWD python -m pytest tests/test_config.py -q` → **15 passed in 1.31s**.
+- `PYTHONPATH=$PWD python -m pytest tests -q -k "not real_index" --maxfail=5` → **146 passed, 1 deselected, 29 warnings in 19.06s**.
+
+**Fixed 15-question deterministic evaluation comparison (local, not promoted as baseline).** Same dataset/baseline/generation/retrieval settings (`evaluation/ci_golden_dataset.json`, dense, extractive, k=5, baseline `evaluation/baseline_metrics.json`, `--check-regression`); only `RAG_DEFINITION_INTENT_BOOST` differed. Baseline file unchanged.
+
+| Run | recall@5 | precision@5 | mrr@5 | evidence_coverage | supported_answer_rate | citation_support_rate | abstention_accuracy | invalid_citations | failure_rate | regression |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Default (`RAG_DEFINITION_INTENT_BOOST=false`, `evaluation/results/ci_defboost_off`) | 0.9236 | 0.3 | 0.8611 | 0.9236 | 0.5833 | 0.4828 | 1.0 | 0 | 0.0 | passed |
+| Opt-in (`RAG_DEFINITION_INTENT_BOOST=true`, `evaluation/results/ci_defboost_on`) | 0.9236 | 0.3 | 0.8611 | 0.9236 | 0.75 | 0.5185 | 1.0 | 0 | 0.0 | passed |
+
+Per-question changes (answer support/citation/statement rates): **EXP001-Q07** improved (supported False->True, cite 0.5->0.5, stmt 0.0->0.3333); **EXP001-Q12** improved (supported False->True, cite 0.3333->1.0, stmt 0.0->1.0); **EXP001-Q13** mixed/regressed on support rates while remaining supported (supported True->True, cite 0.6667->0.5, stmt 0.6667->0.3333). EXP001-Q04/Q10 unchanged on these fields. Interpretation: **small-sample, mixed question-level effect**; do not claim broad improvement or promote boost-on as default/baseline.
+
+**CI/public deployment status.** Not executed/verified. Local deterministic verification only; no staging/commit/push/merge/deploy.
+
+---
+
+### Deployment hardening (2026-11-21, post-merge Task 4, local implementation) — CORS configuration for Render+Vercel
+
+**Status/constraints.** Investigation + local implementation. No commit/push/merge/deploy; no staging. Preserved Task 1-3 local changes and all pre-existing unrelated unstaged deletions/untracked files. No Gemini provider/model change; no chunking/retrieval defaults/RAG architecture changes; `RAG_DEFINITION_INTENT_BOOST` default remains `false`.
+
+**Investigation (before).**
+- `backend/main.py` configured CORS at import with `allow_origins=os.getenv("RAG_CORS_ORIGINS", "*").split(",")`, `allow_credentials=True`, `allow_methods=["*"]`, `allow_headers=["*"]`.
+- `render.yaml` set `RAG_CORS_ORIGINS="*"`; `docker-compose.yml` set `RAG_CORS_ORIGINS=*`; `.env.example` had no `RAG_CORS_ORIGINS`.
+- Wildcard origins were permitted by default (unsafe as intended production config). With wildcard + credentials, browser behavior is restrictive; frontend does not use credentialed requests.
+- Actual Vercel frontend origin is unknown in-repo and must not be guessed.
+
+**Implementation.**
+- `backend/main.py`: added `DEFAULT_DEV_CORS_ORIGINS` (localhost/127.0.0.1 ports 5173/3000) and `_parse_cors_origins(raw)`. Behavior: unset/empty -> local-dev defaults (no wildcard production default); explicit `*` allowed only when intentionally configured; comma-separated explicit origins supported with whitespace trim/empty ignore. `allow_credentials` now `False` for normal/wildcard-safe behavior (frontend does not use browser credentials).
+- `render.yaml`: replaced wildcard with placeholder `https://REPLACE_WITH_VERCEL_FRONTEND_ORIGIN` (must be replaced before public frontend integration).
+- `docker-compose.yml`: local-dev explicit origins.
+- `.env.example`: added local-dev `RAG_CORS_ORIGINS` default.
+- `docs/DEPLOYMENT.md`: documented CORS behavior, requirement to set real Vercel origin before public deployment, and non-wildcard production expectation.
+- `tests/test_cors.py`: added 9 tests covering parser defaults/empty/multiple/explicit wildcard, allowed origin header, unlisted origin omission, multiple origins, explicit wildcard behavior, and local-dev Vite origin usability.
+
+**Exact configuration behavior before/after.**
+- **Before:** default/unset effectively wildcard (`*`), credentials allowed; render/docker defaulted to wildcard.
+- **After (local implementation, verified):** unset/empty -> local-dev defaults only; explicit comma-separated origins accepted; explicit `*` only when configured; unlisted browser origins do not receive `Access-Control-Allow-Origin`. `allow_credentials=False`. Render placeholder is fail-closed for real Vercel origin until replaced with actual deployed frontend origin.
+
+**Tests executed and exact results (local).**
+- `PYTHONPATH=$PWD python -m pytest tests/test_cors.py -q` → **9 passed in 1.57s**.
+- `PYTHONPATH=$PWD python -m pytest tests/test_api.py -q` → **13 passed, 4 warnings in 27.58s**.
+- `PYTHONPATH=$PWD python -m pytest tests -q -k "not real_index" --maxfail=5` → **155 passed, 1 deselected, 29 warnings in 33.98s**.
+
+**Unresolved deployment requirements.** Actual Vercel frontend origin must be set in `RAG_CORS_ORIGINS` (Render/Vercel env) before public frontend integration; placeholder `https://REPLACE_WITH_VERCEL_FRONTEND_ORIGIN` must not be used as-is for production. Public CORS/browser integration verification not executed.
+
+**CI/public deployment status.** Not executed/verified. Local deterministic verification only; no staging/commit/push/merge/deploy.

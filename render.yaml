@@ -20,9 +20,11 @@ services:
       - key: RAG_ALLOW_GEMINI
         value: "true"
       - key: RAG_CORS_ORIGINS
-        value: "*"
+        value: "https://REPLACE_WITH_VERCEL_FRONTEND_ORIGIN"
       - key: RAG_GEMINI_MODEL
         value: gemini-flash-lite-latest
+      - key: RAG_DEFINITION_INTENT_BOOST
+        value: "false"
       - key: GEMINI_API_KEY
         sync: false
       - key: GOOGLE_API_KEY
@@ -39,3 +41,5 @@ services:
         value: https://cloud.langfuse.com
       - key: LANGFUSE_ENABLED
         value: "false"
+      - key: RAG_INGEST_TOKEN
+        sync: false

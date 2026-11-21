@@ -13,14 +13,16 @@ services:
       - RAG_RETRIEVAL_MODE=hybrid
       - RAG_GENERATION_MODE=extractive
       - RAG_ALLOW_GEMINI=true
-      - RAG_CORS_ORIGINS=*
+      - RAG_CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
       - LANGFUSE_ENABLED=false
+      - RAG_DEFINITION_INTENT_BOOST=false
       # Set secrets via env file or platform secrets (do not commit):
       # - GEMINI_API_KEY=...
       # - CO_API_KEY=...
       # - LANGFUSE_PUBLIC_KEY=...
       # - LANGFUSE_SECRET_KEY=...
       # - LANGFUSE_HOST=https://cloud.langfuse.com
+      # - RAG_INGEST_TOKEN=...
     volumes:
       # Mount prebuilt index for persistence across container restarts/recreates
       - ./chroma_db_production:/app/chroma_db_production

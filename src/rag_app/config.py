@@ -17,6 +17,21 @@ def _env_bool(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _env_bool_strict(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    normalized = value.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise ValueError(
+        f"Invalid boolean value for {name}: {value!r}. "
+        "Expected one of: true/false, 1/0, yes/no, on/off."
+    )
+
+
 @dataclass(frozen=True)
 class AppConfig:
     """Runtime configuration for the validated RAG application."""
@@ -58,6 +73,8 @@ class AppConfig:
     chunk_size: int = 800
     chunk_overlap: int = 160
     chunk_strategy: str = "fixed_character"  # fixed_character|structure_aware
+    # Deployment hardening: protect /ingest (disabled by default; fail closed).
+    ingest_token: Optional[str] = None
 
     @classmethod
     def from_env(cls) -> "AppConfig":
@@ -87,4 +104,6 @@ class AppConfig:
             chunk_size=int(os.getenv("RAG_CHUNK_SIZE", "800")),
             chunk_overlap=int(os.getenv("RAG_CHUNK_OVERLAP", "160")),
             chunk_strategy=os.getenv("RAG_CHUNK_STRATEGY", "fixed_character"),
+            ingest_token=os.getenv("RAG_INGEST_TOKEN"),
+            definition_intent_boost=_env_bool_strict("RAG_DEFINITION_INTENT_BOOST", False),
         )

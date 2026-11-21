@@ -9,11 +9,12 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
@@ -28,6 +29,35 @@ from src.rag_app import AppConfig, RAGService
 from src.rag_app.metrics import get_metrics_collector
 from src.rag_app.schemas import HealthResponse, QueryRequest, QueryResponse
 
+DEFAULT_DEV_CORS_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+
+def _parse_cors_origins(raw: str | None) -> list[str]:
+    """Parse comma-separated CORS origins from env.
+
+    - Unset/empty: safe local-dev defaults (no wildcard production default).
+    - Explicit "*": wildcard allowed only when explicitly configured.
+    - Otherwise: comma-separated explicit origins; whitespace trimmed; empties ignored.
+    """
+    if raw is None:
+        return list(DEFAULT_DEV_CORS_ORIGINS)
+    items = [part.strip() for part in raw.split(",")]
+    origins = [item for item in items if item]
+    if not origins:
+        return list(DEFAULT_DEV_CORS_ORIGINS)
+    if "*" in origins:
+        return ["*"]
+    return origins
+
+
+_cors_origins = _parse_cors_origins(os.getenv("RAG_CORS_ORIGINS"))
+_cors_allow_credentials = "*" not in _cors_origins
+
 app = FastAPI(
     title="SATCOM NGP RAG API",
     description=(
@@ -39,8 +69,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("RAG_CORS_ORIGINS", "*").split(","),
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=_cors_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -79,12 +109,20 @@ def health() -> HealthResponse:
 
 
 @app.post("/ingest")
-def ingest() -> Dict[str, Any]:
-    """Rebuild the vector index from the configured PDF (reproducible ingestion)."""
+def ingest(x_ingest_token: Optional[str] = Header(default=None, alias="X-Ingest-Token")) -> Dict[str, Any]:
+    """Rebuild the vector index from the configured PDF (protected; disabled by default)."""
     try:
+        config = AppConfig.from_env()
+        expected = (config.ingest_token or "").strip()
+        if not expected:
+            # Fail closed: public ingestion is disabled unless explicitly configured.
+            raise HTTPException(status_code=403, detail="Ingestion endpoint is disabled. Configure RAG_INGEST_TOKEN to enable authorized ingestion.")
+        provided = x_ingest_token or ""
+        if not secrets.compare_digest(provided, expected):
+            raise HTTPException(status_code=403, detail="Unauthorized ingestion request.")
+
         from src.rag_core import FixedCharacterChunker, StructureAwareChunker, audit_source_coverage, extract_source_document
 
-        config = AppConfig.from_env()
         doc = extract_source_document(config.pdf_path)
         strategy = (config.chunk_strategy or "fixed_character").lower()
         if strategy == "structure_aware":
@@ -114,6 +152,8 @@ def ingest() -> Dict[str, Any]:
             "collection": config.collection_name,
             "persist_dir": str(config.persist_dir),
         }
+    except HTTPException:
+        raise
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"Ingestion failed: {type(exc).__name__}: {exc}")
 

@@ -27,7 +27,7 @@ Per-question highlights: Q05 (`2.5.6`, lexical/terminology-sensitive) retrieved 
 ## Selection
 - **Selected:** fixed-character `chunk_size=800`, `chunk_overlap=160` (step 640), 61 chunks.
 - **Rationale:** highest recall@5 and MRR@5 on the fixed evaluation subset with identical embedding/retrieval settings; precision@5 tied-best; audit passed with complete non-whitespace coverage.
-- **Consistency:** selected config is the application default (`src/rag_app/config.py`), used by ingestion/index rebuild (`scripts/ingest.py`, `POST /ingest`) and query-time retrieval against collection `satcom_ngp_production_fixed_char_800_160`.
+- **Consistency:** selected config is the application default (`src/rag_app/config.py`), used by ingestion/index rebuild (`scripts/ingest.py`, protected `POST /ingest` disabled by default/fail-closed via `RAG_INGEST_TOKEN`) and query-time retrieval against collection `satcom_ngp_production_fixed_char_800_160`.
 
 ## Impact / reassessment
 - Historical accepted baseline EXP-001/PROD-001 used 1000/200 (49 chunks). Chunking experiment provided controlled evidence that 800/160 improves retrieval on the CI set (including Q05 retrievability). Final configuration updated accordingly and documented; historical artifacts/results preserved unchanged.

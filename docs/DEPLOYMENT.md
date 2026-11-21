@@ -9,7 +9,7 @@
 - `vercel.json`: routes `/api/*` to Python serverless entrypoint and frontend static build.
 - `api/index.py`: Vercel Python entrypoint exposing FastAPI app from `backend.main`.
 - Frontend: Vite app (`frontend/`) configurable via `VITE_API_BASE_URL`.
-- Backend CORS configurable via `RAG_CORS_ORIGINS`.
+- Backend CORS configurable via `RAG_CORS_ORIGINS` (comma-separated explicit origins; local-dev defaults when unset; explicit `*` only when intentionally set; production must set actual Vercel origin).
 
 These artifacts enable deployment attempts/local Vercel-compatible structure but **do not by themselves guarantee a working Hobby deployment** given dependency/model/storage constraints.
 
@@ -22,12 +22,14 @@ Local Chroma persistence (`chroma_db_production`) and local model loading cannot
 **Selected documented strategy:** for Hobby-compatible public deployment, prefer **Vercel frontend + separate free-tier backend host** if a verified free-tier host is available; otherwise document blocker and keep local/public-source deployment reproducible. No paid infrastructure incurred.
 
 ## Configuration and secrets
-- Backend env: `RAG_PERSIST_DIR`, `RAG_COLLECTION_NAME`, `RAG_TOP_K`, `RAG_RETRIEVAL_MODE`, `RAG_GENERATION_MODE`, `RAG_GEMINI_MODEL`, `RAG_ALLOW_GEMINI`, `RAG_CHUNK_SIZE`, `RAG_CHUNK_OVERLAP`, `RAG_CORS_ORIGINS`, `GOOGLE_API_KEY`/`GEMINI_API_KEY` (optional), `COHERE_API_KEY`/`CO_API_KEY` (optional), `LANGFUSE_*` (optional).
+- Backend env: `RAG_PERSIST_DIR`, `RAG_COLLECTION_NAME`, `RAG_TOP_K`, `RAG_RETRIEVAL_MODE`, `RAG_GENERATION_MODE`, `RAG_GEMINI_MODEL`, `RAG_ALLOW_GEMINI`, `RAG_CHUNK_SIZE`, `RAG_CHUNK_OVERLAP`, `RAG_CORS_ORIGINS`, `GOOGLE_API_KEY`/`GEMINI_API_KEY` (optional), `COHERE_API_KEY`/`CO_API_KEY` (optional), `LANGFUSE_*` (optional), `RAG_INGEST_TOKEN` (required to enable `POST /ingest`; endpoint fails closed when unset), `RAG_DEFINITION_INTENT_BOOST` (optional, default `false`; opt-in definition-intent/heading-alignment selection boost — do not treat as default-promoted baseline without measured comparison).
+- **CORS (`RAG_CORS_ORIGINS`):** comma-separated explicit origins. Default when unset/empty is local dev origins (`http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000`), **not** wildcard. Explicit `*` is supported only when intentionally configured. For Render+Vercel public deployment, set the **actual Vercel frontend origin** (e.g. `https://<your-app>.vercel.app`) before frontend integration; do not leave wildcard/placeholder in production.
 - Frontend env: `VITE_API_BASE_URL`.
 - Never commit or expose secrets.
 
 ## Ingestion/index management
-- Reproducible build: `python scripts/ingest.py` or `POST /ingest`.
+- Reproducible build: `python scripts/ingest.py` (local/CLI) or protected `POST /ingest` (HTTP, disabled by default).
+- **Security (2026-11-21):** `POST /ingest` is **disabled by default** and fails closed. To enable authorized HTTP ingestion, set `RAG_INGEST_TOKEN` and send header `X-Ingest-Token: <token>`. Unauthorized/missing-token requests return 403 and do not trigger ingestion. Internal automatic index recovery/re-ingestion in `src/rag_app/service.py` remains internal behavior and is not exposed as an unauthenticated public endpoint.
 - Current selected index config (measured): fixed-character 800/160, 61 chunks, collection `satcom_ngp_production_fixed_char_800_160`, embedding `sentence-transformers/all-MiniLM-L6-v2`, source `data/satcom-ngp.pdf`.
 
 ## Public deployment status
@@ -41,7 +43,7 @@ Local Chroma persistence (`chroma_db_production`) and local model loading cannot
 - `GET /metrics` live operational metrics
 - `GET /dashboard` project dashboard (live + offline artifacts)
 - `POST /query` extractive grounded answer with citations/abstention
-- `POST /ingest` index rebuild (controlled environment)
+- `POST /ingest` protected index rebuild (controlled environment; requires `RAG_INGEST_TOKEN` + `X-Ingest-Token`; expect 403 when disabled/unauthorized)
 
 ---
 
@@ -63,8 +65,8 @@ Local Chroma persistence (`chroma_db_production`) and local model loading cannot
 - `chroma_db_production/` exists locally but is currently **gitignored** in `.gitignore`; `data/satcom-ngp.pdf` is tracked. For git-based Render deploys, prebuilt index may not be present in source unless explicitly included; automatic recovery from PDF is the fallback. If packaging the index in deployment artifacts is required, ensure deployment source/image includes `chroma_db_production` contents.
 
 ### Required Render environment variables (set in Render dashboard, do not commit)
-- **App/config:** `RAG_PERSIST_DIR`, `RAG_COLLECTION_NAME=satcom_ngp_production_fixed_char_800_160`, `RAG_RETRIEVAL_MODE=hybrid`, `RAG_GENERATION_MODE=extractive`, `RAG_ALLOW_GEMINI=true`, `RAG_GEMINI_MODEL=gemini-flash-lite-latest`, `RAG_CORS_ORIGINS` (set to Vercel/frontend origin in production).
-- **Secrets:** `GEMINI_API_KEY` and/or `GOOGLE_API_KEY` (Gemini), `CO_API_KEY`/`COHERE_API_KEY` (rerank, optional), `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`, `LANGFUSE_ENABLED` (optional).
+- **App/config:** `RAG_PERSIST_DIR`, `RAG_COLLECTION_NAME=satcom_ngp_production_fixed_char_800_160`, `RAG_RETRIEVAL_MODE=hybrid`, `RAG_GENERATION_MODE=extractive`, `RAG_ALLOW_GEMINI=true`, `RAG_GEMINI_MODEL=gemini-flash-lite-latest`, `RAG_DEFINITION_INTENT_BOOST=false` (default; opt-in only), `RAG_CORS_ORIGINS` (**must be set to the actual Vercel frontend origin before public frontend integration**; placeholder/wildcard is not a production configuration).
+- **Secrets:** `GEMINI_API_KEY` and/or `GOOGLE_API_KEY` (Gemini), `CO_API_KEY`/`COHERE_API_KEY` (rerank, optional), `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`, `LANGFUSE_ENABLED` (optional), `RAG_INGEST_TOKEN` (optional but recommended; required to enable protected `POST /ingest`, which fails closed when unset).
 
 ### Actual deployment status
 - **Backend (Render):** not deployed in this environment (no Render account/API/CLI credentials or GitHub push/deploy access available).
