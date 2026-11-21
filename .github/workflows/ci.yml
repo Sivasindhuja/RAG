@@ -50,10 +50,6 @@ jobs:
           print(f"per_page_extracted_char_counts={per_page}")
           PY
 
-      - name: Run unit/integration tests (deterministic)
-        run: |
-          python -m pytest tests -q -k "not real_index" --maxfail=5
-
       - name: Build/verify index and ingestion integrity (if production index missing)
         run: |
           python - <<'PY'
@@ -77,6 +73,10 @@ jobs:
           stats = index.build(chunks, reset=True)
           print(stats)
           PY
+
+      - name: Run unit/integration tests (deterministic)
+        run: |
+          python -m pytest tests -q -k "not real_index" --maxfail=5
 
       - name: Run fixed 15-question CI evaluation (dense baseline, deterministic)
         run: |

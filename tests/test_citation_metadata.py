@@ -93,18 +93,25 @@ def test_q12_definition_statements_resolve_to_clause_4_2():
     # integration-style check against real PDF/chunker/indexed semantics
     from pathlib import Path
     from sentence_transformers import SentenceTransformer
+    from src.rag_app import AppConfig
     from src.rag_core import DenseIndex, DenseIndexConfig, GroundedPipeline, load_questions
 
     root = Path(__file__).resolve().parent.parent
-    model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    cfg = AppConfig.from_env()
+    model = SentenceTransformer(cfg.embedding_model)
     index = DenseIndex(
         DenseIndexConfig(
-            collection_name="satcom_ngp_production_fixed_char",
-            persist_dir=root / "chroma_db_production",
-            embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+            collection_name=cfg.collection_name,
+            persist_dir=cfg.persist_dir,
+            embedding_model=cfg.embedding_model,
         ),
         model=model,
     )
+    assert index.count() > 0, (
+        f"Configured index is empty (collection={cfg.collection_name}, persist_dir={cfg.persist_dir}); "
+        "build the production index before running this integration test."
+    )
+
     questions = {q.question_id: q for q in load_questions(root / "experiments" / "exp001_questions.csv")}
     q = questions["EXP001-Q12"]
     hits = index.search(q.question, k=5)
