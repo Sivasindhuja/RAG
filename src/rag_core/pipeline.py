@@ -312,10 +312,83 @@ def _idf_weights(hits: Sequence[RetrievedChunk]) -> dict[str, float]:
     }
 
 
+_DEFINITION_SUBJECT_STOPWORDS = frozenset({"define", "defined", "definition", "meaning", "means"})
+
+
+def _normalize_subject_token(token: str) -> str:
+    """Lightweight singular/plural normalization for subject-term comparison."""
+    t = token.lower()
+    if len(t) > 4 and t.endswith("ies"):
+        return t[:-3] + "y"
+    if len(t) > 4 and t.endswith(("ses", "xes", "zes", "ches", "shes")):
+        return t[:-2]
+    if len(t) > 3 and t.endswith("s") and not t.endswith("ss"):
+        return t[:-1]
+    return t
+
+
+def _definition_subject_tokens(question: str) -> set[str]:
+    """Meaningful question tokens for definition-subject alignment.
+
+    Excludes generic definitional-intent words so alignment reflects the requested
+    subject rather than the act of defining.
+    """
+    tokens = {
+        _normalize_subject_token(t)
+        for t in content_tokens(question)
+        if t.lower() not in _DEFINITION_SUBJECT_STOPWORDS
+    }
+    return {t for t in tokens if t}
+
+
+def _governing_heading_for_candidate(hit: RetrievedChunk, local_start: int) -> Optional[str]:
+    """Resolve governing heading for a candidate span using existing metadata rules."""
+    _article, _section, heading = _governing_metadata_for_offset(hit, hit.start_offset + local_start)
+    if heading is None:
+        return None
+    heading = " ".join(str(heading).split()).strip()
+    return heading or None
+
+
+def _heading_subject_alignment(subject_tokens: set[str], heading: Optional[str]) -> Optional[int]:
+    """Count meaningful subject-token overlaps between question and governing heading.
+
+    Returns ``None`` when heading metadata is missing/empty or when no meaningful
+    subject tokens are available, so callers can retain existing behavior.
+    """
+    if not subject_tokens or not heading:
+        return None
+    heading_tokens = {
+        _normalize_subject_token(t)
+        for t in content_tokens(heading)
+        if t.lower() not in _DEFINITION_SUBJECT_STOPWORDS
+    }
+    heading_tokens = {t for t in heading_tokens if t}
+    if not heading_tokens:
+        return None
+    return len(subject_tokens & heading_tokens)
+
+
 def _is_heading(sentence: str) -> bool:
     """True when a sentence has no lower-case letters, i.e. is an ALL-CAPS heading."""
     letters = [char for char in sentence if char.isalpha()]
     return len(letters) >= 3 and all(char.isupper() for char in letters)
+
+
+def _is_mid_sentence_chunk_boundary_fragment(chunk_text: str, local_start: int, sentence: str) -> bool:
+    """True when a candidate appears to be a mid-sentence fragment at chunk start.
+
+    Fixed-character chunk boundaries can cut into a sentence, yielding a span that
+    begins at the start of the chunk (allowing only leading whitespace) with a
+    lowercase initial character. Definition-intent boost is suppressed for such
+    fragments to avoid rewarding boundary artifacts over complete, in-context units.
+    """
+    if local_start < 0 or local_start > len(chunk_text):
+        return False
+    if chunk_text[:local_start].strip():
+        return False
+    stripped = sentence.lstrip()
+    return bool(stripped) and stripped[0].islower()
 
 
 def _sentence_score(sentence: str, query_tokens: set[str], weights: dict[str, float]) -> float:
@@ -581,6 +654,7 @@ class GroundedPipeline:
         query_tokens = set(content_tokens(question))
         weights = _idf_weights(considered)
         definitional_intent = self.definition_intent_boost and bool(_DEFINITION_INTENT_RE.search(question))
+        definition_subject_tokens = _definition_subject_tokens(question) if definitional_intent else set()
         candidates = []
         seen: set[str] = set()
         for position, hit in enumerate(considered):
@@ -591,10 +665,24 @@ class GroundedPipeline:
                 if not normalized or normalized in seen:
                     continue
                 score = _sentence_score(sentence, query_tokens, weights)
-                if definitional_intent and score > 0.0 and _DEFINITIONAL_MARKER_RE.search(sentence):
+                is_definition_candidate = False
+                if (
+                    definitional_intent
+                    and score > 0.0
+                    and _DEFINITIONAL_MARKER_RE.search(sentence)
+                    and not _is_mid_sentence_chunk_boundary_fragment(hit.text, local_start, sentence)
+                ):
                     overlap = query_tokens & set(content_tokens(sentence))
                     if overlap:
                         score += _DEFAULT_DEFINITION_INTENT_BOOST
+                        is_definition_candidate = True
+                if is_definition_candidate and definition_subject_tokens:
+                    heading = _governing_heading_for_candidate(hit, local_start)
+                    alignment = _heading_subject_alignment(definition_subject_tokens, heading)
+                    if alignment is not None:
+                        # Bounded comparative bonus: prefer governing headings aligned with the
+                        # requested definition subject. Missing/ambiguous heading keeps prior behavior.
+                        score += min(3.0, 1.0 * float(alignment))
                 seen.add(normalized)
                 candidates.append(
                     (

@@ -36,6 +36,8 @@ def _hit(
     rank=1,
     section="1.1",
     start_offset=0,
+    heading="heading",
+    article="ARTICLE-1",
 ):
     return RetrievedChunk(
         rank=rank,
@@ -46,9 +48,9 @@ def _hit(
         end_offset=start_offset + len(text),
         start_page=1,
         end_page=1,
-        article="ARTICLE-1",
+        article=article,
         section=section,
-        heading="heading",
+        heading=heading,
         distance=distance,
         metadata={},
     )
@@ -355,3 +357,233 @@ def test_clause_body_units_do_not_group_depth2_headings():
         ]
         == answer.statements[0].text
     )
+
+
+def test_definition_intent_boost_skips_mid_sentence_chunk_boundary_fragment():
+    """A lowercase fragment at chunk start must not receive definition-intent boost."""
+    from src.rag_core import pipeline as pl
+
+    # Fragment begins at chunk start (local_start 0, only leading whitespace before span)
+    # and first non-whitespace char is lowercase: chunk-boundary mid-sentence artifact.
+    chunk_text = "defined as international satellite communication services for foreign links."
+    hit = _hit(
+        "c_frag",
+        chunk_text,
+        distance=0.4,
+        rank=1,
+        section="3.2",
+        start_offset=10868,
+    )
+    question = "How are international satellite communication services defined?"
+    query_tokens = set(pl.content_tokens(question))
+    weights = pl._idf_weights([hit])
+    (sentence, local_start, _local_end) = pl._answer_unit_spans(hit.text)[0]
+
+    assert local_start == 0
+    assert sentence[:1].islower()
+    assert pl._is_mid_sentence_chunk_boundary_fragment(hit.text, local_start, sentence) is True
+
+    base = pl._sentence_score(sentence, query_tokens, weights)
+    assert base > 0.0
+    assert pl._DEFINITIONAL_MARKER_RE.search(sentence)
+    assert query_tokens & set(pl.content_tokens(sentence))
+
+    # End-to-end: boost is suppressed, so a complete later definition sentence wins.
+    later = (
+        "Prefix context. "
+        "International satellite communication services are defined as links terminating abroad."
+    )
+    hit_later = _hit("c_later", later, distance=0.5, rank=2, section="4.2", start_offset=31000)
+    pipeline = GroundedPipeline(_FakeIndex([hit, hit_later]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert answer.statements[0].chunk_id == "c_later"
+    assert "links terminating abroad" in answer.statements[0].text
+
+
+def test_definition_intent_boost_applies_to_complete_definition_sentence_later_in_chunk():
+    """A complete definition sentence later in a chunk still receives the boost."""
+    from src.rag_core import pipeline as pl
+
+    text = (
+        "Introductory text without definition. "
+        "International satellite communication services are defined as links terminating abroad."
+    )
+    hit = _hit("c_def", text, distance=0.5, rank=1, section="4.2", start_offset=31000)
+    question = "How are international satellite communication services defined?"
+    spans = pl._answer_unit_spans(hit.text)
+    # second sentence is the definition sentence, not at chunk start
+    sentence, local_start, _local_end = spans[1]
+    assert local_start > 0
+    assert hit.text[:local_start].strip() != ""
+    assert pl._is_mid_sentence_chunk_boundary_fragment(hit.text, local_start, sentence) is False
+
+    query_tokens = set(pl.content_tokens(question))
+    weights = pl._idf_weights([hit])
+    base = pl._sentence_score(sentence, query_tokens, weights)
+    assert base > 0.0
+    assert pl._DEFINITIONAL_MARKER_RE.search(sentence)
+    assert query_tokens & set(pl.content_tokens(sentence))
+
+    # With boost enabled this definitional sentence should be selected over intro.
+    pipeline = GroundedPipeline(_FakeIndex([hit]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert "defined as links terminating abroad" in answer.statements[0].text
+
+
+def test_definition_intent_boost_retains_behavior_for_non_boundary_chunk_start():
+    """A candidate at chunk start that is not a lowercase fragment retains boost behavior."""
+    from src.rag_core import pipeline as pl
+
+    # Starts at chunk beginning but with a capitalized/complete clause, not a lowercase fragment.
+    text = "International satellite communication services are defined as links terminating abroad."
+    hit = _hit("c_start", text, distance=0.5, rank=1, section="4.2", start_offset=31000)
+    question = "How are international satellite communication services defined?"
+    sentence, local_start, _local_end = pl._answer_unit_spans(hit.text)[0]
+    assert local_start == 0
+    assert not sentence[:1].islower()
+    assert pl._is_mid_sentence_chunk_boundary_fragment(hit.text, local_start, sentence) is False
+
+    query_tokens = set(pl.content_tokens(question))
+    weights = pl._idf_weights([hit])
+    base = pl._sentence_score(sentence, query_tokens, weights)
+    assert base > 0.0
+    assert pl._DEFINITIONAL_MARKER_RE.search(sentence)
+    assert query_tokens & set(pl.content_tokens(sentence))
+
+    pipeline = GroundedPipeline(_FakeIndex([hit]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert "defined as links terminating abroad" in answer.statements[0].text
+
+
+def test_definition_intent_boost_disabled_preserves_behavior_for_boundary_fragment():
+    """When boost is disabled, scoring/selection behavior is unchanged for fragments."""
+    text = "defined as international satellite communication services for foreign links."
+    hit = _hit("c_frag", text, distance=0.4, rank=1, section="3.2", start_offset=10868)
+    question = "How are international satellite communication services defined?"
+
+    pipeline = GroundedPipeline(_FakeIndex([hit]), max_answer_sentences=1, definition_intent_boost=False)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert answer.statements[0].chunk_id == "c_frag"
+    assert "defined as international satellite communication services" in answer.statements[0].text
+
+
+def test_definition_heading_alignment_prefers_subject_aligned_heading_over_higher_base_fragment():
+    """Q12-style: aligned governing heading outranks higher-base unrelated definition fragment."""
+    from src.rag_core import pipeline as pl
+
+    question = "How are international satellite communication services defined?"
+    # Unrelated subject heading; sentence is lexically rich in query tokens (higher base).
+    unrelated = _hit(
+        "unrelated",
+        "3.2 DEFINITION OF INDIAN SATELLITES\n\nInternational satellite communication services are defined as the satellites informed and notified for international satellite communication services operations.",
+        distance=0.1,
+        rank=1,
+        section="3.2",
+        heading="3.2 DEFINITION OF INDIAN SATELLITES",
+        start_offset=1000,
+    )
+    # Aligned subject heading; complete definition with lower base lexical score.
+    aligned = _hit(
+        "aligned",
+        "4.2 INTERNATIONAL COMMUNICATION SERVICES\n\nInternational communication services are defined as links where one end terminates in a foreign country.",
+        distance=0.2,
+        rank=2,
+        section="4.2",
+        heading="4.2 INTERNATIONAL COMMUNICATION SERVICES",
+        start_offset=2000,
+    )
+
+    query_tokens = set(pl.content_tokens(question))
+    weights = pl._idf_weights([unrelated, aligned])
+    unrelated_sentence, u_ls, _ = pl._answer_unit_spans(unrelated.text)[1]
+    aligned_sentence, a_ls, _ = pl._answer_unit_spans(aligned.text)[1]
+    u_base = pl._sentence_score(unrelated_sentence, query_tokens, weights)
+    a_base = pl._sentence_score(aligned_sentence, query_tokens, weights)
+    assert u_base > a_base
+
+    pipeline = GroundedPipeline(_FakeIndex([unrelated, aligned]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert answer.statements[0].chunk_id == "aligned"
+    assert "terminates in a foreign country" in answer.statements[0].text
+
+
+def test_definition_heading_alignment_preserves_indian_satellite_subject():
+    """Q07-style: question about Indian Satellites prefers heading aligned to Indian Satellites."""
+    question = "How is an Indian Satellite defined in the policy?"
+    aligned = _hit(
+        "indian",
+        "3.2 DEFINITION OF INDIAN SATELLITES\n\nIndian Satellites shall be defined as the satellites informed, coordinated, registered and notified by the Indian Administration.",
+        distance=0.2,
+        rank=1,
+        section="3.2",
+        heading="3.2 DEFINITION OF INDIAN SATELLITES",
+        start_offset=1000,
+    )
+    unrelated = _hit(
+        "foreign",
+        "4.2 INTERNATIONAL COMMUNICATION SERVICES\n\nInternational communication services are defined as services where one end terminates in a foreign country.",
+        distance=0.1,
+        rank=2,
+        section="4.2",
+        heading="4.2 INTERNATIONAL COMMUNICATION SERVICES",
+        start_offset=2000,
+    )
+    pipeline = GroundedPipeline(_FakeIndex([unrelated, aligned]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert answer.statements[0].chunk_id == "indian"
+    assert "Indian Satellites shall be defined" in answer.statements[0].text
+
+
+def test_definition_heading_alignment_missing_or_ambiguous_heading_keeps_existing_behavior():
+    """Missing/ambiguous heading metadata should not change prior scoring/selection behavior."""
+    question = "How are international satellite communication services defined?"
+    high = _hit(
+        "high",
+        "Satellite communication services are defined as links that terminate in a foreign country for international communication.",
+        distance=0.1,
+        rank=1,
+        section=None,
+        heading=None,
+        start_offset=1000,
+    )
+    low = _hit(
+        "low",
+        "International communication services are defined as services between administrations.",
+        distance=0.2,
+        rank=2,
+        section=None,
+        heading=None,
+        start_offset=2000,
+    )
+    pipeline = GroundedPipeline(_FakeIndex([high, low]), max_answer_sentences=1, definition_intent_boost=True)
+    answer = pipeline.answer(question)
+    assert answer.status == ANSWERED
+    assert answer.statements[0].chunk_id == "high"
+
+
+def test_definition_heading_alignment_does_not_regress_sibling_selection():
+    """Heading relevance adjustment should not break existing sibling clause selection behavior."""
+    text = (
+        "4.3.4 Land mobile domestic communication services are described. "
+        "4.3.3 Domestic communication services include value added services. "
+        "4.3.2 Domestic communication services include telephone services. "
+        "Land mobile domestic communication services are important."
+    )
+    hit = _hit("c1", text, section="4.3.4", heading="4.3.4 LAND MOBILE", start_offset=0)
+    answer = GroundedPipeline(
+        _FakeIndex([hit]),
+        max_answer_sentences=2,
+        max_answer_chunks=1,
+        sibling_score_ratio=0.5,
+        definition_intent_boost=True,
+    ).answer("land mobile domestic communication services")
+
+    selected = " ".join(statement.text for statement in answer.statements)
+    assert "4.3.4" in selected and "4.3.3" in selected
+    assert "important" not in selected

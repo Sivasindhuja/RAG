@@ -5,7 +5,7 @@ langchain-chroma
 ragas
 pandas
 datasets
-pypdf
+pypdf==6.10.2
 rank_bm25
 cohere
 python-dotenv

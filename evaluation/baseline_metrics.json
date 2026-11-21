@@ -1,0 +1,40 @@
+{
+  "retrieval_mode": "dense",
+  "k": 5,
+  "summary": {
+    "total_questions": 15,
+    "answerable": {
+      "count": 12,
+      "answered": 12,
+      "abstained": 0,
+      "supported_answers": 7,
+      "supported_answer_rate": 0.5833,
+      "statement_support_rate": 0.25,
+      "citation_support_rate": 0.4828,
+      "invalid_citation_count": 0
+    },
+    "unanswerable": {
+      "count": 3,
+      "correct_abstentions": 3,
+      "abstention_accuracy": 1.0,
+      "incorrect_non_abstentions": 0
+    },
+    "retrieval": {
+      "recall@5": 0.9236,
+      "precision@5": 0.3,
+      "mrr@5": 0.8611,
+      "evidence_coverage": 0.9236
+    },
+    "quality": {
+      "invalid_citation_count_total": 0,
+      "failure_count": 0,
+      "failure_rate": 0.0
+    },
+    "latency_ms": {
+      "count": 15,
+      "mean": 728.0967,
+      "p50": 24.069,
+      "p95": 3193.8024
+    }
+  }
+}

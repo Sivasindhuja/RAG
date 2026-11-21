@@ -1,0 +1,9 @@
+{
+  "generation": {
+    "grounded_json": {
+      "path": "generation_grounded_v1.txt",
+      "version": "grounded_json_v1",
+      "description": "Evidence-only grounded JSON claim generation for SATCOM NGP"
+    }
+  }
+}

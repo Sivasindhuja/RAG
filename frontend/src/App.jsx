@@ -7,11 +7,11 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
 
-async function queryRag(question) {
+async function queryRag(question, mode = "extractive") {
   const res = await fetch(`${API_BASE}/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question, mode: "extractive" }),
+    body: JSON.stringify({ question, mode }),
   });
   let data = null;
   try {
@@ -151,6 +151,7 @@ function ResultPanel({ result }) {
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat");
   const [question, setQuestion] = useState("");
+  const [mode, setMode] = useState("extractive");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
@@ -158,14 +159,15 @@ export default function App() {
 
   const latest = history[0] || null;
 
-  async function onAsk() {
+  async function onAsk(selectedMode = mode) {
     const q = question.trim();
+    const m = selectedMode || "extractive";
     if (!q || loading) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await queryRag(q);
-      setHistory((prev) => [{ id: data.request_id || String(Date.now()), question: q, result: data, at: new Date().toISOString() }, ...prev]);
+      const data = await queryRag(q, m);
+      setHistory((prev) => [{ id: data.request_id || String(Date.now()), question: q, mode: m, result: data, at: new Date().toISOString() }, ...prev]);
       setQuestion("");
     } catch (e) {
       setError(e.message || String(e));
@@ -232,9 +234,22 @@ export default function App() {
                   disabled={loading}
                   className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                 />
-                <div className="flex gap-2">
-                  <Button onClick={onAsk} disabled={loading || !question.trim()} className="bg-orange-600 hover:bg-orange-700 text-white">
-                    {loading ? "Querying..." : "Ask (extractive)"}
+                <div className="flex flex-wrap gap-2 items-center">
+                  <label className="text-xs text-slate-600 dark:text-slate-300" htmlFor="mode">Mode</label>
+                  <select
+                    id="mode"
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value)}
+                    disabled={loading}
+                    className="h-9 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-2 text-sm"
+                  >
+                    <option value="extractive">extractive (default)</option>
+                    <option value="gemini">gemini (grounded, provider/model configured)</option>
+                  </select>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <Button onClick={() => onAsk()} disabled={loading || !question.trim()} className="bg-orange-600 hover:bg-orange-700 text-white">
+                    {loading ? "Querying..." : `Ask (${mode})`}
                   </Button>
                   <Button variant="outline" onClick={() => { setQuestion("Who is responsible for obtaining licenses to offer services in a territory?"); }} disabled={loading}>Sample: Q05</Button>
                   <Button variant="outline" onClick={() => { setQuestion("What satellite communication services are classified as domestic services?"); }} disabled={loading}>Sample: Q12</Button>
@@ -246,7 +261,7 @@ export default function App() {
                   </Alert>
                 ) : null}
                 <div className="text-xs text-slate-500">
-                  Note: Gemini mode is available via API but not enabled in this UI by default; M1 is not accepted for quality.
+                  Gemini generation uses the configured provider/model path (`google_generativeai` / `gemini-flash-lite-latest`) with evidence-only grounding, app-side citation validation, and safe fallback/abstention. Quality is reported from measured evaluations; not claimed production-accepted.
                 </div>
                 <div>
                   <div className="text-sm font-semibold mb-2">History</div>
@@ -296,10 +311,10 @@ npm run dev</pre>
               <div>
                 <div className="font-semibold mb-1">What this UI shows</div>
                 <ul className="list-disc pl-5 text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                  <li>Grounded extractive answer (EXP-003 default) or explicit abstention with reason.</li>
+                  <li>Grounded answer modes: extractive (default) and Gemini (configured provider/model path, evidence-only, app-validated citations, safe fallback/abstention).</li>
                   <li>App-resolved, inspectable citations: marker, section/heading, page(s), chunk ID, source offsets, quote.</li>
                   <li>Selected evidence statements, retrieved chunks, request ID/timings and guard diagnostics.</li>
-                  <li>Known limitations remain (M1 Gemini not accepted, BL-001/002 retrieval, 15q set, Vercel Hobby deployment pending).</li>
+                  <li>Known limitations remain where not yet fully verified (e.g. live public deployment/hosting constraints, external observability credentials, RAGAS environment compatibility, small draft CI set).</li>
                 </ul>
               </div>
             </CardContent>

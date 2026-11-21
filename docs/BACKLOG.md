@@ -51,3 +51,13 @@ Rules (DR-013, `docs/PROJECT_BRIEF.md`):
 - EXP-002, EXP-004, EXP-005: rejected with recorded evidence; do not re-adopt without new controlled justification.
 - Legacy experimental generator (`src/rag_core/generation.py`, Ollama): not production; retained as experimental artifact only.
 - M1 Gemini path (`m1-v1`, `experiments/m1_gemini_eval.py`, `experiments/results/m1_gemini/`): architecture/contract implemented and unit-tested (97 tests total pass). **Live validation executed** (DR-015) with `gemini-flash-lite-latest` (explicit, probe ok; other probes failed/unavailable). Results: 11 answered, 3 model-abstained, 1 sufficiency-abstained, 0 errors; mechanical grounding 0.7778, 0 uncited/invalid IDs; manual audit 5 correct/4 partial/2 incorrect/4 abstained, 9 grounded/2 partial/0 unfaithful. **M1 exit criteria not met** due to correctness/completeness and upstream Q04/Q05/Q08/Q10/Q12 blockers; not accepted for production quality.
+
+## Final delivery updates (2026-11-19)
+- **Chunking:** controlled experiment completed; selected 800/160 fixed-character baseline adopted (61 chunks, `satcom_ngp_production_fixed_char_800_160`). Q05 retrievable under selected config in measured CI runs. Historical 1000/200 artifacts preserved.
+- **Hybrid retrieval:** dense+BM25 RRF implemented and adopted as default based on measured CI improvement in supported answer/citation rates (800/160). See `docs/RETRIEVAL_COMPARISON.md`, `docs/CI_EVALUATION.md`.
+- **Cohere reranking:** integration + mocked tests complete; **live validation pending** valid `COHERE_API_KEY`/`CO_API_KEY` (empty in environment). Record model/latency/errors/usage/cost when available.
+- **RAGAS:** evaluation integration implemented; live metric run failed in environment due to dependency/Pydantic compatibility (`evaluation/results/ci_ragas_dense_800_160/report.json`). Pending compatible runtime/pinned deps and rerun.
+- **Langfuse:** tracing integration + no-op/mock behavior implemented; **live tracing pending** valid `LANGFUSE_PUBLIC_KEY/SECRET_KEY/HOST` (empty in environment).
+- **CI:** fixed 15-question suite `evaluation/ci_golden_dataset.json` (draft, not independently verified) + regression-gated workflow `.github/workflows/ci.yml`; measured baseline `evaluation/baseline_metrics.json`.
+- **Deployment:** Vercel-oriented artifacts and deployment documentation added; **public URL not deployed** due to external hosting/provisioning constraints (no paid infra). Remaining steps documented in `docs/DEPLOYMENT.md`.
+- **Remaining quality issues:** Q08 partial retrieval (1/3), Q10 evidence retrieved but extractive selection unsupported, Gemini generation quality not production-accepted, CI dataset requires independent verification.

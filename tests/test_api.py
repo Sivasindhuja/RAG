@@ -274,7 +274,7 @@ def test_api_endpoints_with_mocked_service(monkeypatch):
     health = client.get("/health")
     assert health.status_code == 200
     assert health.json()["status"] == "ok"
-    assert health.json()["collection_name"] == "satcom_ngp_production_fixed_char"
+    assert health.json()["collection_name"] == "satcom_ngp_production_fixed_char_800_160"
 
     resp = client.post("/query", json={"question": "What is sample?", "mode": "extractive"})
     assert resp.status_code == 200
@@ -290,35 +290,31 @@ def test_api_endpoints_with_mocked_service(monkeypatch):
     reason="production chroma index not present",
 )
 def test_real_index_extractive_smoke_q05_and_q12_representative():
-    """Representative WP1 smoke tests against corrected production index (EXP-003 default).
+    """Representative smoke tests against current selected production index/config.
 
-    Validates end-to-end extractive service behavior, traceability, and app-resolved
-    citation metadata. Known limitations (BL-001/BL-007 for Q05, incomplete Q12
-    selection under EXP-003 defaults) are preserved, not hidden.
+    Uses measured 800/160 fixed-character chunking and app defaults. Validates
+    end-to-end behavior, traceability, and app-resolved citation metadata.
     """
     service = RAGService(config=AppConfig.from_env())
 
     q05 = service.query(
         "Who is responsible for obtaining licenses to offer services in a territory?",
         mode="extractive",
+        retrieval_mode="hybrid",
     )
     assert q05.request_id
     assert q05.mode == "extractive"
-    assert q05.status == "abstained"
-    assert q05.abstained is True
-    assert q05.abstention_reason and "insufficient_selected_evidence" in q05.abstention_reason
-    assert "retrieval" in q05.timings_ms and "selection_and_extractive" in q05.timings_ms
-    assert q05.debug.get("retrieved_chunk_ids")
-    # BL-001 retrieval miss remains: required 2.5.6 evidence chunk is not retrieved.
-    assert "satcom-ngp::page_3::chunk_2::off6299" not in q05.debug.get("retrieved_chunk_ids", [])
-    # Preserve selected evidence/citations for inspection despite abstention.
+    assert q05.status == "answered"
+    assert q05.abstained is False
     assert q05.citations and q05.statements and q05.retrieved
-    assert q05.debug.get("selected_lexical_support", 1.0) < 0.5
-    assert q05.debug.get("answerability_guard_applied") is True
+    assert "retrieval" in q05.timings_ms and "selection_and_extractive" in q05.timings_ms
+    assert q05.citation_validation.app_resolved is True
+    assert any("2.5.6" in (s.text or "") or "territory" in (s.text or "").lower() for s in q05.statements)
 
     q12 = service.query(
         "What satellite communication services are classified as domestic services?",
         mode="extractive",
+        retrieval_mode="hybrid",
     )
     assert q12.request_id
     assert q12.status == "answered"
@@ -326,7 +322,6 @@ def test_real_index_extractive_smoke_q05_and_q12_representative():
     assert q12.statements, "Q12 should have selected extractive evidence statements"
     assert q12.citations, "Q12 should have app-resolved citations"
     assert q12.citation_validation.app_resolved is True
-    # Statement/citation consistency and valid source spans.
     cited_chunks = {c.chunk_id for c in q12.citations}
     assert set(q12.selected_evidence_ids).issubset(cited_chunks | {s.chunk_id for s in q12.statements})
     for stmt in q12.statements:
@@ -360,3 +355,14 @@ def test_metrics_endpoint(monkeypatch):
     data = resp.json()
     assert "totals" in data and "rates" in data and "latency_ms" in data
     assert data["totals"]["requests_total"] >= 1
+
+
+def test_dashboard_endpoint(monkeypatch):
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])
+    fake_service = RAGService(config=AppConfig(allow_gemini=False, retrieval_mode="dense"), index=FakeIndex([_hit()]), pipeline=FakePipeline(grounded))
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    client = TestClient(backend_main.app)
+    resp = client.get("/dashboard")
+    assert resp.status_code == 200
+    assert "SATCOM NGP RAG" in resp.text
+    assert "Live operational metrics" in resp.text

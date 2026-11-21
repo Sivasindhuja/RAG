@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: satcom-ngp-rag-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install --index-url https://download.pytorch.org/whl/cpu torch && pip install -r requirements.runtime.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: RAG_PERSIST_DIR
+        value: /opt/render/project/src/chroma_db_production
+      - key: RAG_COLLECTION_NAME
+        value: satcom_ngp_production_fixed_char_800_160
+      - key: RAG_RETRIEVAL_MODE
+        value: hybrid
+      - key: RAG_GENERATION_MODE
+        value: extractive
+      - key: RAG_ALLOW_GEMINI
+        value: "true"
+      - key: RAG_CORS_ORIGINS
+        value: "*"
+      - key: RAG_GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: CO_API_KEY
+        sync: false
+      - key: COHERE_API_KEY
+        sync: false
+      - key: LANGFUSE_PUBLIC_KEY
+        sync: false
+      - key: LANGFUSE_SECRET_KEY
+        sync: false
+      - key: LANGFUSE_HOST
+        value: https://cloud.langfuse.com
+      - key: LANGFUSE_ENABLED
+        value: "false"
