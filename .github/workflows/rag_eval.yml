@@ -9,26 +9,70 @@ on:
 jobs:
   evaluate:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      RAG_GENERATION_MODE: extractive
+      RAG_RETRIEVAL_MODE: dense
+      LANGFUSE_ENABLED: "false"
+      TOKENIZERS_PARALLELISM: "false"
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: "3.11"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          requirements.runtime.txt
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements.txt -r requirements.runtime.txt
 
-    - name: Run RAG Evaluation
-      env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        CO_API_KEY: ${{ secrets.CO_API_KEY }}
-        # This is the key: it tells GitHub Actions where to find your 'src' folder
-        PYTHONPATH: ${{ github.workspace }}
-      # Updated to run the new script name as a module
-      run: python -m tests.eval_pipeline
+    - name: Build/verify index and ingestion integrity (if production index missing)
+      run: |
+        python - <<'PY'
+        from pathlib import Path
+        import sys
+        from src.rag_app.config import AppConfig
+        from src.rag_core import extract_source_document, FixedCharacterChunker, audit_source_coverage, DenseIndex, DenseIndexConfig
+        cfg = AppConfig.from_env()
+        idx = cfg.persist_dir / "chroma.sqlite3"
+        if idx.exists():
+            print("production index present")
+            sys.exit(0)
+        print("production index missing; building from PDF")
+        doc = extract_source_document(cfg.pdf_path)
+        chunker = FixedCharacterChunker(chunk_size=cfg.chunk_size, overlap=cfg.chunk_overlap)
+        chunks = chunker.chunk(doc)
+        audit = audit_source_coverage(doc, chunks, max_chars=cfg.chunk_size, allow_overlap=True)
+        if not audit['ok']:
+            raise SystemExit(f"ingestion audit failed: {audit['issues']}")
+        index = DenseIndex(DenseIndexConfig(collection_name=cfg.collection_name, persist_dir=cfg.persist_dir, embedding_model=cfg.embedding_model))
+        stats = index.build(chunks, reset=True)
+        print(stats)
+        PY
+
+    - name: Run RAG Evaluation (deterministic CI harness)
+      run: |
+        python -m evaluation.ci_eval \
+          --dataset evaluation/ci_golden_dataset.json \
+          --out evaluation/results/rag_eval_ci \
+          --retrieval-modes dense \
+          --generation-mode extractive \
+          --k 5 \
+          --baseline evaluation/baseline_metrics.json \
+          --check-regression
+
+    - name: Upload evaluation artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: rag-evaluation-ci
+        path: evaluation/results/rag_eval_ci
