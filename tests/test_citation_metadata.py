@@ -112,7 +112,7 @@ def test_q12_definition_statements_resolve_to_clause_4_2():
         "build the production index before running this integration test."
     )
 
-    questions = {q.question_id: q for q in load_questions(root / "experiments" / "exp001_questions.csv")}
+    questions = {q.question_id: q for q in load_questions(root / "tests" / "fixtures" / "exp001" / "exp001_questions.csv")}
     q = questions["EXP001-Q12"]
     hits = index.search(q.question, k=5)
     ans = GroundedPipeline(index, sibling_score_ratio=0.5, definition_intent_boost=True).answer_from_hits(q.question, hits)

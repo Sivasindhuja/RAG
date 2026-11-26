@@ -20,9 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, List, Optional
 
-import chromadb
-
 from .chunker import Chunk
+from .retrieval_types import RetrievedChunk
 
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -34,25 +33,6 @@ class DenseIndexConfig:
     collection_name: str
     persist_dir: Path
     embedding_model: str = DEFAULT_EMBEDDING_MODEL
-
-
-@dataclass
-class RetrievedChunk:
-    """One ranked retrieval hit with enough metadata for evaluation and citation."""
-
-    rank: int
-    chunk_id: str
-    text: str
-    source: str
-    start_offset: int
-    end_offset: int
-    start_page: int
-    end_page: int
-    article: Optional[str]
-    section: Optional[str]
-    heading: Optional[str]
-    distance: Optional[float]
-    metadata: dict[str, Any]
 
 
 def chunk_to_metadata(chunk: Chunk) -> dict[str, Any]:
@@ -90,6 +70,8 @@ class DenseIndex:
         self.config = config
         self._model = model
         Path(config.persist_dir).mkdir(parents=True, exist_ok=True)
+        import chromadb  # lazy import: keep Weaviate-only path light
+
         self._client = chromadb.PersistentClient(path=str(config.persist_dir))
         self._collection = self._client.get_or_create_collection(name=config.collection_name)
 

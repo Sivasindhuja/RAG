@@ -96,7 +96,7 @@ npm run build
 - BL-002 (Q08): incomplete retrieval/evidence.
 - BL-003/004/005: opt-in candidates exist separately (EXP-006/008) but **not default/promoted/combined**.
 - 15-question evaluation set only; not a general production-quality claim.
-- Local Chroma + local model loading not validated for Vercel Hobby serverless (M3). No new experiments/retrieval/chunking/reranking added.
+- Local Chroma + local model loading not validated for Vercel Hobby serverless (M3). No new experiments, retrieval, chunking, or reranking changes were added.
 
 ## Local observability (M5, 2026-11-15)
 - Request/trace IDs and stage timings are returned in API responses for debugging (see `request_id`, `timings_ms`, `errors`/`debug.trace` in `/query` responses).
@@ -104,9 +104,74 @@ npm run build
 - See `docs/M5_OBSERVABILITY.md` for captured fields and limitations. External dashboards/CI gates remain follow-up work (BL-013/BL-012).
 
 ## Evaluation (M4 foundation, 2026-11-15)
-- Reproducible offline baseline harness (extractive, no production behavior changes):
+- Historical M4 baseline harness (`experiments/m4_eval_harness.py`, Task 16 cleanup removed experiment scripts/artifacts; see git history) is retired. For the current supported deterministic evaluation/regression gate, use the CI evaluation harness with explicit CI dense-only baseline arguments.
+
+  **Git Bash (CI-equivalent dense-only regression baseline step):**
   ```bash
-  PYTHONPATH=. python -m experiments.m4_eval_harness --out experiments/results/m4_baseline --mode extractive --k 5
+  PYTHONPATH=. python -m evaluation.ci_eval \
+    --dataset evaluation/ci_golden_dataset.json \
+    --out evaluation/results/ci_local \
+    --retrieval-modes dense \
+    --generation-mode extractive \
+    --k 5 \
+    --baseline evaluation/baseline_metrics.json \
+    --check-regression
   ```
-- Outputs: `answerable_results.json`, `unanswerable_results.json`, `summary.json`, `summary.md`.
-- See `docs/M4_EVALUATION_PLAN.md` and `docs/M4_PROGRESS.md`. Thresholds must be derived from measured (expanded) baselines, not set arbitrarily.
+
+  **Windows PowerShell (equivalent):**
+  ```powershell
+  $env:PYTHONPATH='.'; python -m evaluation.ci_eval --dataset evaluation/ci_golden_dataset.json --out evaluation/results/ci_local --retrieval-modes dense --generation-mode extractive --k 5 --baseline evaluation/baseline_metrics.json --check-regression
+  ```
+
+- **Why explicit args:** these values reproduce the CI dense-only regression baseline step (`.github/workflows/ci.yml`). Omitting `--retrieval-modes` uses `evaluation/ci_eval.py` default `dense,hybrid`, which runs an additional hybrid comparison and is **not** equivalent to the CI dense-only baseline step. Omitting `--generation-mode` or `--k` currently matches CI defaults (`extractive`, `5`), but keeping them explicit avoids ambiguity.
+- Supported wrapper: `python scripts/evaluate.py --help` (forwards to `evaluation.ci_eval`; see `scripts/evaluate.py`). Pass the same explicit arguments when using the wrapper for CI-parity runs.
+- Outputs: CI evaluation artifacts under the selected `--out` directory (e.g. `summary.json`, per-mode results). See `docs/CI_EVALUATION.md`, `docs/M4_EVALUATION_PLAN.md`, and `docs/M4_PROGRESS.md`. Thresholds must be derived from measured baselines, not set arbitrarily.
+## Isolated Weaviate Cloud experiment (Task 24, opt-in, not production)
+
+**Purpose:** Evaluate Weaviate Cloud hosted embeddings + native hybrid search as an isolated retrieval backend. Default backend remains `chroma` (existing dense+BM25+RRF production path unchanged). No production migration.
+
+**Safety:** Do not touch `chroma_db_production/`. Do not use live credentials without explicit authorization. Do not run ingestion/eval against production. No silent fallback to chroma.
+
+**Install (isolated env only):**
+```bash
+pip install -r requirements.weaviate.txt
+```
+
+**Environment variables (names only; never commit values):**
+- `RAG_RETRIEVER_BACKEND=weaviate` (explicit opt-in; default `chroma`)
+- `WEAVIATE_URL` (Weaviate Cloud cluster REST endpoint)
+- `WEAVIATE_API_KEY`
+- `WEAVIATE_COLLECTION` (dedicated experimental collection, e.g. `SatcomNgpExp800160`)
+- `WEAVIATE_EMBEDDING_MODEL` (default `Snowflake/snowflake-arctic-embed-l-v2.0`; verify model availability/quota on your cluster)
+- Optional connection resilience (experimental): `WEAVIATE_INIT_TIMEOUT_S` (default `2`, weaviate-client default), `WEAVIATE_QUERY_TIMEOUT_S` (default `30`). Increase init timeout only when diagnosing transient gRPC startup checks; do not disable startup checks to hide connectivity problems.
+
+**Experimental ingestion (explicit, isolated collection only):**
+```bash
+# Git Bash - create new or explicitly reuse existing experimental collection (no delete)
+WEAVIATE_URL=... WEAVIATE_API_KEY=... WEAVIATE_COLLECTION=SatcomNgpExp800160 \
+  python scripts/weaviate_ingest.py --allow-existing
+```
+```powershell
+# Windows PowerShell (set env vars in-session; do not echo secrets)
+$env:WEAVIATE_URL='...'; $env:WEAVIATE_API_KEY='...'; $env:WEAVIATE_COLLECTION='SatcomNgpExp800160'
+python scripts/weaviate_ingest.py --allow-existing
+```
+Safety (Task 27): default never deletes. Existing collection is reported with object count and ingestion stops unless `--allow-existing`. Destructive reset requires `--recreate --confirm-delete-collection <exact-name>` (exact match). Production-like/non-experimental names refused. Uses existing chunking config (default fixed 800/160). Reports final collection count; no silent overwrite.
+
+**Evaluation (same fixed 15-question dataset):**
+```bash
+# Baseline A: existing chroma dense+BM25+RRF
+PYTHONPATH=. python -m evaluation.weaviate_eval --run-baseline
+
+# Candidate B: Weaviate native hybrid (requires Weaviate env vars)
+PYTHONPATH=. WEAVIATE_URL=... WEAVIATE_API_KEY=... WEAVIATE_COLLECTION=SatcomNgpExp800160 \
+  python -m evaluation.weaviate_eval --run-weaviate
+
+# Compare both in one run (requires Weaviate env vars)
+PYTHONPATH=. ... python -m evaluation.weaviate_eval --run-baseline --run-weaviate
+```
+Default output is timestamped under `evaluation/results/weaviate_experiment/<UTC timestamp>`; `--overwrite` requires explicit authorization for existing non-empty output. Reports include dataset version, collection, embedding model, alpha, and per-question diagnostics (top-k retrieved IDs/ranks/scores/safe metadata, selected citation evidence satisfaction, abstention raw score/distance metadata, latency components).
+
+**Disable / return to default:** set `RAG_RETRIEVER_BACKEND=chroma` for local Chroma baseline, or unset it (AppConfig default remains `chroma` for local/dev compatibility; Render production deployment sets `RAG_RETRIEVER_BACKEND=weaviate` explicitly via `render.yaml`). No code changes required.
+
+**Free-tier/limitations:** Weaviate Cloud Sandbox/Embeddings have quota/rate/batch limits and model availability may vary by cluster/region/time; verify official docs before live run. Weaviate embedding model is not equivalent to `all-MiniLM-L6-v2`; results are comparative, not a drop-in quality guarantee. This experiment does not prove Render Free 512MB viability without a separate Weaviate-only deployment image/dependency set and measured deployment.

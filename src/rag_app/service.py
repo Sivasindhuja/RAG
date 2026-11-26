@@ -3,21 +3,18 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
-from src.rag_core import (
-    ABSTAINED,
-    ANSWERED,
-    DenseIndex,
-    DenseIndexConfig,
-    GeminiGenerator,
-    GroundedPipeline,
-    HybridRetriever,
-    RetrievedChunk,
-    RetrievalResult,
-    content_tokens,
-)
-from src.rag_core.pipeline import ABSTENTION_MESSAGE
+from src.rag_core.retrieval_types import RetrievedChunk, RetrievalResult
+
+if TYPE_CHECKING:
+    from src.rag_core import (
+        DenseIndex,
+        DenseIndexConfig,
+        GeminiGenerator,
+        GroundedPipeline,
+        HybridRetriever,
+    )
 
 from .config import AppConfig
 from .langfuse_tracing import get_langfuse_tracer
@@ -47,6 +44,20 @@ def _statement_model(s: Any) -> StatementModel:
 
 def _retrieved_model(h: RetrievedChunk) -> RetrievedChunkModel:
     meta = h.metadata or {}
+    # Diagnostic metadata: exclude bulky/sensitive text; keep scores and identifiers.
+    diag_meta = {}
+    for k, v in meta.items():
+        if k in {"text", "chunk_text", "content"}:
+            continue
+        diag_meta[k] = v
+    retrieval_scores = {}
+    for key in ("rrf_score", "rerank_score", "bm25_score", "dense_distance", "_weaviate_score", "_weaviate_distance"):
+        if key in meta and meta.get(key) is not None:
+            retrieval_scores[key.lstrip("_")] = meta.get(key)
+    score = retrieval_scores.get("rerank_score") or retrieval_scores.get("rrf_score") or retrieval_scores.get("weaviate_score")
+    if score is None and h.distance is not None:
+        # distance is not a similarity score; keep as distance only.
+        pass
     return RetrievedChunkModel(
         rank=h.rank,
         chunk_id=h.chunk_id,
@@ -56,10 +67,15 @@ def _retrieved_model(h: RetrievedChunk) -> RetrievedChunkModel:
         start_offset=h.start_offset,
         end_offset=h.end_offset,
         distance=h.distance,
+        score=score,
+        retrieval_scores=retrieval_scores,
+        metadata=diag_meta,
     )
 
 
 def _selected_lexical_support(question: str, statements: Sequence[Any]) -> float:
+    from src.rag_core.pipeline import content_tokens
+
     q = set(content_tokens(question))
     if not q:
         return 1.0
@@ -87,6 +103,7 @@ class RAGService:
         self._pipeline = pipeline
         self._gemini_generator = gemini_generator
         self._retriever = retriever
+        self._weaviate_retriever = None
         self._model: Any = None
         self._langfuse = get_langfuse_tracer(
             enabled=self.config.langfuse_enabled,
@@ -106,6 +123,8 @@ class RAGService:
     @property
     def index(self) -> DenseIndex:
         if self._index is None:
+            from src.rag_core import DenseIndex, DenseIndexConfig
+
             self._index = DenseIndex(
                 DenseIndexConfig(
                     collection_name=self.config.collection_name,
@@ -167,6 +186,8 @@ class RAGService:
     @property
     def retriever(self) -> HybridRetriever:
         if self._retriever is None:
+            from src.rag_core import HybridRetriever
+
             self._retriever = HybridRetriever(
                 dense_index=self.index,
                 mode=self.config.retrieval_mode,
@@ -179,11 +200,55 @@ class RAGService:
         return self._retriever
 
     @property
+    def weaviate_retriever(self):
+        if self._weaviate_retriever is None:
+            from src.rag_core.weaviate_retriever import WeaviateRetriever, WeaviateRetrieverConfig
+
+            cfg = WeaviateRetrieverConfig(
+                url=(self.config.weaviate_url or "").strip(),
+                api_key=(self.config.weaviate_api_key or "").strip(),
+                collection_name=(self.config.weaviate_collection or "").strip(),
+                embedding_model=(self.config.weaviate_embedding_model or "Snowflake/snowflake-arctic-embed-l-v2.0").strip(),
+                init_timeout_s=float(getattr(self.config, "weaviate_init_timeout_s", 2.0)),
+                query_timeout_s=float(getattr(self.config, "weaviate_query_timeout_s", 30.0)),
+                alpha=float(getattr(self.config, "weaviate_alpha", 0.5)),
+                search_mode=str(getattr(self.config, "weaviate_search_mode", "hybrid") or "hybrid"),
+            )
+            # Validate explicitly; no silent fallback.
+            missing = []
+            if not cfg.url:
+                missing.append("WEAVIATE_URL")
+            if not cfg.api_key:
+                missing.append("WEAVIATE_API_KEY")
+            if not cfg.collection_name:
+                missing.append("WEAVIATE_COLLECTION")
+            if missing:
+                raise ValueError(
+                    "Weaviate backend selected but missing configuration: " + ", ".join(missing)
+                )
+            self._weaviate_retriever = WeaviateRetriever(cfg)
+        return self._weaviate_retriever
+
+    @property
     def pipeline(self) -> GroundedPipeline:
         if self._pipeline is None:
+            from src.rag_core import GroundedPipeline
+            from src.rag_core.pipeline import AbstentionPolicy
+
+            backend = (getattr(self.config, "retriever_backend", "chroma") or "chroma").lower()
+            idx = None if backend == "weaviate" else self.index
+            policy = None
+            if backend == "weaviate" and bool(getattr(self.config, "weaviate_abstention_experimental", False)):
+                policy = AbstentionPolicy(
+                    missing_distance_behavior=str(
+                        getattr(self.config, "weaviate_abstention_missing_distance_behavior", "skip") or "skip"
+                    ),
+                    min_retrieval_score=getattr(self.config, "weaviate_abstention_min_retrieval_score", None),
+                )
             self._pipeline = GroundedPipeline(
-                index=self.index,
+                index=idx,
                 top_k=self.config.top_k,
+                policy=policy,
                 sibling_score_ratio=self.config.sibling_score_ratio,
                 clause_body_units=self.config.clause_body_units,
                 cross_reference_selection=self.config.cross_reference_selection,
@@ -195,6 +260,8 @@ class RAGService:
     @property
     def gemini_generator(self) -> GeminiGenerator:
         if self._gemini_generator is None:
+            from src.rag_core import GeminiGenerator
+
             self._gemini_generator = GeminiGenerator(
                 model=self.config.gemini_model,
                 temperature=self.config.gemini_temperature,
@@ -203,24 +270,87 @@ class RAGService:
         return self._gemini_generator
 
     def health(self) -> HealthResponse:
+        # Lightweight by default: do NOT trigger SentenceTransformer loading,
+        # Chroma initialization, index recovery, or embedding generation.
+        # Deep index availability is reported only when the index has already
+        # been initialized in this process.
+        backend = (getattr(self.config, "retriever_backend", "chroma") or "chroma").lower()
+        index_initialized = self._index is not None
+        index_status = "unknown"
         index_available = False
-        try:
-            index_available = self.index.count() > 0
-        except Exception:
+        if backend == "weaviate":
+            # Experimental backend: local chroma index is not used by this path.
+            index_initialized = False
+            index_status = "unknown"
             index_available = False
+            collection_name = getattr(self.config, "weaviate_collection", "") or self.config.collection_name
+        else:
+            collection_name = self.config.collection_name
+            if index_initialized:
+                try:
+                    index_available = bool(self._index.count() > 0)
+                    index_status = "available" if index_available else "unavailable"
+                except Exception:
+                    index_available = False
+                    index_status = "unavailable"
         gemini_configured = bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"))
         return HealthResponse(
             status="ok",
             default_mode=self.config.default_generation_mode,
             retrieval_mode=self.config.retrieval_mode,
-            collection_name=self.config.collection_name,
+            retriever_backend=backend,
+            collection_name=collection_name,
             top_k=self.config.top_k,
             index_available=index_available,
+            index_status=index_status,
+            index_initialized=index_initialized,
             gemini_configured=gemini_configured,
             langfuse=self._langfuse.status(),
         )
 
-    def _retrieve(self, question: str, top_k: int, retrieval_mode: str) -> RetrievalResult:
+    @staticmethod
+    def _parse_weaviate_mode(retrieval_mode: Optional[str], default_mode: str = "hybrid") -> tuple[str, Optional[float]]:
+        raw = (retrieval_mode or default_mode or "hybrid").strip().lower()
+        alpha: Optional[float] = None
+        # Accept formats: hybrid, hybrid:0.25, hybrid@0.25, weaviate_hybrid_0.25
+        for sep in (":", "@"):
+            if sep in raw:
+                raw, alpha_raw = raw.split(sep, 1)
+                raw = raw.strip()
+                try:
+                    alpha = float(alpha_raw.strip())
+                except Exception:
+                    alpha = None
+                break
+        if raw.startswith("weaviate_"):
+            raw = raw[len("weaviate_"):]
+        # handle hybrid_0.25 / hybrid_a0.25
+        if raw.startswith("hybrid_"):
+            suffix = raw[len("hybrid_"):]
+            if suffix.startswith("a"):
+                suffix = suffix[1:]
+            try:
+                alpha = float(suffix)
+                raw = "hybrid"
+            except Exception:
+                pass
+        aliases = {"vector": "dense", "near_text": "dense"}
+        raw = aliases.get(raw, raw)
+        if raw not in {"dense", "bm25", "hybrid"}:
+            raw = default_mode if default_mode in {"dense", "bm25", "hybrid"} else "hybrid"
+        return raw, alpha
+
+    def _retrieve(self, question: str, top_k: int, retrieval_mode: str, *, weaviate_alpha: Optional[float] = None) -> RetrievalResult:
+        backend = (getattr(self.config, "retriever_backend", "chroma") or "chroma").lower()
+        if backend == "weaviate":
+            # Experimental opt-in path: do NOT initialize local Chroma/BM25/embedding model.
+            # No silent fallback to chroma.
+            mode, parsed_alpha = self._parse_weaviate_mode(retrieval_mode, default_mode=getattr(self.config, "weaviate_search_mode", "hybrid") or "hybrid")
+            alpha = weaviate_alpha if weaviate_alpha is not None else parsed_alpha
+            if alpha is None:
+                alpha = float(getattr(self.config, "weaviate_alpha", 0.5))
+            return self.weaviate_retriever.retrieve(question, k=top_k, search_mode=mode, alpha=alpha)
+
         mode = (retrieval_mode or "dense").lower()
         # Fast/simple path for dense retrieval and for indexes without corpus/collection support (tests, mocks).
         if mode == "dense":
@@ -230,6 +360,8 @@ class RAGService:
             return RetrievalResult(hits=hits, debug={"mode": "dense", "k": top_k, "final": [h.chunk_id for h in hits]})
         # Use configured retriever when mode matches, else create a lightweight one.
         try:
+            from src.rag_core import HybridRetriever
+
             if mode == self.config.retrieval_mode and self._retriever is not None:
                 return self._retriever.retrieve(question, k=top_k)
             if mode == self.config.retrieval_mode and self._retriever is None:
@@ -266,16 +398,34 @@ class RAGService:
         mode: Optional[str] = None,
         top_k: Optional[int] = None,
         retrieval_mode: Optional[str] = None,
+        weaviate_alpha: Optional[float] = None,
     ) -> QueryResponse:
         trace = RequestTrace()
         question = (question or "").strip()
-        requested_mode = (mode or self.config.default_generation_mode or "extractive").lower()
+        requested_mode = (mode or self.config.default_generation_mode or "gemini").lower()
         if requested_mode not in {"extractive", "gemini"}:
-            requested_mode = "extractive"
-        req_retrieval_mode = (retrieval_mode or self.config.retrieval_mode or "dense").lower()
-        if req_retrieval_mode not in {"dense", "hybrid", "hybrid_rerank"}:
-            req_retrieval_mode = "dense"
+            requested_mode = "gemini"
+        backend = (getattr(self.config, "retriever_backend", "chroma") or "chroma").lower()
+        w_alpha: Optional[float] = weaviate_alpha
+        if backend == "weaviate":
+            w_mode, parsed_alpha = self._parse_weaviate_mode(
+                retrieval_mode, default_mode=getattr(self.config, "weaviate_search_mode", "hybrid") or "hybrid"
+            )
+            if w_alpha is None:
+                w_alpha = parsed_alpha
+            if w_alpha is None:
+                w_alpha = float(getattr(self.config, "weaviate_alpha", 0.5))
+            req_retrieval_mode = f"weaviate_{w_mode}" if w_mode != "hybrid" else f"weaviate_hybrid_a{w_alpha:g}"
+            # Keep legacy label for default hybrid 0.5 to avoid noisy diffs in existing reports.
+            if w_mode == "hybrid" and abs(w_alpha - 0.5) < 1e-9:
+                req_retrieval_mode = "weaviate_hybrid"
+        else:
+            req_retrieval_mode = (retrieval_mode or self.config.retrieval_mode or "dense").lower()
+            if req_retrieval_mode not in {"dense", "hybrid", "hybrid_rerank"}:
+                req_retrieval_mode = "dense"
         effective_top_k = int(top_k or self.config.top_k)
+
+        from src.rag_core.pipeline import ABSTAINED, ANSWERED, ABSTENTION_MESSAGE
 
         prompt_version = None
         try:
@@ -314,7 +464,9 @@ class RAGService:
             # 1-6 Retrieval stages (dense/bm25/fusion/rerank encapsulated but traced)
             with trace.stage("retrieval", top_k=effective_top_k, retrieval_mode=req_retrieval_mode):
                 with self._langfuse.span(lf_trace, "retrieval", input={"question": question, "mode": req_retrieval_mode, "top_k": effective_top_k}) as span:
-                    retrieval_result = self._retrieve(question, effective_top_k, req_retrieval_mode)
+                    retrieval_result = self._retrieve(
+                        question, effective_top_k, retrieval_mode or req_retrieval_mode, weaviate_alpha=w_alpha
+                    )
                     hits = list(retrieval_result.hits)
                     try:
                         span.update(output={"hit_count": len(hits), "chunk_ids": [h.chunk_id for h in hits], "debug": retrieval_result.debug})
@@ -449,6 +601,7 @@ class RAGService:
                     "pipeline_status": grounded.status,
                     "pipeline_reason": grounded.reason,
                     "retrieval_debug": retrieval_result.debug,
+                    "retriever_backend": backend,
                     "prompt_version": prompt_version,
                     "langfuse": self._langfuse.status(),
                     "selection_defaults": {
@@ -530,6 +683,8 @@ class RAGService:
         lf_trace: Any = None,
         prompt_version: Optional[str] = None,
     ) -> None:
+        from src.rag_core.pipeline import ABSTAINED, ANSWERED
+
         extractive_citations = [_citation_model(c) for c in grounded.citations]
         gen = GenerationModel(
             attempted=True,

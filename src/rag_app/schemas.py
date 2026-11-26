@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, description="User question about satcom-ngp.pdf")
-    mode: Literal["extractive", "gemini"] = "extractive"
+    mode: Literal["extractive", "gemini"] = "gemini"
     top_k: Optional[int] = Field(default=None, ge=1, le=20)
     retrieval_mode: Optional[Literal["dense", "hybrid", "hybrid_rerank"]] = None
 
@@ -44,6 +44,10 @@ class RetrievedChunkModel(BaseModel):
     start_offset: int
     end_offset: int
     distance: Optional[float] = None
+    # Optional diagnostic fields (additive; default None/empty for backward compatibility).
+    score: Optional[float] = None
+    retrieval_scores: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class CitationValidationModel(BaseModel):
@@ -55,7 +59,7 @@ class CitationValidationModel(BaseModel):
 
 class GenerationModel(BaseModel):
     attempted: bool = False
-    mode: Literal["extractive", "gemini"] = "extractive"
+    mode: Literal["extractive", "gemini"] = "gemini"
     status: Optional[str] = None
     model: Optional[str] = None
     prompt_version: Optional[str] = None
@@ -72,7 +76,7 @@ class QueryResponse(BaseModel):
     request_id: str
     status: Literal["answered", "abstained", "error"]
     mode: Literal["extractive", "gemini"]
-    retrieval_mode: Literal["dense", "hybrid", "hybrid_rerank"] = "dense"
+    retrieval_mode: str = "dense"  # includes experimental weaviate_* modes/alpha labels
     question: str
     answer: str
     abstained: bool
@@ -92,8 +96,11 @@ class HealthResponse(BaseModel):
     status: str
     default_mode: str
     retrieval_mode: str
+    retriever_backend: str = "chroma"
     collection_name: str
     top_k: int
     index_available: bool
+    index_status: Literal["unknown", "available", "unavailable"] = "unknown"
+    index_initialized: bool = False
     gemini_configured: bool
     langfuse: Dict[str, Any] = Field(default_factory=dict)

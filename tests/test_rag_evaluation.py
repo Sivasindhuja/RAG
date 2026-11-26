@@ -26,8 +26,8 @@ from src.rag_core.index import chunk_to_metadata  # noqa: E402
 
 
 PDF_PATH = ROOT / "data" / "satcom-ngp.pdf"
-QUESTIONS_CSV = ROOT / "experiments" / "exp001_questions.csv"
-GROUND_TRUTH = ROOT / "experiments" / "exp001_ground_truth.json"
+QUESTIONS_CSV = ROOT / "tests" / "fixtures" / "exp001" / "exp001_questions.csv"
+GROUND_TRUTH = ROOT / "tests" / "fixtures" / "exp001" / "exp001_ground_truth.json"
 
 
 def _evidence(evidence_id: str, start: int, end: int) -> EvidenceUnit:

@@ -14,12 +14,14 @@ import math
 import os
 import re
 import time
-from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from rank_bm25 import BM25Okapi
+from .retrieval_types import RetrievalResult, RetrievedChunk
 
-from .index import DenseIndex, RetrievedChunk
+if TYPE_CHECKING:
+    from rank_bm25 import BM25Okapi
+
+    from .index import DenseIndex
 
 _WORD_RE = re.compile(r"[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*")
 
@@ -32,12 +34,6 @@ DEFAULT_COHERE_MODEL = "rerank-english-v3.0"
 def tokenize(text: str) -> List[str]:
     # Simple alphanumeric/dotted tokenization to preserve clause-like tokens (e.g. 2.5.6).
     return [t.lower() for t in _WORD_RE.findall(text or "")]
-
-
-@dataclass
-class RetrievalResult:
-    hits: List[RetrievedChunk]
-    debug: Dict[str, Any]
 
 
 class CorpusIndex:
@@ -68,7 +64,12 @@ class CorpusIndex:
         self.metadatas = [dict(x or {}) for x in metas[:n]]
         self._id_to_pos = {cid: i for i, cid in enumerate(self.ids)}
         tokenized = [tokenize(d) for d in self.documents]
-        self._bm25 = BM25Okapi(tokenized) if tokenized else None
+        if tokenized:
+            from rank_bm25 import BM25Okapi
+
+            self._bm25 = BM25Okapi(tokenized)
+        else:
+            self._bm25 = None
         self._loaded = True
 
     @property

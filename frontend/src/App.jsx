@@ -5,9 +5,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "http://localhost:8000" : "")
+).replace(/\/$/, "");
 
 async function queryRag(question, mode = "extractive") {
+  if (!API_BASE) {
+    throw new Error("VITE_API_BASE_URL is not configured. Set it at build time for production deployments.");
+  }
   const res = await fetch(`${API_BASE}/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -177,6 +182,10 @@ export default function App() {
   }
 
   async function checkHealth() {
+    if (!API_BASE) {
+      setHealth({ ok: false, data: { error: "VITE_API_BASE_URL is not configured. Set it at build time for production deployments." } });
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/health`);
       const data = await res.json();
@@ -306,7 +315,7 @@ export default function App() {
                 <pre className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-2 text-xs overflow-x-auto">cd frontend
 npm install
 npm run dev</pre>
-                <div className="text-xs text-slate-500 mt-1">Optional: set <code>VITE_API_BASE_URL</code> (default <code>http://localhost:8000</code>).</div>
+                <div className="text-xs text-slate-500 mt-1">Set <code>VITE_API_BASE_URL</code> at build time for Vercel/production (dev defaults to <code>http://localhost:8000</code>).</div>
               </div>
               <div>
                 <div className="font-semibold mb-1">What this UI shows</div>

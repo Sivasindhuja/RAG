@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from .document import SourceDocument
-from .index import RetrievedChunk
+from .retrieval_types import RetrievedChunk
 
 
 @dataclass(frozen=True)

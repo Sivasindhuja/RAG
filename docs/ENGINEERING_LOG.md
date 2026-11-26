@@ -153,7 +153,7 @@ make results incomparable and let production silently differ from what was
 measured.
 
 **Decision.** Canonical document, chunking, dense index and evaluation code lives
-in `src/rag_core/`. New experiments import it. `experiments/exp001.py` is the
+in `src/rag_core/`. New experiments import it. `removed-experiment-artifacts/exp001.py` is the
 single frozen exception because it is the accepted historical baseline and must
 remain byte-for-byte reproducible.
 
@@ -271,7 +271,7 @@ production default.
 - Regression coverage: `tests/test_pipeline.py` sibling tests and
   `test_answer_from_hits_reuses_supplied_retrieval_without_searching`.
 
-See `docs/EXP-003.md` and `experiments/results/exp003/`.
+See `docs/EXP-003.md` and `removed-experiment-artifacts/results/exp003/`.
 
 ### DR-011 — Constrained generator evaluation rejected (EXP-004)
 
@@ -324,7 +324,7 @@ not fix retrieval or selection failures because it never saw unselected chunks.
   independent audit and a grounding metric that is not satisfied by wrong
   evidence.
 
-See `docs/EXP-004.md` and `experiments/results/exp004/`.
+See `docs/EXP-004.md` and `removed-experiment-artifacts/results/exp004/`.
 
 ### DR-012 — Clause-body-aware answer units investigated and rejected (EXP-005)
 
@@ -391,7 +391,7 @@ evidence coverage for Q14 remained present.
 - Regression coverage: `tests/test_pipeline.py` adds depth-3 grouping and depth-2
   non-grouping tests.
 
-See `docs/EXP-005.md` and `experiments/results/exp005/`.
+See `docs/EXP-005.md` and `removed-experiment-artifacts/results/exp005/`.
 
 ### DR-013 — Authoritative project objective, fixed constraints and milestone roadmap
 
@@ -452,7 +452,7 @@ must be measured and documented (BL-009/BL-015).
 
 **Impact.** `docs/PROJECT_BRIEF.md` is authoritative for objective/constraints/
 roadmap/status; `docs/BACKLOG.md` tracks known issues and deferred improvements;
-future experiments/changes must cite the milestone/problem they serve.
+future removed-experiment-artifacts/changes must cite the milestone/problem they serve.
 
 **Status.** Accepted.
 
@@ -495,8 +495,8 @@ in-corpus insufficient-evidence cases, and mechanical/manual evaluation.
   selected evidence only; no outside knowledge; no page/section/metadata in model
   text; empty list on insufficient evidence. Citation IDs validated and mapped to
   app-owned markers/citations by `assemble_generated_answer`.
-- Added `experiments/m1_gemini_eval.py` and artifacts in
-  `experiments/results/m1_gemini/` (config, integrity audit, retrieval, extractive
+- Added `removed-experiment-artifacts/m1_gemini_eval.py` and artifacts in
+  `removed-experiment-artifacts/results/m1_gemini/` (config, integrity audit, retrieval, extractive
   answers, Gemini answers, abstention, manual audit template, per-question
   comparison, summary). Fixed/changed: retrieval/selection none; generation
   backend Gemini (blocked in run).
@@ -541,7 +541,7 @@ embeddings, ground truth and EXP-003 selection unchanged.
 
 **Model availability/selection (actual).**
 - `google.generativeai.list_models()` returned 49 `generateContent` models for
-  the configured key (recorded in `experiments/results/m1_gemini/config.json`).
+  the configured key (recorded in `removed-experiment-artifacts/results/m1_gemini/config.json`).
 - Probes attempted (actual availability/latency/cost signals): `gemini-2.5-flash`
   selected by fallback but **unavailable** to account (404 "no longer available to
   new users"); `gemini-3.8-flash` (explicit, API-suggested) **probe timeout/504**
@@ -562,7 +562,7 @@ embeddings, ground truth and EXP-003 selection unchanged.
   mean 2504.93 ms, median 2435.07 ms, max 5175.49 ms. Tokens: prompt 5311,
   candidates 704, total 6015 (counts from API usage metadata where available).
 - Out-of-corpus abstention: 12/12 (extractive and Gemini path).
-- Manual audit (`experiments/results/m1_gemini/manual_audit.{json,csv,summary}`; not
+- Manual audit (`removed-experiment-artifacts/results/m1_gemini/manual_audit.{json,csv,summary}`; not
   independent external audit): correctness **5 correct / 4 partial / 2 incorrect /
   4 abstained**; completeness **5 complete / 2 partial / 4 incomplete / 4 n/a**;
   faithfulness **9 grounded / 2 partially grounded / 0 unfaithful / 4 abstained**;
@@ -604,7 +604,7 @@ unfaithful. Differences reflect model behavior, abstentions, and the same
 upstream retrieval/selection failures; results are on the small 15-question set
 and not general production evidence.
 
-**Bug fixed during live run.** `experiments/m1_gemini_eval.py`:
+**Bug fixed during live run.** `removed-experiment-artifacts/m1_gemini_eval.py`:
 `_evaluate_generated/_claim_grounded` assumed statement objects; Gemini
 `GeneratedAnswer.to_dict()` stores evidence statements as dicts, causing
 `AttributeError` (`'dict' object has no attribute 'text'`). Fixed to accept
@@ -688,10 +688,10 @@ against which later chunking changes are measured.
 Per-question notes: Q05 Recall@5 = 0.0, Q08 = 0.3333, Q13 = 1.0.
 
 **Decision.** **Accepted** as the reference baseline. Artifacts in
-`experiments/results/exp001_v3/` are frozen; `experiments/exp001.py` and the
+`removed-experiment-artifacts/results/exp001_v3/` are frozen; `removed-experiment-artifacts/exp001.py` and the
 approved questions/ground truth must not be modified. See `docs/EXP-001.md`.
 
-**Caveats.** The original `experiments/results/exp001/` run is invalid
+**Caveats.** The original `removed-experiment-artifacts/results/exp001/` run is invalid
 (wrong question set, heading-only ground truth) and must not be used.
 
 ### EXP-002 — Structure-aware chunking (REJECTED as default)
@@ -759,7 +759,7 @@ The aggregate Recall change is small, but Precision and MRR are materially worse
 and the compound-question regressions are real. The structure-aware chunker is
 retained as a metadata-rich baseline and a foundation for a justified
 parent-context/sibling-expansion experiment. See `docs/EXP-002.md` and
-`experiments/results/exp002/`.
+`removed-experiment-artifacts/results/exp002/`.
 
 ### PROD-001 — Production slice over the accepted baseline
 
@@ -817,7 +817,7 @@ foundation**, with EXP-003 accepted as the answer-selection default. Do not
 present it as a complete answer engine. Q08 multi-clause completeness and Q10
 relevance remain open defects, not hidden by the exact retrieval parity. See
 `docs/PRODUCTION_SLICE.md`, `docs/EXP-003.md` and
-`experiments/results/production_slice/`.
+`removed-experiment-artifacts/results/production_slice/`.
 
 **Reproduction.** `python -m experiments.production_slice` writes config, chunks,
 integrity audit, retrieval results, answers, abstention results,
@@ -853,7 +853,7 @@ statement count. The rule is accepted as the production default (DR-010).
 
 **Not fixed.** Q05 (retrieval miss), Q08 (partial retrieval), Q10 (body-level
 clause evidence), Q14 (two statements overlapping one evidence unit). See
-`docs/EXP-003.md` and `experiments/results/exp003/`.
+`docs/EXP-003.md` and `removed-experiment-artifacts/results/exp003/`.
 
 ### EXP-004 — Constrained generator over selected evidence (rejected)
 
@@ -893,7 +893,7 @@ token coverage, showing the proxy does not measure relevance.
 **Decision.** Reject as the production default (DR-011). The generator is not
 wired into production. Q04/Q12 headings, Q05/Q08 retrieval misses and Q10
 selection remain upstream problems. See `docs/EXP-004.md` and
-`experiments/results/exp004/`.
+`removed-experiment-artifacts/results/exp004/`.
 
 ### EXP-005 — Clause-body-aware answer-unit selection (rejected)
 
@@ -942,14 +942,14 @@ remained covered by a merged 4.4.3+body statement.
 
 **Decision.** Reject (DR-012). Clause-body segmentation alone is insufficient:
 it creates the required unit but lexical/context ranking still does not select it.
-Production remains EXP-003. See `docs/EXP-005.md` and `experiments/results/exp005/`.
+Production remains EXP-003. See `docs/EXP-005.md` and `removed-experiment-artifacts/results/exp005/`.
 
 
 ### DR-016 — Cross-reference applicability selection investigated; accepted as opt-in candidate (EXP-006)
 
 **Date.** 2026-11-14 (investigation/run), 2026-11-15 (review/evaluator normalization).
 
-**Review decision (2026-11-15).** Accepted as successful opt-in candidate; **EXP-003 remains production default** and `cross_reference_selection` not promoted globally. Before EXP-007: fixed Q10 phrase-check normalization in `experiments/exp006.py` evaluator to tolerate PDF whitespace artifacts (e.g. `prio rity`) while preserving original source text and ground truth; added `experiments/results/exp006/normalized_review.json` (`all_key_phrases_present=true` under normalization). Original EXP-006 artifacts/decision history preserved (`comparison.json`/`summary.md` unchanged). Complete test suite on working tree: **97 passed, 27 warnings** (`python -m pytest tests -q`, ~83s, 2026-11-15).
+**Review decision (2026-11-15).** Accepted as successful opt-in candidate; **EXP-003 remains production default** and `cross_reference_selection` not promoted globally. Before EXP-007: fixed Q10 phrase-check normalization in `removed-experiment-artifacts/exp006.py` evaluator to tolerate PDF whitespace artifacts (e.g. `prio rity`) while preserving original source text and ground truth; added `removed-experiment-artifacts/results/exp006/normalized_review.json` (`all_key_phrases_present=true` under normalization). Original EXP-006 artifacts/decision history preserved (`comparison.json`/`summary.md` unchanged). Complete test suite on working tree: **97 passed, 27 warnings** (`python -m pytest tests -q`, ~83s, 2026-11-15).
 
 **Date.** 2026-11-14.
 
@@ -964,7 +964,7 @@ Production remains EXP-003. See `docs/EXP-005.md` and `experiments/results/exp00
 
 **Controlled variable.** Selection only: EXP-003 baseline (`cross_reference_selection=False`, default) vs candidate (`cross_reference_selection=True`, opt-in). Frozen: PDF, questions, 20 evidence units, fixed-character 1000/200 chunks, MiniLM embeddings, dense top-5 retrieval/precomputed hits, sibling ratio 0.5, answer caps, citations, abstention, metrics. No Gemini evaluation.
 
-**Implementation.** `src/rag_core/pipeline.py`: added `cross_reference_selection` parameter (default `False`) and `_apply_cross_reference_selection`. Candidate identifies query-relevant submarkers from retrieved segments (meaningful overlap: >=2 query tokens or weighted segment score >=4.0), finds numbered applicability clauses whose referenced submarkers intersect them, merges clause start + contiguous body (until next clause start) into a single exact source span, suppresses components, promotes unit near top score (0.95 * top direct score). `experiments/exp006.py` and `experiments/results/exp006/*` record config, audit, retrieval, answers, abstention, comparison, CSV, summary.
+**Implementation.** `src/rag_core/pipeline.py`: added `cross_reference_selection` parameter (default `False`) and `_apply_cross_reference_selection`. Candidate identifies query-relevant submarkers from retrieved segments (meaningful overlap: >=2 query tokens or weighted segment score >=4.0), finds numbered applicability clauses whose referenced submarkers intersect them, merges clause start + contiguous body (until next clause start) into a single exact source span, suppresses components, promotes unit near top score (0.95 * top direct score). `removed-experiment-artifacts/exp006.py` and `removed-experiment-artifacts/results/exp006/*` record config, audit, retrieval, answers, abstention, comparison, CSV, summary.
 
 **Results.**
 | Measure | Baseline | Candidate | Delta |
@@ -1003,7 +1003,7 @@ Q10: baseline 0/3 supported, no evidence covered, 3.6.8 not cited. Candidate 1/3
 
 **Hypothesis.** Introductory spans ending with `:` signal an immediately associated enumeration/definition block in the same chunk; grouping intro span with contiguous following spans until next numbered clause start preserves heading-associated lists/definitions as one verbatim unit (general, document-grounded).
 
-**Implementation.** `src/rag_core/pipeline.py`: opt-in `associated_heading_units` (default `False`) groups colon-ending intro spans with contiguous associated content until next numbered clause start. `experiments/exp007.py`, `experiments/results/exp007/*`.
+**Implementation.** `src/rag_core/pipeline.py`: opt-in `associated_heading_units` (default `False`) groups colon-ending intro spans with contiguous associated content until next numbered clause start. `removed-experiment-artifacts/exp007.py`, `removed-experiment-artifacts/results/exp007/*`.
 
 **Results (frozen 15q + 12q abstention).** Baseline vs EXP-007: supported answers 12→12, statements 15/45→15/45 (0.3333), citations 16/31→16/32 (0.5161→0.5000, delta -0.0161), abstention 12/12 unchanged, no non-target regressions, offsets/citation traceability valid 15/15. **Q04:** all four classifications present (4/4), evidence covered/cited, supported 1/3; selected merged unit `2.4.1 ... (a)-(d)` offsets 4734–4937 (verbatim, traceable). **Q12:** required definition elements present 0/7 in answer text despite evidence covered by supported non-definitional statement; key retrieved definition sentences not selected/ranked. **Q10 separate comparison:** EXP-006-only still supported/covers E01/cites 3.6.8; EXP-007-only unchanged from baseline (no combination).
 
@@ -1013,7 +1013,7 @@ Q10: baseline 0/3 supported, no evidence covered, 3.6.8 not cited. Candidate 1/3
 
 ### EXP-007 — Heading-introduced associated answer units (Q04/Q12, rejected for promotion)
 
-Controlled answer-unit construction/selection only (`associated_heading_units`, opt-in). Q04 includes all four classifications in one verbatim supported/cited unit; Q12 required definition elements not selected. No regressions, abstention unchanged, traceability valid. Not promoted/combined. See `docs/EXP-007.md`, `experiments/results/exp007/`.
+Controlled answer-unit construction/selection only (`associated_heading_units`, opt-in). Q04 includes all four classifications in one verbatim supported/cited unit; Q12 required definition elements not selected. No regressions, abstention unchanged, traceability valid. Not promoted/combined. See `docs/EXP-007.md`, `removed-experiment-artifacts/results/exp007/`.
 
 ### DR-018 — Q12 definitional evidence selection investigated; accepted as opt-in candidate (EXP-008)
 
@@ -1027,9 +1027,9 @@ Controlled answer-unit construction/selection only (`associated_heading_units`, 
 
 **Controlled variable.** Selection/ranking only: `definition_intent_boost` off vs on (opt-in). Frozen: PDF, questions/evidence/unanswerable, chunking, embeddings, retrieval/precomputed hits, top-k, EXP-003 sibling ratio, caps, citations, abstention, metrics. EXP-006/EXP-007 kept separate.
 
-**Implementation.** `src/rag_core/pipeline.py` opt-in `definition_intent_boost` (+1.5 when definitional intent, marker, and query-content overlap present). `experiments/exp008.py`, `experiments/results/exp008/*`.
+**Implementation.** `src/rag_core/pipeline.py` opt-in `definition_intent_boost` (+1.5 when definitional intent, marker, and query-content overlap present). `removed-experiment-artifacts/exp008.py`, `removed-experiment-artifacts/results/exp008/*`.
 
-**Results.** Checks all passed. Baseline→EXP-008: supported answers 12→12, statements 15/45 (0.3333)→17/45 (0.3778, +0.0444), citations 16/31 (0.5161)→17/32 (0.5312), abstention 12/12 unchanged, no regressions. **Q12:** all 7 required elements present, evidence covered (`EXP001-Q12-E01`), answer supported, 3/3 supported statements, valid offsets/pages/traceability. EXP-008 result artifacts preserved as executed history (`experiments/results/exp008/*`). **Separate checks:** Q04 EXP-008 baseline-like (not combined with EXP-007); Q10 EXP-008 baseline-like while EXP-006-only still fixes Q10.
+**Results.** Checks all passed. Baseline→EXP-008: supported answers 12→12, statements 15/45 (0.3333)→17/45 (0.3778, +0.0444), citations 16/31 (0.5161)→17/32 (0.5312), abstention 12/12 unchanged, no regressions. **Q12:** all 7 required elements present, evidence covered (`EXP001-Q12-E01`), answer supported, 3/3 supported statements, valid offsets/pages/traceability. EXP-008 result artifacts preserved as executed history (`removed-experiment-artifacts/results/exp008/*`). **Separate checks:** Q04 EXP-008 baseline-like (not combined with EXP-007); Q10 EXP-008 baseline-like while EXP-006-only still fixes Q10.
 
 **Post-review citation metadata correction (separate, 2026-11-15).** Audit against original PDF verified Q12 statement offsets 31006–31254, 31255–31506, 31006–31178 are page 13, verbatim 4.2 content (4.2 starts 30381, 4.3 starts 31512); ground truth unchanged. Recorded EXP-008 citations labeled 4.2 statements as 4.3/4.1 due to **chunk metadata assignment issue with fixed-character windowing**: chunk `...off30978` starts inside 4.2 but contained later 4.3 heading and was labeled 4.3; chunk `...off30178` starts at 4.1 but cited statement is in 4.2 region. Correction (smallest justified): `FixedCharacterChunker` now assigns start-governing clause metadata; pipeline resolves citation section/heading from governing clause of first selected statement offset (preferring in-chunk clause at/before offset; retaining start-governing metadata when statement precedes first in-chunk clause). Production index `chroma_db_production/satcom_ngp_production_fixed_char` rebuilt (49 chunks). Corrected Q12 citations resolve to **4.2 / “4.2 INTERNATIONAL COMMUNICATION SERVICES”** with unchanged chunk ranges/pages/offsets. See `docs/EXP-008-citation-metadata-correction.md`, `tests/test_citation_metadata.py`.
 
@@ -1039,7 +1039,7 @@ Controlled answer-unit construction/selection only (`associated_heading_units`, 
 
 ### EXP-008 — Q12 definitional evidence selection (accepted as opt-in candidate)
 
-Controlled selection/ranking only (`definition_intent_boost`, opt-in). Q12 all required elements selected/cited with traceability; no regressions; abstention unchanged. Not promoted/combined. See `docs/EXP-008.md`, `experiments/results/exp008/`.
+Controlled selection/ranking only (`definition_intent_boost`, opt-in). Q12 all required elements selected/cited with traceability; no regressions; abstention unchanged. Not promoted/combined. See `docs/EXP-008.md`, `removed-experiment-artifacts/results/exp008/`.
 
 **Verification note (2026-11-15, post-EXP-008 correction):** complete test suite `python -m pytest tests -q` → **101 passed, 29 warnings** (~15.09s) after adding citation-metadata regression tests and rebuilding production index. `tests/test_pipeline.py` restored from HEAD (accidentally emptied during audit session) before final run.
 
@@ -1128,11 +1128,11 @@ Coverage added across this work:
 
 ### F.4 Reproducibility
 
-- `experiments/exp002.py` writes `config.json`, `chunks.json`,
+- `removed-experiment-artifacts/exp002.py` writes `config.json`, `chunks.json`,
   `integrity_audit.json`, `chunk_stats.json`, `evidence.json`,
   `retrieval_results.json`, `evidence_coverage.json`, `comparison.json`,
   `failure_analysis.json`, `per_question_metrics.csv`, `summary.md` under
-  `experiments/results/exp002/`.
+  `removed-experiment-artifacts/results/exp002/`.
 - CSV/metric comparison keys follow the configured `--top-k`; baseline comparison
   is only reported when the baseline contains the same metric key (prevents
   misleading deltas at a different K).
@@ -1141,25 +1141,25 @@ Coverage added across this work:
 - PROD-001 writes `config.json`, `chunks.json`, `integrity_audit.json`,
   `retrieval_results.json`, `answers.json`, `abstention_results.json`,
   `per_question_metrics.csv` and `summary.md` under
-  `experiments/results/production_slice/`.
+  `removed-experiment-artifacts/results/production_slice/`.
 - PROD-001 observed latency: pipeline mean 38.60 ms, median 38.52 ms, max
   44.97 ms; index build 2,422.49 ms for 49 chunks.
 - EXP-003 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
   `answers_baseline.json`, `answers_sibling.json`, `abstention_results.json`,
   `comparison.json`, `per_question_metrics.csv` and `summary.md` under
-  `experiments/results/exp003/`. Answer-assembly latency (hits held fixed):
+  `removed-experiment-artifacts/results/exp003/`. Answer-assembly latency (hits held fixed):
   baseline 2.93 ms mean, sibling 3.06 ms mean (negligible; varies by run).
 - EXP-004 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
   `answers_extractive.json`, `answers_generated.json`, `abstention_results.json`,
   `comparison.json`, `per_question_metrics.csv`, `latency.json`, `summary.md`,
   `manual_audit_template.csv`, `manual_audit.json`, `manual_audit_summary.json`
-  and `decision.md` under `experiments/results/exp004/`. The generator run used
+  and `decision.md` under `removed-experiment-artifacts/results/exp004/`. The generator run used
   an isolated `chroma_db_exp004/` collection. Observed generator latency:
   mean 3,757.21 ms, median 3,256.99 ms, max 7,818.54 ms for 15 answered questions.
 - EXP-005 writes `config.json`, `integrity_audit.json`, `retrieval_results.json`,
   `answers_baseline.json`, `answers_candidate.json`, `abstention_results.json`,
   `comparison.json`, `per_question_metrics.csv`, `latency.json` and `summary.md`
-  under `experiments/results/exp005/`. It reused the production index with
+  under `removed-experiment-artifacts/results/exp005/`. It reused the production index with
   identical precomputed retrieval hits. Observed selection latency:
   baseline 2.00 ms mean, candidate 1.86 ms mean (negligible; varies by run).
 
@@ -1233,7 +1233,7 @@ Coverage added across this work:
     list 11.323, 3.6.10 9.176, 3.6.9-tail 5.801, 3.6.8 4.914), left Q10 at 0/3,
     and regressed Q14 supported-statement count (2 -> 1). Rejected (DR-012,
     RA-011). Added `clause_body_units` support/tests in the pipeline,
-    `experiments/exp005.py`, `docs/EXP-005.md` and `experiments/results/exp005/`.
+    `removed-experiment-artifacts/exp005.py`, `docs/EXP-005.md` and `removed-experiment-artifacts/results/exp005/`.
     Full suite now 91 passed.
 
 17. Established authoritative project direction (DR-013): updated
@@ -1242,7 +1242,7 @@ Coverage added across this work:
     roadmap M0–M6. No new RAG experiment or technique implemented.
 18. Started M1 Gemini answer path (DR-014): added `GeminiGenerator` and
     `m1-v1` evidence-only JSON claim contract with app-validated citation-ID
-    resolution, selected-evidence sufficiency gate, `experiments/m1_gemini_eval.py`,
+    resolution, selected-evidence sufficiency gate, `removed-experiment-artifacts/m1_gemini_eval.py`,
     and 6 generation-contract tests. `python -m pytest tests -q` → 97 passed.
     Ran M1 eval on 15-question set with retrieval/selection fixed; extractive
     baseline unchanged (12/15 supported, 15/45, 16/31). **Live Gemini run
@@ -1250,7 +1250,7 @@ Coverage added across this work:
     quality/cost/latency selection and generation not executed. Q05 correctly
     abstained by sufficiency gate (0.3333 < 0.5); 14 sufficient questions blocked
     pending credentials; out-of-corpus 12/12 abstained. Artifacts in
-    `experiments/results/m1_gemini/`.
+    `removed-experiment-artifacts/results/m1_gemini/`.
 19. Completed M1 live validation run (DR-015) with local `.env` credentials
     (key not exposed). Actual availability: 49 generateContent models listed.
     Probes: `gemini-2.5-flash` unavailable (404), `gemini-3.8-flash` 504 timeout,
@@ -1481,7 +1481,7 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 
 ### J. 2026-11-15 — M4 evaluation expansion foundation and M5 observability (parallel, no prod-behavior changes)
 
-**M4 (foundation + baseline measured, no retrieval/chunking/EXP-003/threshold tuning):** Added `docs/M4_EVALUATION_PLAN.md`, `experiments/m4_eval_harness.py`, and `docs/M4_PROGRESS.md`. Preserved existing datasets/ground truth (`exp001_questions.csv`, `exp001_ground_truth.json`, `unanswerable_questions.csv`). Executed baseline on local validated `RAGService` (extractive, EXP-003, corrected prod index, k=5): **answerable 15** — answered 14, abstained 1 (Q05 guard), supported_answer_rate 0.80, statement support 0.3333, citation support 0.5161, mean recall@5 0.8889 / precision@5 0.2533 / MRR@5 0.7944; **unanswerable 12** — abstention accuracy 1.00. Latency (includes cold first-call outlier): total p50 19.704 ms / p95 22.648 ms / max 17265.834 ms. Artifacts: `experiments/results/m4_baseline/`. Thresholds not set (must be derived from measured expanded baselines). Pending: manual curation/verification of 35–85 additional questions (50–100 initial, path to 200) covering all four articles and required types/tags/evidence/citation/abstention labels.
+**M4 (foundation + baseline measured, no retrieval/chunking/EXP-003/threshold tuning):** Added `docs/M4_EVALUATION_PLAN.md`, `removed-experiment-artifacts/m4_eval_harness.py`, and `docs/M4_PROGRESS.md`. Preserved existing datasets/ground truth (`exp001_questions.csv`, `exp001_ground_truth.json`, `unanswerable_questions.csv`). Executed baseline on local validated `RAGService` (extractive, EXP-003, corrected prod index, k=5): **answerable 15** — answered 14, abstained 1 (Q05 guard), supported_answer_rate 0.80, statement support 0.3333, citation support 0.5161, mean recall@5 0.8889 / precision@5 0.2533 / MRR@5 0.7944; **unanswerable 12** — abstention accuracy 1.00. Latency (includes cold first-call outlier): total p50 19.704 ms / p95 22.648 ms / max 17265.834 ms. Artifacts: `removed-experiment-artifacts/results/m4_baseline/`. Thresholds not set (must be derived from measured expanded baselines). Pending: manual curation/verification of 35–85 additional questions (50–100 initial, path to 200) covering all four articles and required types/tags/evidence/citation/abstention labels.
 
 **M5 (lightweight, $0, exportable):** Extended `src/rag_app/observability.py` (trace details/total), added `src/rag_app/metrics.py` (in-memory aggregated collector: totals/rates, p50/p95 latency for total/retrieval/selection/generation, recent records), instrumented `src/rag_app/service.py` (retrieval/selection/abstention/citation-validation/generation details; metrics recording), added `GET /metrics` in `backend/main.py`, and documented in `docs/M5_OBSERVABILITY.md`. Token/cost fields recorded when available (Gemini cost not computed). **Tests:** `tests/test_api.py` 8 passed (incl. metrics endpoint), `tests -q -k "not real_index"` 108 passed / 1 deselected.
 
@@ -1520,7 +1520,7 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 **Context.** Final project delivery required completing ingestion-to-answer pipeline, chunking experiment, hybrid retrieval + Cohere reranking integration, externalized/versioned prompts, RAGAS-integrated evaluation on fixed 15-question CI suite, PR CI with regression gates, Langfuse tracing, metrics dashboard, and public deployment compatibility.
 
 **Decisions and evidence.**
-- **Chunking (measured):** controlled experiment (`experiments/chunking_experiment.py`, `experiments/results/chunking_experiment/`) compared fixed-character 500/100, 800/160, 1000/200, 1200/240 on CI answerable subset (same PDF/embedding/dense k=5). Selected **800/160** (61 chunks) for highest recall@5 (0.9236) and MRR@5 (0.8611), audit ok. Q05 (2.5.6) became retrievable at 800/160 (and other tested sizes except 1000/200). Default config and ingestion/index rebuild updated to 800/160; collection `satcom_ngp_production_fixed_char_800_160` built. Historical 1000/200 artifacts/baselines preserved.
+- **Chunking (measured):** controlled experiment (`removed-experiment-artifacts/chunking_experiment.py`, `removed-experiment-artifacts/results/chunking_experiment/`) compared fixed-character 500/100, 800/160, 1000/200, 1200/240 on CI answerable subset (same PDF/embedding/dense k=5). Selected **800/160** (61 chunks) for highest recall@5 (0.9236) and MRR@5 (0.8611), audit ok. Q05 (2.5.6) became retrievable at 800/160 (and other tested sizes except 1000/200). Default config and ingestion/index rebuild updated to 800/160; collection `satcom_ngp_production_fixed_char_800_160` built. Historical 1000/200 artifacts/baselines preserved.
 - **Hybrid retrieval (measured):** implemented BM25+RRF fusion and configurable retriever (`src/rag_core/retrieval.py`, `HybridRetriever`, modes dense/hybrid/hybrid_rerank). On 800/160 CI set, hybrid improved supported_answer_rate 0.5833→0.8333 and citation_support_rate 0.4828→0.5484 vs dense with same recall/evidence coverage (0.9236) and precision 0.3333 (`evaluation/results/ci_compare_800_160/report.json`). Hybrid adopted as default retrieval mode. Q08 remains partial retrieval; Q10 remains selection-limited despite evidence retrieval.
 - **Cohere reranking:** integrated (`cohere_rerank`, mode `hybrid_rerank`, default `rerank-english-v3.0`) with mocked tests (`tests/test_cohere_reranker.py`). Live credentialed comparison not completed because `CO_API_KEY`/`COHERE_API_KEY` unavailable (empty in `.env`); fallback runs not evidence of reranker quality. Pending valid key for live latency/usage/cost/quality measurement.
 - **Prompts:** externalized to `prompts/` with manifest and versioned template (`prompts/generation_grounded_v1.txt`, `grounded_json_v1`), loader (`src/rag_app/prompts.py`) and generation integration; prompt version recorded in responses/trace metadata.
@@ -1586,7 +1586,7 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 **Problem.** PR #1 GitHub Actions failures reported for commit `2c3003b` (branch `deploy/render-vercel`): (1) RAG Evaluation CI evidence-mapping mismatch on `EXP001-Q03-E01`, and CI pytest failures including source-excerpt mismatches after global offset mapping (e.g. `EXP001-Q13-E02` expected `4.3.2`/actual `.3.2`, `EXP001-Q13-E03` `4.3.3`/`.3.3`, `EXP001-Q15-E01` identical-looking prefix but comparison failure). (2) After later fixes, `tests/test_citation_metadata.py::test_q12_definition_statements_resolve_to_clause_4_2` failed in CI because it hardcoded collection `satcom_ngp_production_fixed_char` and `chroma_db_production` while `AppConfig` defaults to `satcom_ngp_production_fixed_char_800_160`; `.gitignore` excludes `chroma_db_production/`; and CI ran pytest before production-index build/verify. With current production config (800/160, 61 chunks, `pypdf==6.10.2`), Q12 retrieved expected 4.2 statements (offsets 31006, 31255) but also selected an unrelated 3.2 fragment (offset 10868).
 
 **Investigation / root cause (measured).**
-- **Extraction determinism (local diagnosis):** `data/satcom-ngp.pdf` (tracked, 68,396 bytes) extracted via `src/rag_core/document.py:extract_source_document` (`pypdf.PdfReader.extract_text()` per page, as-is, cumulative offsets). Local env `pypdf 6.10.2` (win32, Python 3.11.0): 15 pages, 35,407 chars, per-page `[2517,2182,2166,2723,2360,2982,2864,2609,2457,2840,2301,2177,2316,2692,221]`; all 17 `evaluation/ci_golden_dataset.json` units and all 20 `experiments/exp001_ground_truth.json` units matched exactly; `tests/test_exp001.py` + `tests/test_rag_evaluation.py` = 32 passed locally. CI used unpinned/loose `pypdf` (`requirements.txt` unpinned, `requirements.runtime.txt>=4.0`), consistent with environment-dependent `extract_text()` drift causing reported mapping failures. Exact CI extracted text/offsets not available locally; cause attributed with high confidence to extractor/version drift under non-deterministic dependency resolution.
+- **Extraction determinism (local diagnosis):** `data/satcom-ngp.pdf` (tracked, 68,396 bytes) extracted via `src/rag_core/document.py:extract_source_document` (`pypdf.PdfReader.extract_text()` per page, as-is, cumulative offsets). Local env `pypdf 6.10.2` (win32, Python 3.11.0): 15 pages, 35,407 chars, per-page `[2517,2182,2166,2723,2360,2982,2864,2609,2457,2840,2301,2177,2316,2692,221]`; all 17 `evaluation/ci_golden_dataset.json` units and all 20 `tests/fixtures/exp001/exp001_ground_truth.json` units matched exactly; `tests/test_exp001.py` + `tests/test_rag_evaluation.py` = 32 passed locally. CI used unpinned/loose `pypdf` (`requirements.txt` unpinned, `requirements.runtime.txt>=4.0`), consistent with environment-dependent `extract_text()` drift causing reported mapping failures. Exact CI extracted text/offsets not available locally; cause attributed with high confidence to extractor/version drift under non-deterministic dependency resolution.
 - **Q12 trace (isolated temp index, not `chroma_db_production/`):** temp `C:\Users\sindh\AppData\Local\Temp\opencode\q12_ci_idx_xkh2rq2j`, collection `satcom_ngp_production_fixed_char_800_160`, 800/160, 61 chunks. Hits for “How are international satellite communication services defined?” included 4.2 chunks (off30818, off31458) and 3.2 chunk `satcom-ngp::page_5::chunk_2::off10868` (rank 4). `GroundedPipeline(index, sibling_score_ratio=0.5, definition_intent_boost=True).answer_from_hits` selected 31006/31255 (4.2, correct per expected answer/evidence) and 10868–11204 (3.2, **incorrect/unrelated**: “defined as  the satellites…” defining Indian satellites, chunk-boundary mid-sentence fragment). Base score 5.0123 (tokens `defined,international,satellite`), boosted to 6.5123 by definition-intent marker `defined as` (`src/rag_core/pipeline.py` `_extractive_answer` boost at scoring loop; top candidate had no numbered-clause parent so global score selection applied). Citations/offset mapping consistent; retrieval included correct evidence but selection admitted unrelated fragment.
 
 **Decisions / implementation (uncommitted at time of log, local working tree).**
@@ -1596,7 +1596,7 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 
 **Verification (local; CI/public not re-verified in this step).**
 - Diagnostics: `python_version=3.11.0`, `pypdf_version=6.10.2`, `pdf_page_count=15`, `total_extracted_char_count=35407`, per-page `[2517,2182,2166,2723,2360,2982,2864,2609,2457,2840,2301,2177,2316,2692,221]`.
-- Evidence mapping: `evaluation/ci_golden_dataset.json` 17 units/0 mismatches; `experiments/exp001_ground_truth.json` 20 units/0 problems (`load_exp001_evidence`).
+- Evidence mapping: `evaluation/ci_golden_dataset.json` 17 units/0 mismatches; `tests/fixtures/exp001/exp001_ground_truth.json` 20 units/0 problems (`load_exp001_evidence`).
 - `python -m pytest tests/test_exp001.py tests/test_rag_evaluation.py -q` → **32 passed, 25 warnings** (exit 0).
 - `python -m pytest tests/test_pipeline.py -q` → **25 passed** (exit 0) including new definition-intent boost regression tests.
 - `RAG_PERSIST_DIR=<temp isolated index> python -m pytest tests/test_citation_metadata.py -q` → **1 failed, 3 passed** (exit 1): Q12 still fails original assertion (`by_chunk[s.chunk_id].section == "4.2"` got `3.2`) because 3.2 fragment base score (5.0123, boost now suppressed) still outranks 4.2 boosted statements (4.3267/4.1260); suppressed boost alone is **necessary but not sufficient** under current production config. Q12 now reaches retrieval/answer with expected 31006/31255 present but also includes 10868/3.2.
@@ -1680,7 +1680,7 @@ Move to **deployment feasibility (M3/WP6 planning)**, **observability expansion 
 
 ### Deployment hardening (2026-11-21, post-merge Task 1, local implementation) — Protect public `POST /ingest`
 
-**Status/constraints.** Post-merge hardening on latest merged `main` (`4187f4d`, origin/main fast-forwarded locally) before this task. **No commit/push/merge/deploy.** No `git reset/clean/stash/discard`. Preserved pre-existing unrelated unstaged deletions (`experiments/rag.py`, `experiments/results/eval_report.json`, `src/memory/working.py`, `src/metrics/citation.py`, `src/restart.py`, `tests/eval_pipeline.py`, `todo.txt`) and unrelated untracked files (`.agents/`, `evaluation/results/`, `experiments/chunking_experiment.py`, `experiments/eval/`, `experiments/results/chunking_experiment.log`, `experiments/results/chunking_experiment.run.log`, `experiments/results/chunking_experiment/`, `nul`, `vercel.frontend.json`, `vercel.json`). No Gemini provider/model change; no RAG architecture/chunking/retrieval default redesign.
+**Status/constraints.** Post-merge hardening on latest merged `main` (`4187f4d`, origin/main fast-forwarded locally) before this task. **No commit/push/merge/deploy.** No `git reset/clean/stash/discard`. Preserved pre-existing unrelated unstaged deletions (`removed-experiment-artifacts/rag.py`, `removed-experiment-artifacts/results/eval_report.json`, `src/memory/working.py`, `src/metrics/citation.py`, `src/restart.py`, `tests/eval_pipeline.py`, `todo.txt`) and unrelated untracked files (`.agents/`, `evaluation/results/`, `removed-experiment-artifacts/chunking_experiment.py`, `removed-experiment-artifacts/eval/`, `removed-experiment-artifacts/results/chunking_experiment.log`, `removed-experiment-artifacts/results/chunking_experiment.run.log`, `removed-experiment-artifacts/results/chunking_experiment/`, `nul`, `vercel.frontend.json`, `vercel.json`). No Gemini provider/model change; no RAG architecture/chunking/retrieval default redesign.
 
 **Security issue (before).** `POST /ingest` in `backend/main.py` was publicly reachable without authentication and triggered index rebuild from configured PDF (`extract_source_document` -> chunk -> audit -> `index.build(..., reset=True)` -> reset retriever). On a publicly deployed backend this allowed unauthorized callers to trigger expensive CPU/memory/disk work and index mutation/reset behavior.
 
@@ -1804,3 +1804,953 @@ Per-question changes (answer support/citation/statement rates): **EXP001-Q07** i
 **Unresolved deployment requirements.** Actual Vercel frontend origin must be set in `RAG_CORS_ORIGINS` (Render/Vercel env) before public frontend integration; placeholder `https://REPLACE_WITH_VERCEL_FRONTEND_ORIGIN` must not be used as-is for production. Public CORS/browser integration verification not executed.
 
 **CI/public deployment status.** Not executed/verified. Local deterministic verification only; no staging/commit/push/merge/deploy.
+
+---
+
+### Render Free deployment failure investigation (2026-11-21, read-only investigation)
+
+**Status/constraints.** Read-only code investigation; no application code changed; no deploy/staging/commit of app code performed during investigation. Preserved existing work and unrelated working-tree changes. Did not change embedding model, chunking (800/160), hybrid dense+BM25 retrieval, or Gemini provider/model. No paid infrastructure introduced. This entry documents investigation only; **no proposed fix is implemented**.
+
+**User-reported Render evidence (external, not independently verified in this environment):**
+- Commit: `e478a1b`. Render service `satcom-ngp-rag-backend`, plan Free, 512 MB memory, 0.15 CPU.
+- Deployment became Live, then instance `qmmb9` failed ~7 minutes later.
+- Logs showed SentenceTransformer model weights downloaded and loaded immediately before instance restart.
+- `/health` returned `index_available: false`.
+- App has automatic Chroma index recovery from `data/satcom-ngp.pdf`.
+
+**Files inspected (code/config):**
+- `backend/main.py` — `/health` (`get_service().health()`), `/healthz`, startup/lifespan behavior (no startup preload), `get_service()` lru_cache singleton.
+- `src/rag_app/service.py` — `model` property lazy-loads `SentenceTransformer(self.config.embedding_model)`; `index` property creates `DenseIndex(..., model=self.model)` then calls `_ensure_index_ready()`; `_ensure_index_ready()` checks `index.count()`, if missing/empty extracts `data/satcom-ngp.pdf`, chunks (800/160 fixed char default), audits, calls `index.build(chunks, reset=True)`, clears retriever cache; `health()` catches exceptions and returns `index_available` based on `self.index.count() > 0`.
+- `src/rag_core/index.py` — `DenseIndex` uses `chromadb.PersistentClient`, loads ST model if not injected, `build()` encodes all chunk texts at once via `model.encode`, adds to Chroma; `search()` encodes query.
+- `src/rag_app/config.py` — defaults: `sentence-transformers/all-MiniLM-L6-v2`, 800/160 fixed_char, hybrid, collection `satcom_ngp_production_fixed_char_800_160`, persist dir `chroma_db_production`.
+- `requirements.runtime.txt`, `Dockerfile`, `render.yaml` — CPU torch installed; runtime includes torch-indirect deps through sentence-transformers, chromadb, onnxruntime/chromadb deps as resolved; Render free 512MB not configurable in yaml.
+- `data/satcom-ngp.pdf` present (68,396 bytes, tracked).
+
+**Execution-path findings:**
+1. **`/health` can trigger heavy initialization.** `/health` -> `get_service().health()` -> `self.index.count()`; first access constructs service/index and loads model + runs index readiness check. `/healthz` is lightweight and does not touch model/index.
+2. **No duplicate model load in inspected path.** `RAGService.model` loads once; passed into `DenseIndex(model=self.model)`. `_ensure_index_ready` uses same index/model for build.
+3. **Index recovery can be expensive on cold/ephemeral start.** If Chroma persist dir missing/empty (expected on Render Free ephemeral FS), recovery extracts PDF, chunks 61 chunks (small), encodes all chunks with ST model, writes to Chroma. PDF/chunking overhead small; embedding/build adds CPU/memory/transient allocations.
+4. **Retriever/BM25 not triggered by `/health`.** `health()` does not access `retriever`; query does. BM25 corpus build in `HybridRetriever` would add memory on first query.
+
+**Memory requirement estimate (rough, not measured on Render):**
+- **Python + FastAPI/uvicorn baseline:** ~40-80 MB (estimate).
+- **PyTorch CPU + sentence-transformers/transformers runtime:** often ~150-250+ MB resident depending on wheels/imports/allocator fragmentation (estimate).
+- **all-MiniLM-L6-v2 model weights in memory:** ~90 MB (fp32 parameters) plus tokenizer/runtime overhead; can be higher with framework overhead (estimate).
+- **ChromaDB/client/SQLite/collections:** ~20-60+ MB depending on state (estimate).
+- **PDF extraction + 61 chunks + embedding batch vectors:** small (PDF 68KB, 61 chunks, 384-dim embeddings ~0.1 MB raw) but transient overhead during encode/build (estimate low).
+- **HybridRetriever BM25 corpus (on query):** additional memory proportional to corpus/tokenization; likely modest for 61 chunks but non-zero.
+- **Rough total:** likely ~300-500+ MB at rest after model load, with spikes during first load/recovery/query possibly exceeding 512 MB. **This is an estimate, not a Render measurement.**
+
+**Most likely failure explanation:**
+- **Likely OOM / memory pressure on Render Free (512 MB) during or after SentenceTransformer model load/index recovery path.** Confidence: **medium**. Evidence aligns (model load logged immediately before restart; `/health` reported `index_available:false`; health path triggers lazy model+index+recovery; 512MB is tight for torch+ST+Chroma). **Not confirmed as OOM** without Render memory metrics/events/logs explicitly stating OOM/killed; restart could also be caused by health-check timeout, process crash, or platform instability, but model-load timing makes OOM/memory exhaustion the leading hypothesis.
+
+**Render Free viability assessment:**
+- **Not viable as currently configured with high confidence of reliability.** It may occasionally boot, but 512 MB/0.15 CPU is unlikely to reliably support torch CPU + sentence-transformers + Chroma + index recovery/query under cold starts. Canonical RAG quality settings (embedding/chunking/hybrid/Gemini) are constrained; infra fit is the main risk.
+
+**Potential optimizations (preserve RAG architecture/quality; NOT implemented):**
+1. **Low risk / operational:** Prebuild and package/bake `chroma_db_production` into deploy artifact/image (if size acceptable) to avoid recovery embedding/build on cold start; keep same collection/chunking/embedding. Still requires model load for query unless avoided.
+2. **Low-medium risk:** Lazy-load model only on `/query` (or background warmup) and keep `/health` lightweight; `/healthz` already lightweight. Improves liveness but does not reduce query memory need; can delay first-query failure.
+3. **Medium risk:** Reduce runtime memory footprint without changing retrieval quality: use smaller CPU torch build options already used; tune sentence-transformers/torch threads (`OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `TOKENIZERS_PARALLELISM`), disable unnecessary model features, ensure `low_cpu_mem_usage`/fp32 defaults understood, clear caches after recovery; measure locally with RSS profiling. Uncertain gain.
+4. **Medium-high risk:** Move embedding inference to external free API/provider while keeping same vector space? **Not allowed** by "Do not change the embedding model" / quality constraints; rejected.
+5. **Medium-high risk:** Split services (separate lightweight API + embedding/index worker) — likely conflicts with "no paid infrastructure"/Render Free limits and complexity; not viable on free.
+6. **High-confidence alternative (if Render Free remains insufficient):** identify another verified free-tier host with >=1GB RAM or different container limits; requires user account/access and evidence before migration. No code/architecture change required beyond deploy config.
+
+**Next steps (investigation only):** capture Render dashboard memory graph/events, deploy logs around restart, and OOM/killed signal; if available, reproduce locally with 512MB container limit (`docker run --memory=512m`) and profile RSS during `/health` -> model load -> recovery -> `/query`. Do not implement fixes without explicit approval.
+
+---
+
+### Render Free resource-limit reproduction attempt (2026-11-21, investigation only)
+
+**Status/constraints.** Investigation/documentation only. No application code modified. No embedding model/Gemini provider-model/chunking/retrieval/RAG architecture changes. No paid infrastructure introduced. No commit/push/deploy/reset/clean/stash/discard. Preserved all existing unrelated modifications, deletions, and untracked files. Did not use `git add .`. No measurements manufactured.
+
+**Environment checked (local):**
+- OS: Windows (win32), workspace `C:\Users\sindh\RAG`.
+- Docker CLI: `Docker version 28.0.4, build b8034c0` (`docker --version`).
+- Docker daemon: **unavailable/not running**. `docker info` failed with: `error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.48/info": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.`
+
+**Planned test configuration (not executed):**
+- Use existing `Dockerfile` / `requirements.runtime.txt` / runtime config.
+- Container limits: `--memory=512m --cpus=0.15` (Render Free approximation).
+- Stages to measure: process startup, `/healthz`, `/health` + index recovery, one representative query.
+- Metrics to capture: process/container exit status, logs, peak RSS/container memory (`docker stats`/cgroup), elapsed time.
+
+**Exact commands used:**
+- `docker --version 2>&1 | tail -n 5; echo "==="; docker info 2>&1 | tail -n 20`
+- `git status --short` (before/after documentation)
+
+**Measured results:** **None.** Resource-limited container test could not be run because Docker daemon/engine was unavailable.
+
+**Failures/evidence:** Docker daemon connection failure (above). No container created/run; no process exit status, peak memory, or stage timings obtained.
+
+**Limitations of local reproduction:**
+- Cannot reproduce Render Free cgroup limits without running Docker engine.
+- Local Windows process RSS would not enforce 512MB/0.15 CPU and would not be comparable to Render container behavior.
+- Even with Docker, local reproduction would approximate but not identical to Render Free (kernel/cgroup behavior, filesystem, networking, CPU scheduling, platform health checks).
+
+**Effect on Render OOM hypothesis:** **Neutral (no strengthening/weakening evidence).** The hypothesis remains **medium confidence, unconfirmed** based on prior code-path analysis and user-reported Render symptoms. This attempt provides no new runtime measurement.
+
+**Render Free viability:** Unchanged from prior investigation: **not viable with high confidence of reliability in current configuration**; still unconfirmed by local 512MB-limited runtime reproduction.
+
+---
+
+### Render Free confirmed OOM and remediation planning (2026-11-21, investigation only; no implementation)
+
+**Status/constraints.** Investigation/planning only. No application code modified. No commit/push/deploy/stage. Preserved all pre-existing unrelated deletions and untracked files. Preserved `google_generativeai/gemini-flash-lite-latest`, `sentence-transformers/all-MiniLM-L6-v2`, fixed-character chunking 800/160, hybrid dense+BM25 RRF retrieval, existing Chroma collection/grounded-answer behavior. No paid services/infrastructure; no model/provider substitution; no retrieval/chunking experiments.
+
+**Confirmed Render event (user-reported, Render platform message):**
+- **Exact error:** `Instance failed: qmmb9 — Ran out of memory (used over 512MB) while running your code.`
+- **Service:** `satcom-ngp-rag-backend` (Render Free).
+- **Resource limit:** 512 MB RAM / 0.15 CPU (Render Free, as reported).
+- **Instance:** `qmmb9`.
+- **Timestamp:** not provided in user message; event reported by user on 2026-11-21.
+- **Root cause status:** **Confirmed OOM** (platform-reported memory limit exceeded). Prior local reproduction was not possible because Docker daemon was unavailable; this platform event confirms memory exhaustion.
+- **Remediation status:** **Not implemented.** No code/config changes applied in this task.
+
+**Memory-heavy code paths (file/line refs, code-observed):**
+- `backend/main.py:79-82,101-108` — `get_service()` lru_cache singleton; `/health` calls `get_service().health()` and can trigger lazy heavy init. `/healthz` (`:95-98`) is lightweight.
+- `src/rag_app/service.py:99-104` — `model` property lazy-loads `SentenceTransformer(self.config.embedding_model)`.
+- `src/rag_app/service.py:107-118` — `index` property creates `DenseIndex(..., model=self.model)` and calls `_ensure_index_ready()` on first access.
+- `src/rag_app/service.py:120-165` — `_ensure_index_ready()` on missing/empty index: PDF extraction, chunking, coverage audit, `index.build(chunks, reset=True)`, retriever reset. Runs on ephemeral FS when prebuilt index absent.
+- `src/rag_app/service.py:167-179` — `retriever` property lazily creates `HybridRetriever`, which builds/uses `CorpusIndex` (BM25).
+- `src/rag_core/index.py:89-103,111-131` — `DenseIndex` holds Chroma PersistentClient; model load if not injected; `build()` encodes all chunk texts at once (`_encode`) then `collection.add(...)`.
+- `src/rag_core/retrieval.py:44-76,235` — `CorpusIndex.load()` pulls all docs/metadatas from Chroma into memory, tokenizes all docs, builds `BM25Okapi` over tokenized corpus; `HybridRetriever` creates `CorpusIndex(dense_index)`.
+- `requirements.runtime.txt`/`Dockerfile` — CPU torch + sentence-transformers + chromadb + onnxruntime (chromadb dep) contribute base RSS.
+
+**Evidence vs estimates:**
+- **Evidence:** Render platform error confirms >512MB usage and OOM kill. Code paths above show lazy model load on first service/index/health/query use; index recovery embeds/builds if index missing; BM25 corpus loads full corpus into memory on first hybrid retrieval. `/healthz` is already lightweight and configured as Render healthCheckPath (`render.yaml:8`).
+- **Estimates (not measured):** base Python/runtime 40-80MB; torch CPU+ST/transformers 150-250+MB; all-MiniLM-L6-v2 weights ~90MB+overhead; Chroma 20-60+MB; BM25 tokenized corpus small for 61 chunks but non-zero; transient encode/build spikes possible. Total can exceed 512MB.
+
+**Proposed changes (NOT implemented; ranked by expected memory benefit / risk / quality impact):**
+
+| Rank | Proposal | Expected memory benefit | Impl. risk | Quality/behavior impact | Notes |
+|---|---|---:|---:|---:|---|
+| 1 | **Bake prebuilt `chroma_db_production` into deploy image/artifact** (include in Docker build context; remove/adjust ignore as needed for deploy image only) so recovery does not encode/build on cold start. | Medium (removes recovery encode/build spike; avoids duplicate model+build work) | Low-medium | **None to retrieval quality** if same collection/chunks/embedding used | Does not remove model load. Requires deploy artifact to include index; verify image size/build time. Render Free ephemeral FS still fine if index inside image. |
+| 2 | **Make `/health` lightweight/readiness-safe by default** (do not trigger model/index load; report `index_available` only if already initialized or via cheap check) while keeping `/healthz` as liveness. | Medium on health probes (prevents accidental heavy load) | Low-medium | **No RAG answer quality change**; health semantics change (readiness less deep) | Render already uses `/healthz`. Need clear API/docs; avoid breaking existing clients expecting deep health. |
+| 3 | **Runtime memory tuning (env/process)**: set `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `TOKENIZERS_PARALLELISM=false`, `PYTORCH_ENABLE_MPS_FALLBACK` irrelevant; consider `ORT_*`/Chroma settings; keep CPU torch. | Low-medium (reduces thread/allocator overhead; uncertain) | Low | **None expected** | Easy to test; gains uncertain on 0.15 CPU/512MB. |
+| 4 | **Lazy/conditional heavy initialization boundaries**: ensure no import-time model load; keep model load only on first query or explicit warmup endpoint (protected) — not on health. | Medium for idle/liveness | Medium | **No quality change**; first query latency increases | Must not create unauthenticated heavy trigger; `/ingest` already protected. |
+| 5 | **Reduce BM25/corpus duplication**: avoid loading full corpus when dense-only; for hybrid, consider lazy BM25 build on first hybrid query and careful data structures. | Low-medium (61 chunks small) | Medium | **Must preserve hybrid RRF results** | Current corpus small; benefit limited. Any change needs equivalence test. |
+| 6 | **Model-load memory controls** (same model): evaluate `torch.set_num_threads(1)`, low-memory load patterns supported by sentence-transformers/torch for same model/weights; clear unused refs after init. | Low-medium, uncertain | Medium | **Must preserve embeddings/quality** | Must not change model or quantization unless proven identical outputs; risky to assume. |
+
+**Quality impact:** All ranked proposals above are intended to preserve answer quality/retrieval behavior. Any implementation touching retrieval/index/model loading would require equivalence/regression verification against existing deterministic eval and citation behavior.
+
+**Render Free salvageability:** **Uncertain-to-low.** OOM is confirmed. Optimizations 1-4 may reduce spikes and avoid unnecessary health-triggered loads, but base torch+ST+Chroma footprint may still be near/over 512MB on first real query. Prebaked index helps recovery spike but not model-resident memory. A 512MB-limited local Docker reproduction is still needed to confirm post-change viability; Docker daemon unavailable here. If optimizations fail under 512MB, Render Free is not viable for this stack without violating constraints.
+
+**Decision required before implementation:** Presenting proposed changes for approval. **No implementation performed.**
+
+---
+
+### Safe memory optimizations for Render Free (2026-11-21, Task 7, investigation/planning only)
+
+**Status/constraints.** Investigation/planning only. No application code modified. No commit/push/deploy. Preserved `all-MiniLM-L6-v2`, CPU-only PyTorch, Gemini `gemini-flash-lite-latest`, 800/160 fixed-character chunking, hybrid dense+BM25 RRF retrieval, ChromaDB/existing collection, answer-generation/grounding behavior. No paid infrastructure. All pre-existing unrelated git changes preserved.
+
+**1) PyTorch / Sentence Transformers**
+- **Imports/init (evidence):** `service.py:99-104` and `index.py:97-102` lazy-import/load `SentenceTransformer` only when model property accessed. `service.py` passes model into `DenseIndex(model=self.model)` (`:107-116`), avoiding duplicate model load in inspected app path. No module-import-time ST model load found in app runtime files.
+- **Thread limits:** No `OMP_NUM_THREADS`/`MKL_NUM_THREADS`/`TOKENIZERS_PARALLELISM`/`torch.set_num_threads` set in `Dockerfile`, `render.yaml`, or app code. Setting thread caps can reduce thread-stack/allocator overhead (qualitative); unlikely to fix 512MB alone but low risk.
+- **Dependencies:** `requirements.runtime.txt` contains required runtime deps (fastapi, uvicorn, chromadb, sentence-transformers, rank_bm25, google-generativeai, cohere, langfuse, numpy, httpx, pypdf, dotenv). No obvious unused required dep removal; removing any could break behavior. CPU torch already installed separately.
+
+**2) ChromaDB / index initialization**
+- **Prebuilt index:** `_ensure_index_ready()` (`service.py:120-165`) skips rebuild when `index.count() > 0`. If `chroma_db_production` containing the same collection is baked into image/build artifact, recovery encode/build is avoided. For 61 chunks, rebuild is small but still an avoidable spike (encode + Chroma add). Prebuild does **not** eliminate model-load memory.
+- **Duplication:** `index.build()` encodes all chunk texts into vectors in memory then adds to Chroma (`index.py:111-131`). Single encode batch for 61 chunks is small; no obvious duplicate copy beyond normal Python/NumPy/torch objects. Index recovery creates doc/chunks/audit objects transiently.
+
+**3) Health endpoints**
+- **Current behavior (evidence):** `backend/main.py:101-108` `/health` calls `get_service().health()`; `service.py:205-210` accesses `self.index.count()`, triggering lazy model load, DenseIndex init, and `_ensure_index_ready()`. `backend/main.py:95-98` `/healthz` is lightweight. `render.yaml:8` uses `/healthz` for platform health check.
+- **Proposal:** Make `/health` non-loading by default (return process/service liveness/readiness metadata without forcing model/index init; report deep index status only if already initialized). Preserve `/healthz`. No retrieval/generation behavior change. Requires careful API contract/docs update.
+
+**4) BM25**
+- **Current behavior (evidence):** `HybridRetriever.__init__` creates `CorpusIndex(dense_index)` (`retrieval.py:235`) but `CorpusIndex.load()` is lazy (`:58-76`), invoked by `bm25`/`bm25_search`/`get`/`to_retrieved_chunk`. Dense mode in `HybridRetriever.retrieve()` returns before BM25 (`:259-267` earlier section). Service dense fast path (`service.py:224-230`) bypasses HybridRetriever entirely.
+- **Deferral:** BM25 corpus build is already deferred until hybrid retrieval needs it. Further deferral limited; creating `CorpusIndex` object is cheap. No change needed for correctness; any refactor must preserve identical hybrid RRF candidates/scores.
+
+**Proposals (not implemented) — see final report for ranking/test plan.** No measurements invented.
+
+---
+
+### Lightweight health checks and conservative CPU/thread limits (2026-11-21, Task 8, local implementation)
+
+**Status/constraints.** Local implementation only. No commit/push/deploy/stage. Preserved all pre-existing unrelated deletions and untracked files. No changes to embedding model/provider, Gemini config, chunking (800/160), retrieval/BM25/RRF, Chroma collection, or answer-generation/grounding behavior. No prebuilt index packaged. No dependencies removed.
+
+**What changed and why:**
+- **`/health` lightweight semantics (`backend/main.py`, `src/rag_app/service.py`, `src/rag_app/schemas.py`):** `GET /health` no longer triggers SentenceTransformer loading, Chroma initialization, index recovery, or embedding generation. It reports deep index availability only when the index is already initialized in-process. This reduces avoidable memory pressure from health probes on Render Free (confirmed OOM 512MB). `GET /healthz` remains lightweight liveness endpoint (Render `healthCheckPath`).
+- **Health response fields:** preserved existing fields where practical; added `index_status` (`unknown|available|unavailable`, default `unknown`) and `index_initialized` (bool). `index_available` remains bool but is **never falsely true**; it is true only when index already initialized and `count()>0`, false otherwise (including unknown/not initialized).
+- **Conservative thread limits:** set `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `TOKENIZERS_PARALLELISM=false` in `render.yaml`, `Dockerfile`, and `docker-compose.yml` for consistent low-overhead runtime. Did not add `torch.set_num_threads()` (not necessary based on inspection; safe init point not required).
+- **Docs/tests:** updated `docs/DEPLOYMENT.md`; added API tests proving `/health` does not initialize model/index and `/healthz` remains lightweight.
+
+**Tests and exact results (local):**
+- `PYTHONPATH="$PWD" python -m pytest tests/test_api.py tests/test_config.py tests/test_cors.py -q` → **41 passed, 4 warnings in 28.31s**.
+- `PYTHONPATH="$PWD" python -m pytest tests -q -k "not real_index" --maxfail=5` → **159 passed, 1 deselected, 29 warnings in 27.95s**.
+- CI eval comparison (no baseline overwrite): `PYTHONPATH="$PWD" LANGFUSE_ENABLED=false RAG_ALLOW_GEMINI=false python -m evaluation.ci_eval --out evaluation/results/ci_task8_healthcheck --baseline evaluation/baseline_metrics.json --check-regression` → **regression passed** (`passed: true`, `failures: []`, `baseline: evaluation\\baseline_metrics.json`). Dense metrics matched baseline: recall@5 0.9236, precision@5 0.3, mrr@5 0.8611, evidence_coverage 0.9236, supported_answer_rate 0.5833, citation_support_rate 0.4828, abstention_accuracy 1.0, invalid_citations 0, failure_rate 0.0. (Hybrid also reported in comparison output; no regression failures.)
+
+**RAG quality evidence:** Deterministic CI eval regression passed against baseline; no RAG behavior/quality change claimed beyond this measured comparison. Not a full RAGAS/production-traffic validation.
+
+**Limitations / remaining OOM risk:**
+- `/health` no longer triggers heavy init, and Render already uses `/healthz`; this removes one avoidable trigger but **does not reduce model-resident memory** required for first query/index recovery.
+- Thread env vars are conservative/low-risk but **expected benefit uncertain**; not measured in 512MB container here (Docker daemon unavailable).
+- Render Free OOM remains **confirmed risk**; 512MB may still be insufficient for torch+sentence-transformers+Chroma on query/recovery. Prebuilt index packaging was not done in this task.
+- Local verification only; no CI/public deploy verification performed.
+
+---
+
+### Prebuilt Chroma index packaging feasibility (2026-11-21, Task 9, investigation only; no implementation)
+
+**Status/constraints.** Investigation only. No implementation. No modification/deletion/regeneration of existing index. No stage/commit/push/deploy. Preserved all pre-existing unrelated deletions and untracked files. Preserved RAG behavior constraints (all-MiniLM-L6-v2, CPU PyTorch, Gemini, 800/160 fixed-character chunking, hybrid dense+BM25 RRF, ChromaDB/existing collection, grounded-answer behavior).
+
+**Index location/size/structure (evidence):**
+- **Path:** `chroma_db_production/` (repo root; default `RAG_PERSIST_DIR` resolves here).
+- **Disk size:** ~6.3M (`du -sh`); 9 files total.
+- **Structure:** `chroma.sqlite3` (~3.1M), two HNSW segment dirs: `dc220631-1c37-42f8-b4fc-45cce513acf7/` (data_level0.bin ~1.6M, header.bin, length.bin, link_lists.bin) and `f43144c4-4050-4e58-9fa7-63dcd953216e/` (similar).
+- **Inspection method:** copied `chroma_db_production` to temp dir `C:\Users\sindh\AppData\Local\Temp\opencode\chroma_db_production_inspect` and queried SQLite read-only (`mode=ro`); no writes to original index.
+
+**Collection metadata (evidence, sqlite read-only):**
+- Collections in DB: `satcom_ngp_production_fixed_char` (`cd6d9962-...`, dim 384) and `satcom_ngp_production_fixed_char_800_160` (`bc04931c-f898-424a-b8f0-023d1ab20173`, dim 384, HNSW l2, ef_construction 100, M 16).
+- Target collection `satcom_ngp_production_fixed_char_800_160`: metadata segment `fabb5d6a-5159-4123-9729-0205db55dd89` has **61 embeddings**; vector segment `dc220631-1c37-42f8-b4fc-45cce513acf7` is HNSW-persisted.
+- Embedding metadata keys: `article, chroma:document, chunk_id, chunk_sequence, chunking_strategy, end_offset, end_page, end_page_char, heading, part, section, section_hierarchy, source, start_offset, start_page, start_page_char`.
+- Sample metadata: `chunking_strategy='fixed_character'`, `source='satcom-ngp.pdf'`, `start_offset=2,end_offset=802` (800 chars), next `642-1442`, `1282-2082` => **800 char size, 160 overlap/640 step**. Confirms 800/160 fixed-character.
+
+**Provenance verification (evidence/limits):**
+- **800/160 fixed-character:** confirmed by metadata (`chunking_strategy=fixed_character`, offset/size pattern) and chunk count 61; consistent with `docs/CHUNKING_EXPERIMENT.md` and config defaults.
+- **all-MiniLM-L6-v2:** **partially evidenced**. Collection dimension is 384, consistent with MiniLM-L6-v2; app config/default and docs specify `sentence-transformers/all-MiniLM-L6-v2`. Collection config/metadata does not explicitly store model name. **Not proven by directory name alone**; provenance is supported by code/config/docs + dimension, but not a cryptographic/model-id stamp in Chroma metadata.
+- **Collection match:** exact name `satcom_ngp_production_fixed_char_800_160` present.
+
+**Packaging/deploy feasibility (evidence):**
+- `.gitignore:10` ignores `chroma_db_production/`; git-based Render deploy would not include it unless committed or fetched at build.
+- `.dockerignore:17` ignores `chroma_db` but **not** `chroma_db_production`; Docker build context would include it if present.
+- `Dockerfile` copies app (`COPY . .`) and creates `/app/chroma_db_production`; image would include index if in context. `render.yaml` is git-based Python runtime (not Docker image deploy) with `pip install ... && pip install -r requirements.runtime.txt`; no index fetch step.
+- **Render git deploy implication:** packaging requires either (a) committing index to repo (size/tradeoff), (b) downloading from external storage during build (must be free/public/no paid infra; adds availability dependency), or (c) Docker-image-based deploy path. All need careful validation.
+
+**Chroma portability/version concerns:**
+- `requirements.runtime.txt` pins `chromadb>=0.5.23` (open upper bound). Chroma persistent format/sqlite+HNSW may be sensitive across versions; unpinned minor/major upgrades can break compatibility. **Risk:** deploy-time dependency resolution could install incompatible Chroma version.
+- Index files are small (6.3M) and should be portable as files, but runtime compatibility must be validated against exact deployed Chroma version.
+
+**Expected effect (estimates, not measured):**
+- **Deployment artifact/image size:** +~6.3M raw; minor.
+- **Build time:** neutral for git deploy if committed; Docker context slightly larger. Avoids recovery embedding/build CPU time on cold start.
+- **Cold-start memory:** **reduces avoidable recovery spike** (no PDF extract/chunk/embed/build). **Does not reduce SentenceTransformer model load memory** required for dense query embeddings.
+- **Index recovery behavior:** if index present and valid, `_ensure_index_ready()` returns early; recovery path unused. Need fallback behavior decision if packaged index missing/corrupt.
+
+**Safe validation approach (no modification to existing local index):**
+- Copy `chroma_db_production` to temp/staging dir or mount read-only copy in Docker; set `RAG_PERSIST_DIR` to copy; run app/tests against copy. Alternatively build Docker image with index included in image layer and run `--memory=512m --cpus=0.15` locally when Docker daemon available. Do not point validation writes at original `chroma_db_production`.
+
+**Recommendation (investigation only, no implementation):**
+- **Feasible in principle, with caveats.** Packaging the prebuilt index can remove cold-start recovery embedding/build work, but **will not solve confirmed model-memory OOM** by itself. Recommended only as part of a measured Render Free memory-reduction plan after: (1) pinning/confirming Chroma version compatibility; (2) deciding git-commit vs build-fetch packaging (no paid infra); (3) validating in 512MB-limited container; (4) keeping recovery fallback. Do not treat as sufficient fix for 512MB OOM.
+
+**Cleanup:** temp inspection copy `C:\Users\sindh\AppData\Local\Temp\opencode\chroma_db_production_inspect` removed after inspection. No changes to original `chroma_db_production/`.
+
+---
+
+### Safe free prebuilt-index delivery mechanism (2026-11-21, Task 10, planning/documentation only; no implementation)
+
+**Status/constraints.** Planning/documentation only. No implementation. No change to index contents/RAG behavior. No change to all-MiniLM-L6-v2, CPU PyTorch, Gemini, 800/160 chunking, hybrid dense+BM25 RRF, or grounded-answer behavior. Did not modify/regenerate original `chroma_db_production/`. No commit/push/deploy. Preserved all pre-existing unrelated deletions and untracked files.
+
+**Additional evidence gathered (read-only):**
+- **Local installed ChromaDB:** `chromadb==0.5.23` (`pip show chromadb` / `python -c "import chromadb; print(chromadb.__version__)"`). `requirements.runtime.txt` specifies `chromadb>=0.5.23` (open upper bound).
+- **Index sqlite migrations (temp read-only copy):** sysdb migrations 00001-00009, metadb 00001-00004, embeddings_queue 00001-00002 present; consistent with Chroma 0.5.x schema. **Not a definitive creator-version stamp**; supports compatibility with 0.5.23 but does not prove exact build version.
+- **Original index checksums (read-only, computed on original files; no modification):** SHA256 manifest
+  - `34fd9d20fdf50c31ce329e67264660634078c597d8f2ab76a3266b7dd4ca9af0  chroma_db_production/chroma.sqlite3`
+  - `d3c9fd302f000d7790aa403c2d0d8fec363fe46f30b07d53020b6e33b22435a9  .../dc220631-1c37-42f8-b4fc-45cce513acf7/data_level0.bin`
+  - `e87a1dc8bcae6f2c4bea6d5dd5005454d4dace8637dae29bff3c037ea771411e  .../dc220631-1c37-42f8-b4fc-45cce513acf7/header.bin`
+  - `a29ec4facde1e7b598b7c8d104314d6f93b4e9551d20a84d9ceca7950ee868d7  .../dc220631-1c37-42f8-b4fc-45cce513acf7/length.bin`
+  - `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  .../dc220631-1c37-42f8-b4fc-45cce513acf7/link_lists.bin`
+  - `d3c9fd302f000d7790aa403c2d0d8fec363fe46f30b07d53020b6e33b22435a9  .../f43144c4-4050-4e58-9fa7-63dcd953216e/data_level0.bin`
+  - `e87a1dc8bcae6f2c4bea6d5dd5005454d4dace8637dae29bff3c037ea771411e  .../f43144c4-4050-4e58-9fa7-63dcd953216e/header.bin`
+  - `a23d5308dba44ab7cab6f53d8fa640a017846e9de5e5fc261e0da3040a6c1ef6  .../f43144c4-4050-4e58-9fa7-63dcd953216e/length.bin`
+  - `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  .../f43144c4-4050-4e58-9fa7-63dcd953216e/link_lists.bin`
+  Temp inspection copy `chroma_db_production_inspect2` removed after inspection.
+
+## Options comparison
+
+| Option | Free availability / limits (evidence) | Reliability / accessibility | Build/image implications | Chroma persistence compatibility | Security / integrity | Render Blueprint fit |
+|---|---|---|---|---|---|---|
+| 1. Versioned index artifact fetched during Render build (e.g. GitHub Release asset / raw repo object / other free host) | **Needs verification.** GitHub provides free public-repo features, but release-asset/raw bandwidth/rate limits/terms must be confirmed at implementation time; do not assume unlimited/reliable. Other "free" hosts not verified. | External dependency; build fails if download unavailable/rate-limited. Pin URL + SHA256. | Adds download/extract step to buildCommand; +~6.3M download; small extraction disk. No repo bloat if not committed. | Same files; validate against deployed chromadb version. | Strong if SHA256 verified in build; use HTTPS; pin immutable version/tag/commit. | **Works with current native Python Blueprint** (`render.yaml` buildCommand/startCommand). |
+| 2. Include index in Git repository | **Free** for normal git repo usage; repo size grows by ~6.3M (small). GitHub repo hosting limits/quotas should be confirmed if repo grows. | High (artifact travels with source). No external runtime fetch. | Clone/build context includes index; small increase. `.gitignore` currently ignores `chroma_db_production/` (`.gitignore:10`) — would need explicit exception/commit. `.dockerignore` does not ignore it. | Same files; version compatibility risk remains. | Integrity verifiable by git history + optional SHA256 manifest checked in CI/build. | **Works with current native Python Blueprint**; simplest for Render git deploy. |
+| 3. Switch Render service to Docker deployment and package index in image | Render Docker deploy is supported; Render Free resource limits still apply. No paid infra by itself. | High once image built; build depends on base image/registry. | Requires Docker runtime/image build; image already large (torch/ST/chromadb). +~6.3M small; build time/memory may be higher on free tier. | Same files; Dockerfile already `COPY . .`; .dockerignore currently allows `chroma_db_production`. | SHA256 manifest can be validated during build; image provenance via git commit. | **Requires Blueprint/config change** (`runtime: docker` / Docker settings) — not current native Python Blueprint as-is. |
+
+## Recommendation (planning only)
+- **Recommended: Option 2 (commit index in Git) as primary candidate, with checksum manifest and Chroma pin**, *if repo policy accepts a 6.3M binary artifact*. Reasons: smallest operational complexity for current Render native-Python Blueprint; no external download dependency at build; high reliability; easy integrity verification (git + SHA256 manifest).
+- **Fallback:** Option 1 only with immutable pinned URL and SHA256 verification, after confirming host free/reliability/terms; adds external dependency.
+- **Option 3** not recommended now because it adds deploy-mode change and Docker-build overhead on Render Free while not addressing model-memory OOM.
+- **Important limitation:** prebuilt index does **not** eliminate SentenceTransformer model memory; confirmed 512MB OOM risk remains.
+
+## Exact required future file/config changes (if implemented later)
+- Add `chroma_db_production/` to repo (or selected delivery artifact) **without modifying contents**; update `.gitignore` to allow it (or specific path exception).
+- Add checksum manifest (e.g. `chroma_db_production.sha256` or `deployment/index-manifest.json`) and CI/build verification step.
+- Pin `chromadb` to a compatible tested version in `requirements.runtime.txt` / deployment env (avoid open `>=0.5.23` for persisted index portability).
+- Optionally add startup integrity check/logging (read-only validation) and keep `_ensure_index_ready()` fallback policy explicit.
+- Update `docs/DEPLOYMENT.md`/`ENGINEERING_LOG.md` with implemented evidence. If Option 1: modify `render.yaml` buildCommand to download+verify+extract. If Option 3: modify `render.yaml` to Docker runtime and verify Docker build.
+
+## Safe temp-copy validation (no touching original)
+- Copy `chroma_db_production/` to temp/staging dir; verify SHA256 manifest against copy; set `RAG_PERSIST_DIR` to copy; run app/tests/CI eval read-only against copy. For Docker, mount/copy into image layer and test in constrained container. Never write to original `chroma_db_production/`.
+
+## Remaining risks
+- Chroma version drift/incompatibility with persisted files.
+- Render Free 512MB OOM still likely during model load/query despite index prepackaging.
+- Git repo binary bloat/policy concerns (Option 2) or external dependency/rate limits (Option 1).
+- Need explicit integrity verification to avoid corrupted/stale index.
+
+---
+
+### Repository cleanup batch 1 — redundant deployment files and generated artifacts (2026-11-21, Task 13, local cleanup)
+
+**Status/constraints.** Narrow cleanup only. No application source code modified. No `api/index.py` deleted. No legacy modules deleted/moved. No CI workflow consolidation. No Chroma index modified. No stage/commit/push/reset/stash/deploy. No `git add .`, `git clean`, or broad destructive commands. Preserved all unrelated modifications, deletions, and untracked files. Task 12 backup exists outside repo: `C:\Users\sindh\RAG-backup-task12-20261121-161336-e478a1b`.
+
+**Git status before:**
+```text
+ M Dockerfile
+ M docker-compose.yml
+ M docs/DEPLOYMENT.md
+ M docs/ENGINEERING_LOG.md
+ D removed-experiment-artifacts/rag.py
+ D removed-experiment-artifacts/results/eval_report.json
+ M render.yaml
+ D src/memory/working.py
+ D src/metrics/citation.py
+ M src/rag_app/schemas.py
+ M src/rag_app/service.py
+ D src/restart.py
+ D tests/eval_pipeline.py
+ M tests/test_api.py
+ D todo.txt
+?? .agents/
+?? evaluation/results/
+?? removed-experiment-artifacts/chunking_experiment.py
+?? removed-experiment-artifacts/eval/
+?? removed-experiment-artifacts/results/chunking_experiment.log
+?? removed-experiment-artifacts/results/chunking_experiment.run.log
+?? removed-experiment-artifacts/results/chunking_experiment/
+?? nul
+?? vercel.frontend.json
+?? vercel.json
+```
+
+**Removed (exact paths):**
+- `vercel.json` (untracked, root legacy Vercel config pointing to obsolete `api/index.py` path; backed up in Task 12) — **safe**: not canonical; canonical frontend config is `frontend/vercel.json` (confirmed intact).
+- `vercel.frontend.json` (untracked, alternate legacy frontend config; backed up in Task 12) — **safe**: no refs found, non-canonical.
+- `.pytest_cache/` — **safe**: regenerable test cache.
+- `frontend/dist/` — **safe**: regenerable frontend build output.
+- Python `__pycache__/` directories (13 dirs): `backend/__pycache__`, `evaluation/__pycache__`, `removed-experiment-artifacts/__pycache__`, `src/__pycache__`, `src/chunking/__pycache__`, `src/config/__pycache__`, `src/generation/__pycache__`, `src/metrics/__pycache__`, `src/observability/__pycache__`, `src/rag_app/__pycache__`, `src/rag_core/__pycache__`, `src/retrieval/__pycache__`, `tests/__pycache__` — **safe**: regenerable bytecode caches.
+
+**Not removed (intentional):** `frontend/node_modules/`, all Chroma indexes (`chroma_db_production/` untouched), evaluation datasets/reports source files, experiment outputs/source, `api/index.py`, legacy src modules, CI workflows, `nul` (Windows reserved-name handling deferred to separate safe approach).
+
+**Ignore-rule changes (minimal, justified):**
+- `.gitignore`: added `.env.*` + `!.env.example` (secret-file variants), `*.pyc`, `.pytest_cache/`, `node_modules/`, `frontend/node_modules/`, `frontend/dist/`, `frontend/.vite/` (generated/caches), `evaluation/results/` (local eval artifacts), `*.log` (temp logs), `nul` (Windows junk), `.DS_Store`, `Thumbs.db`. Rationale: prevent accidental commit of secrets/caches/generated artifacts/local results.
+- `.dockerignore`: added `chroma_db_exp001/002/003/004/`, `chroma_db_probe/` (local experiment indexes) and `evaluation/results/` (local eval artifacts). Rationale: reduce Docker build context; exclude local artifacts. Did **not** add `chroma_db_production/` because prebuilt-index packaging decision is pending.
+
+**Minor hygiene:** fixed pre-existing trailing whitespace in prior Task 5/8/10 ENGINEERING_LOG entries to satisfy `git diff --check`.
+
+**Git status after:**
+```text
+ M .dockerignore
+ M .gitignore
+ M Dockerfile
+ M docker-compose.yml
+ M docs/DEPLOYMENT.md
+ M docs/ENGINEERING_LOG.md
+ D removed-experiment-artifacts/rag.py
+ D removed-experiment-artifacts/results/eval_report.json
+ M render.yaml
+ D src/memory/working.py
+ D src/metrics/citation.py
+ M src/rag_app/schemas.py
+ M src/rag_app/service.py
+ D src/restart.py
+ D tests/eval_pipeline.py
+ M tests/test_api.py
+ D todo.txt
+?? .agents/
+?? removed-experiment-artifacts/chunking_experiment.py
+?? removed-experiment-artifacts/eval/
+?? removed-experiment-artifacts/results/chunking_experiment/
+```
+
+**Verification:**
+- `frontend/vercel.json` remains intact. Root `vercel.json` and `vercel.frontend.json` removed. `.pytest_cache`, `frontend/dist`, all `__pycache__` dirs removed (find count 0).
+- `git diff --check` passes.
+- Existing Task 8 modifications and 7 pre-existing deletions remain intact. `evaluation/results/` and `nul` now ignored by updated `.gitignore` (still present on disk/untracked by prior state; no longer reported by `git status --short`).
+
+**Limitations:** This is only the first cleanup batch. `nul` remains on disk (deferred). `api/index.py`, legacy src modules, duplicate CI workflows, and old experiment artifacts not cleaned. Repository not claimed clean.
+
+---
+
+### Repository cleanup and organization (2026-11-21, Task 16, local cleanup)
+
+**Status/constraints.** Cleanup executed locally. No stage/commit/push/reset/stash/deploy. No secrets modified/exposed; `.env` untouched. Task 12 backup verified present: `C:\Users\sindh\RAG-backup-task12-20261121-161336-e478a1b`. Preserved active application work (Task 8 tracked modifications and pre-existing unrelated deletions) and did not restore files from HEAD merely because modified/deleted. Provider/model, embedding model, chunking config, retrieval defaults, and RAG architecture behavior preserved.
+
+**Pre-cleanup verification:** repo `C:\Users\sindh\RAG`, branch `main`, HEAD `e478a1b`.
+
+**Deleted (removed-experiment-artifacts/obsolete/legacy):**
+- Entire `removed-experiment-artifacts/` directory (scripts, datasets, eval helpers, results, logs, artifacts, experiment-specific content). Tracked deletions appear in git status; untracked experiment artifacts removed (backed up in Task 12).
+- `.github/workflows/rag_eval.yml` removed; CI consolidated into `.github/workflows/ci.yml` (already superset: PR all branches + push main, Python 3.11, cache, diagnostic, index build/check, deterministic pytest `-k "not real_index" --maxfail=5`, dense CI eval regression gate against `evaluation/baseline_metrics.json`, canonical `ci-evaluation` artifact, optional non-blocking dense-vs-hybrid `ci-evaluation-compare` artifact).
+- `api/index.py` removed (legacy Vercel serverless entrypoint; canonical deployment is Render backend + Vercel frontend).
+- Legacy src modules removed after dependency inspection (not imported by active app/core/backend/tests/CI/ingest/deploy): `src/chunking/`, `src/config/`, `src/generation/`, `src/observability/`, `src/retrieval/`, `src/memory/`, `src/metrics/retrieval_eval.py`, and empty `src/metrics/`.
+- Obsolete test/data: `tests/test_exp001.py`, `tests/golden_dataset.csv` (experiment-legacy dependencies).
+
+**Restored minimal active-test dependencies (from HEAD, worktree only, not staged):** `tests/fixtures/exp001/exp001_ground_truth.json`, `tests/fixtures/exp001/exp001_questions.csv`, `tests/fixtures/exp001/chunks.json` were restored because active tests (`test_citation_metadata.py`, `test_fixed_chunker.py`, `test_rag_evaluation.py`) depend on them; deleting them caused 4 failures. Restoration documented; only these required files kept.
+
+**Retained active application components:** `backend/main.py`, `src/rag_app/`, `src/rag_core/`, `frontend/`, `prompts/`, `data/satcom-ngp.pdf`, `evaluation/` (ci_eval, golden dataset, baselines), `tests/` active suite, `scripts/ingest.py`, `scripts/evaluate.py`, `docs/`, `render.yaml`, `frontend/vercel.json`, `Dockerfile`, `docker-compose.yml`, `requirements.txt`, `requirements.runtime.txt`, `.env.example`, `.gitignore`, `.dockerignore`, `README.md`, `pyproject.toml`.
+
+**Config/doc updates:** narrowed `.gitignore` `*.log` to `evaluation/results/*.log`; updated `README.md` in place; corrected stale docs refs (`docs/DEPLOYMENT.md`, `docs/CHUNKING_STRATEGY.md`, `docs/PROJECT_BRIEF.md` deployment/legacy notes); updated `src/rag_core/__init__.py` docstring.
+
+**Validation (local):**
+- `PYTHONPATH="$PWD" python -m py_compile backend/main.py src/rag_app/config.py src/rag_app/service.py src/rag_core/pipeline.py src/rag_core/retrieval.py` → EXIT 0.
+- `PYTHONPATH="$PWD" python -m pytest tests -q -k "not real_index" --maxfail=5` → **133 passed, 1 deselected, 27 warnings** (after restoring 3 required experiment data files; 4 failures before restoration were due to missing experiment data).
+- `PYTHONPATH="$PWD" LANGFUSE_ENABLED=false RAG_ALLOW_GEMINI=false python -m evaluation.ci_eval --dataset evaluation/ci_golden_dataset.json --out evaluation/results/ci_task16_cleanup --baseline evaluation/baseline_metrics.json --check-regression` → **regression passed** (dense recall@5 0.9236, precision@5 0.3, mrr@5 0.8611, evidence_coverage 0.9236, supported_answer_rate 0.5833, citation_support_rate 0.4828, abstention_accuracy 1.0, invalid_citations 0, failure_rate 0.0).
+- `cd frontend && npm run build` → **built in 424ms** (EXIT 0).
+- `git diff --check` → EXIT 0.
+- Deployment/config presence check: `render.yaml`, `frontend/vercel.json`, `Dockerfile`, `docker-compose.yml`, `.env.example`, `data/satcom-ngp.pdf`, `evaluation/ci_golden_dataset.json`, `evaluation/baseline_metrics.json` present; `.env` exists and untouched.
+- Reference grep: no active code refs to deleted legacy modules; remaining `rag_eval.yml`/`api/index.py` mentions are historical in `docs/PROJECT_BRIEF.md` historical section and `docs/ENGINEERING_LOG.md`.
+
+**Known limitations / manual follow-up:** Render Free 512MB OOM remains a confirmed risk; public Render/Vercel deployment verification still requires user account/env/secrets and post-deploy smoke evidence. `evaluation/results/` is ignored/local. `nul` remains on disk on Windows (reserved-name cleanup deferred). Large git deletion set for `removed-experiment-artifacts/` is intentional per Task 16; only 3 active-test-required experiment data files retained.
+
+---
+
+### Final experiments dir removal and fixture relocation (2026-11-21, Task 17, local cleanup)
+
+**Status/constraints.** No application behavior/RAG config/model/prompt/deployment setting changes. Fixture contents preserved exactly (SHA256 verified). `.env` untouched. No stage/commit/push/reset/stash/deploy. All other current changes/deletions preserved.
+
+**Moved fixtures (from deleted `experiments/` to `tests/fixtures/exp001/`):**
+- `experiments/exp001_ground_truth.json` -> `tests/fixtures/exp001/exp001_ground_truth.json` (sha256 `4b03f584405c9bd3d398f62586430bbbd1f2ea2e326465fd9dd2b120029bc0be`)
+- `experiments/exp001_questions.csv` -> `tests/fixtures/exp001/exp001_questions.csv` (sha256 `beac9bcf4aa25b9bc54d988016180a1575cda59a3012408798b3ff9eec00ffa1`)
+- `experiments/results/exp001_v3/chunks.json` -> `tests/fixtures/exp001/chunks.json` (sha256 `75858b45efea69f7be60bfcef7823d4ca3b1099769aeff67a9e6e52e869895a4`)
+
+**Reference updates:** updated active tests `tests/test_rag_evaluation.py`, `tests/test_citation_metadata.py`, `tests/test_fixed_chunker.py`; updated `src/rag_app/config.py` comment; updated docs to remove old `experiments/` path references (historical artifact paths marked as removed-experiment-artifacts; moved fixture paths updated). Cleaned stale `.dockerignore` experiment-log lines. Removed `tests/__pycache__`.
+
+**Verification:** `grep` for `experiments/` in active files (excluding `.git`, `.agents`) returned none. `experiments/` directory removed.
+
+**Validation (local):**
+- `PYTHONPATH="$PWD" python -m pytest tests -q -k "not real_index" --maxfail=5` → **137 passed, 1 deselected, 29 warnings in 26.26s** (after fixing `tests/test_fixed_chunker.py` fixture path).
+- `PYTHONPATH="$PWD" LANGFUSE_ENABLED=false RAG_ALLOW_GEMINI=false python -m evaluation.ci_eval --dataset evaluation/ci_golden_dataset.json --out evaluation/results/ci_task17_fixtures --baseline evaluation/baseline_metrics.json --check-regression` → **regression passed** (`passed:true`, failures:[]).
+- `git diff --check` → **DIFF_CHECK_OK**.
+
+---
+
+### Local experiment/probe ChromaDB cleanup (2026-11-21, Task 18, local data cleanup)
+
+**Status/constraints.** Local data cleanup only. No application code/dependency/env/deployment config changes. No stage/commit/push/reset/stash/deploy. Did not delete/regenerate `chroma_db_production/`. Preserved `.env`, `frontend/node_modules/`, active evaluation fixtures, and all other current work.
+
+**Repo verification:** `C:\Users\sindh\RAG`, branch `main`, HEAD `e478a1b`.
+
+**Targets (verified experiment/probe indexes; not referenced by active app/tests/scripts/Docker/deploy runtime):** `chroma_db_exp001/`, `chroma_db_exp002/`, `chroma_db_exp003/`, `chroma_db_exp004/`, `chroma_db_probe/`. References found only in `.gitignore`/`.dockerignore` ignore rules and historical docs/fixture metadata.
+
+**Production index before/after (unchanged):** `chroma_db_production/` — **9 files, 6.3M** before; **9 files, 6.3M** after.
+
+**Removed:** all 5 experiment/probe directories (each had 5 files; ~4.0M/3.6M/2.8M/2.5M/2.5M before removal).
+
+**Verification:**
+- All 5 target dirs absent; `chroma_db_production/` intact.
+- `PYTHONPATH="$PWD" python -m pytest tests -q -k "not real_index" --maxfail=5` → **137 passed, 1 deselected, 29 warnings in 27.09s**.
+- `git diff --check` → **DIFF_CHECK_OK**.
+
+---
+
+### Documentation repair after cleanup (2026-11-21, Task 20, docs-only)
+
+**Status/constraints.** Documentation-only repair. No application code, tests, CI workflows, dependencies, or deployment config modified. `todo.txt` deletion left untouched (pending confirmation). `.env` not modified/inspected. No stage/commit/push/reset/stash/deploy. Historical experiment findings/decisions preserved; no experiment history rewritten; deleted `experiments/` directory/scripts not reintroduced.
+
+**Defects found (Task 19 audit):**
+- `docs/RUN_LOCAL.md:99` garbled text: "No new removed-experiment-artifacts/retrieval/chunking/reranking added."
+- `docs/RUN_LOCAL.md:109` stale/broken command `python -m experiments.m4_eval_harness ...` (script removed in Task 16 cleanup).
+- `docs/PROJECT_BRIEF.md` contained widespread `removed-experiment-artifacts` wording/path artifacts, a garbled "Current Status" insertion, and an accidental duplicated copy of sections 1–10.
+- Multiple docs under `docs/` contained `removed-experiment-artifacts` path artifacts from bulk cleanup replacement; some historical docs also contained stale runnable-looking `python -m experiments.*` commands.
+
+**Files corrected:**
+- `docs/RUN_LOCAL.md` — fixed garbled limitation text; replaced retired M4 harness command with current supported CI evaluation command (`python -m evaluation.ci_eval ... --dataset evaluation/ci_golden_dataset.json --baseline evaluation/baseline_metrics.json --check-regression --out evaluation/results/ci_local`) and documented `python scripts/evaluate.py --help` wrapper, with evidence from `.github/workflows/ci.yml`, `evaluation/ci_eval.py --help`, and `scripts/evaluate.py`.
+- `docs/PROJECT_BRIEF.md` — removed garbled Current Status blob and accidental duplicated sections 1–10 (kept unique Section 11); fixed garbled path/wording artifacts; updated Commands section to current supported pytest/eval commands and marked historical experiment runners retired (Task 16 cleanup, git history).
+- `docs/M4_PROGRESS.md` — marked historical M4 harness command/artifacts retired and pointed to current CI evaluation command.
+- `docs/M4_EVALUATION_PLAN.md` — marked historical harness as retired; pointed to current CI eval.
+- `docs/BACKLOG.md` — clarified BL-012 historical harness retired and current CI gate path.
+- `docs/PRODUCTION_SLICE.md` — updated command section to current deterministic pytest subset; marked historical experiment commands as retired/historical record.
+- `docs/EXP-002.md`, `docs/EXP-003.md`, `docs/EXP-004.md`, `docs/EXP-005.md`, `docs/EXP-006.md` — added explicit "Historical (retired)" note in experiment command code blocks (scripts removed in Task 16 cleanup; historical record preserved).
+- Other docs (`BACKLOG`, `CHUNKING_EXPERIMENT`, `EXP-001`, `EXP-007`, `EXP-008`, `EXP-008-citation-metadata-correction`, `PRODUCTION_SLICE`, `PROJECT_BRIEF`) — replaced `removed-experiment-artifacts` wording/path artifacts with clear historical `experiments/...` references where appropriate; historical findings/decisions preserved.
+
+**Obsolete evaluation command:** `python -m experiments.m4_eval_harness ...` is retired because `experiments/m4_eval_harness.py` and experiment artifacts were removed in Task 16 cleanup. No identical replacement exists; the current supported deterministic evaluation/regression gate is `evaluation/ci_eval.py` (CI workflow `.github/workflows/ci.yml`, wrapper `scripts/evaluate.py`). Docs now point to the supported command.
+
+**Remaining documentation limitations:**
+- `docs/ENGINEERING_LOG.md` retains historical `removed-experiment-artifacts` strings in prior entries; left unchanged intentionally (task forbids rewriting earlier log entries).
+- Historical experiment report docs still reference `experiments/...` paths/scripts as historical records; those files do not exist on disk after Task 16 cleanup, but references are preserved/marked historical where appropriate.
+- `todo.txt` remains deleted in worktree pending explicit confirmation.
+
+**Validation:**
+- `grep -rn "removed-experiment-artifacts" docs` → only `docs/ENGINEERING_LOG.md` historical entries remain.
+- RUN_LOCAL eval commands verified: `python -m evaluation.ci_eval --help` (exit 0), `scripts/evaluate.py` exists and wraps `evaluation.ci_eval`, CI workflow uses same command/args. Referenced dataset/baseline paths exist.
+- `git diff --check` → **DIFF_CHECK_OK**.
+- Reviewed diff: docs-only changes (plus pre-existing unrelated worktree changes already present); no application code/tests/CI/deps/deploy config modified by Task 20.
+
+---
+
+### Align local evaluation docs with CI dense-only baseline (2026-11-25, Task 22, docs-only)
+
+**Status/constraints.** Documentation-only. No evaluation code, tests, CI workflow, dependencies, or deployment files modified. `todo.txt` left untouched. No stage/commit/push/reset/stash/deploy. No full evaluation run; validation used source inspection and `--help`.
+
+**Task 21 finding addressed:** documented local CI evaluation command in `docs/RUN_LOCAL.md` omitted `--retrieval-modes`, `--generation-mode`, and `--k`. `evaluation/ci_eval.py` defaults are `--retrieval-modes=dense,hybrid`, `--generation-mode=extractive`, `--k=5`; `.github/workflows/ci.yml` dense baseline step explicitly passes `--retrieval-modes dense --generation-mode extractive --k 5`. Omitting `--retrieval-modes` changes behavior (runs dense+hybrid, not CI-equivalent dense-only baseline); omitting `--generation-mode`/`--k` currently matches defaults but is ambiguous.
+
+**Exact documentation corrections:**
+- `docs/RUN_LOCAL.md` — replaced eval command with explicit CI-equivalent args (`--retrieval-modes dense --generation-mode extractive --k 5 --baseline evaluation/baseline_metrics.json --check-regression --out evaluation/results/ci_local`); added Git Bash and Windows PowerShell command forms; added explanation that explicit args reproduce CI dense-only regression baseline step and that omitting `--retrieval-modes` uses default `dense,hybrid` (not CI-equivalent).
+- `docs/M4_PROGRESS.md` — updated current supported evaluation/regression gate to same explicit CI-equivalent args with Git Bash/PowerShell forms; retained historical context and clearly distinguished current command from retired historical harness command/artifacts.
+- `docs/ENGINEERING_LOG.md` — appended this Task 22 entry; earlier entries unchanged.
+
+**Validation:**
+- Args verified against `.github/workflows/ci.yml` dense baseline step and `evaluation/ci_eval.py` argparse defaults/help.
+- PowerShell syntax: `$env:PYTHONPATH='.'; python -m evaluation.ci_eval ...` (single-line). Git Bash syntax: `PYTHONPATH=. python -m evaluation.ci_eval \ ...` with line continuations.
+- `git diff --check` → **DIFF_CHECK_OK**.
+- Diff inspection: only intended Markdown files modified by Task 22 (`docs/RUN_LOCAL.md`, `docs/M4_PROGRESS.md`, `docs/ENGINEERING_LOG.md`) within pre-existing worktree; no code/tests/CI/deps/deploy files changed.
+- `todo.txt` remains ` D todo.txt` (untouched).
+---
+
+### Isolated Weaviate Cloud retrieval experiment (2026-11-25, Task 24, experimental/opt-in)
+
+**Status/constraints.** Experimental, opt-in only. Default backend remains `chroma` (existing production dense+BM25+RRF path unchanged). No production migration, no deploy/stage/commit/push, no live Weaviate ingestion/evaluation performed (no credentials provided/authorized), no Render queries. `chroma_db_production/` not modified/deleted. Existing evaluation baselines/historical experiment results not changed. `.env`, `.agents/`, `tests/fixtures/`, generated results, local data preserved. No `git add .`.
+
+**Phase 1 inspection (smallest safe integration point):**
+- Embedding/init path: `src/rag_app/service.py` lazily loads `SentenceTransformer` via `service.model` and builds `DenseIndex` via `service.index`; `service._ensure_index_ready()` rebuilds local Chroma from PDF when empty.
+- Chunking/metadata: `src/rag_app/config.py` default `chunk_strategy=fixed_character`, `chunk_size=800`, `chunk_overlap=160`; `src/rag_core/chunker.py` provides fixed/structure-aware chunkers; `src/rag_core/index.py` `chunk_to_metadata()` persists citation-relevant metadata (`chunk_id,text,source,start/end_offset,start/end_page,article,section,heading,...`).
+- Chroma ingestion/retrieval interfaces: `src/rag_core/index.py` `DenseIndex.build/search/count/reset`; `src/rag_core/retrieval.py` `HybridRetriever.retrieve()` returns `RetrievalResult(hits=[RetrievedChunk...], debug=...)` with RRF fusion and optional Cohere rerank.
+- BM25/RRF: `src/rag_core/retrieval.py` uses `rank_bm25.BM25Okapi`, `rrf_fuse`, `DEFAULT_RRF_K=60`, `DEFAULT_DENSE_K/BM25_K=20`.
+- Answer-generation interface: `src/rag_app/service.py` calls `self.pipeline.answer_from_hits(question, hits)`; `src/rag_core/pipeline.py` `GroundedPipeline` requires index only for `answer()`; `answer_from_hits()` is index-independent.
+- Evaluation harness: `evaluation/ci_golden_dataset.json` fixed 15 questions (10 answerable, 5 unanswerable); `evaluation/ci_eval.py` computes retrieval/context/faithfulness/answer/citation/abstention/latency metrics, supports regression gate; CI workflow runs dense-only baseline by default.
+- Config/env conventions: `src/rag_app/config.py` `AppConfig.from_env()` with `RAG_*` vars; `.env.example`; `requirements.txt`/`requirements.runtime.txt`.
+- Docs/log: `docs/ENGINEERING_LOG.md` append-only; deployment/run docs in `docs/DEPLOYMENT.md`, `docs/RUN_LOCAL.md`.
+
+**Phase 2 Weaviate compatibility (official docs verified via webfetch, 2026-11-25):**
+- Docs: Weaviate Python client v4 (`weaviate-client`), `connect_to_weaviate_cloud` + `Auth.api_key`; collections via `client.collections.create`; vectorizer `Configure.Vectors.text2vec_weaviate(model=..., source_properties=[...])` or `text2vec_weaviate` vectorizer config; hybrid query `collection.query.hybrid(query=..., limit=..., alpha=..., return_metadata=...)`.
+- Weaviate Embeddings: managed service available on Weaviate Cloud; docs state "You can try it out **for free on a free cluster**" / free Sandbox/trial limits apply (rate/batch limits documented by Weaviate; verify current cluster quota before live run). Model availability is cluster/account-dependent; this experiment defaults to `Snowflake/snowflake-arctic-embed-l-v2.0` (documented example) but is configurable via `WEAVIATE_EMBEDDING_MODEL`. Do not assume equivalence to local `all-MiniLM-L6-v2`.
+- Uncertainties/limitations recorded: exact free-tier hosted-embedding quota/model availability may change; client API minor differences handled defensively; live cluster behavior not verified here.
+
+**Phase 3 implementation (opt-in, isolated):**
+- `src/rag_core/weaviate_retriever.py` (new): `WeaviateRetrieverConfig.from_env()` requires `WEAVIATE_URL`, `WEAVIATE_API_KEY`, `WEAVIATE_COLLECTION`; optional `WEAVIATE_EMBEDDING_MODEL`; lazy `weaviate-client` import; no silent fallback; returns `RetrievalResult`/`RetrievedChunk` with citation metadata and debug.
+- `src/rag_app/config.py`: added `retriever_backend` default `chroma`, plus optional Weaviate env fields (`RAG_RETRIEVER_BACKEND`/`RETRIEVER_BACKEND`, `WEAVIATE_URL`, `WEAVIATE_API_KEY`, `WEAVIATE_COLLECTION`, `WEAVIATE_EMBEDDING_MODEL`). Defaults unchanged.
+- `src/rag_app/service.py`: added `weaviate_retriever` property with explicit config validation; `_retrieve()` routes to Weaviate only when backend explicitly selected and does not initialize local Chroma/BM25/SentenceTransformer; no silent fallback. `pipeline` property passes `index=None` for Weaviate backend because `answer_from_hits()` does not require index. `health()` reports `retriever_backend` and avoids misleading Chroma status for Weaviate.
+- `src/rag_app/schemas.py`: added `retriever_backend` to `HealthResponse`; extended `QueryResponse.retrieval_mode` literal to include `weaviate_hybrid` for experimental reporting.
+- `src/rag_core/pipeline.py`: `GroundedPipeline.index` made optional; `answer()` raises clear error if index missing; `answer_from_hits()` unchanged. This avoids unnecessary local index/model load for precomputed Weaviate hits.
+- `.env.example`: added Weaviate env var names only. `requirements.weaviate.txt`: optional `weaviate-client>=4.6.0,<5.0.0` (isolated install; not added to default runtime requirements to avoid Render default bloat).
+
+**Phase 4 ingestion/evaluation:**
+- `scripts/weaviate_ingest.py` (new): explicit experimental ingestion command; reads existing PDF, uses existing AppConfig chunking (default fixed 800/160), audits coverage, creates/reuses dedicated Weaviate collection with `text2vec_weaviate` and explicit citation metadata properties, deterministic UUIDs for chunk IDs, batch ingestion, optional `--recreate`, `--limit` debug only. Does not touch `chroma_db_production` or local Chroma.
+- `evaluation/weaviate_eval.py` (new): isolated runner reusing `evaluation.ci_eval` dataset/metric logic. Compares A) baseline `chroma` + `hybrid` (dense+BM25+RRF) and B) `weaviate` + native hybrid, same 15-question dataset. Reports per-mode summaries/comparison JSON; requires explicit `--run-baseline`/`--run-weaviate`; Weaviate mode requires env vars and no silent fallback. Not run with live credentials in this task.
+
+**Phase 5 memory implications (reasoned, not deployment-verified):**
+- Weaviate experimental retrieval path in `RAGService._retrieve()` avoids calling `self.index`, `HybridRetriever`/BM25 corpus build, and `SentenceTransformer` model load. `GroundedPipeline` is constructed with `index=None` for Weaviate.
+- However, `sentence-transformers`, `chromadb`, `rank_bm25`, and torch-related packages remain installed/importable in default runtime image unless dependency packaging is changed. Importing them is lazy in key paths but process-level memory savings on Render require a separate Weaviate-only deployment image/dependency set and actual measurement. No claim that Render Free 512MB will work without live deployment/measurement.
+
+**Phase 6 tests (executed):**
+- `tests/test_weaviate_retriever.py` (new, mocked, no live credentials): 8 passed — default backend remains chroma; explicit backend selection; missing credentials fail clearly; normalized retrieval structure/citation metadata preserved; connection error handled; service Weaviate path does not init chroma; ingestion script has no chroma/PersistentClient/DenseIndex usage; baseline eval defaults unchanged.
+- `python -m pytest tests/test_api.py -q` → 17 passed, 4 warnings (includes real_index smoke; no regressions observed).
+- Not executed: live Weaviate ingestion/eval, full `pytest -k "not real_index"` after final doc edits in this turn, CI-equivalent dense eval, Render/Vercel deployment smoke.
+
+**Phase 7 docs:**
+- Updated `.env.example`, added `requirements.weaviate.txt`, appended this log. `docs/RUN_LOCAL.md` and `docs/DEPLOYMENT.md` updated with isolated experiment setup/run/disable/limitations (names only, no secrets).
+
+**Safety checks:** `chroma_db_production/` present and untouched; no Weaviate credentials used; no live network calls to Weaviate; no stage/commit/push/deploy.
+---
+
+### Weaviate-only runtime and import audit (2026-11-26, Task 25, audit/no-deploy)
+
+**Status/constraints.** Audit only. No production Chroma index modified/deleted. Default retriever remains `chroma`. No embedding/chunking/retrieval algorithm/eval baseline changes. No Weaviate cluster created, no live API requests, no deploy/stage/commit/push. `.env` untouched; no credentials exposed. Existing uncommitted work preserved. No `git add .`.
+
+**Phase 1 — Import chain trace (code inspection + subprocess probes, PYTHONPATH=.):**
+
+- Entry/import chain: `backend/main.py` -> `src.rag_app` (`AppConfig`, `RAGService`) -> `src/rag_app/service.py` top-level imports `DenseIndex`, `HybridRetriever`, `RetrievedChunk`, `RetrievalResult` from `src.rag_core` -> `src/rag_core/__init__.py` eagerly imports index/retrieval/pipeline/generation/evaluation modules.
+- Eager heavy imports identified: `src/rag_core/index.py` imports `chromadb` at module top; `src/rag_core/retrieval.py` imports `rank_bm25.BM25Okapi` at module top. `service.py` lazy-imports `SentenceTransformer` only inside `model` property; Weaviate path avoids `self.index`/`self.model`/`HybridRetriever`.
+- Subprocess probes (no live Weaviate calls; dummy env vars):
+  - `import backend.main` with `RAG_RETRIEVER_BACKEND=weaviate`: `torch/sentence_transformers/transformers/scipy` not imported; **`chromadb/rank_bm25/numpy` imported**.
+  - `from src.rag_app.service import RAGService` with Weaviate env: same result.
+  - `WeaviateRetriever` import only: `torch/sentence_transformers/transformers` not imported; **`chromadb/rank_bm25/numpy` imported** due to `RetrievedChunk`/`RetrievalResult` imports from index/retrieval modules.
+  - `RAGService` Weaviate backend mocked query path (`_retrieve` with fake retriever, no network): query returned `weaviate_hybrid`; **`chromadb/rank_bm25/numpy` imported, torch/sentence_transformers/transformers/scipy not imported**.
+
+**Import vs init distinction:** Current Weaviate path avoids **initializing** SentenceTransformer model, loading model weights, allocating local embedding inference tensors, initializing Chroma PersistentClient/index, and building BM25 corpus. It does **not** currently avoid **importing** `chromadb`, `rank_bm25`, and `numpy` because of eager module imports in `rag_core/index.py`, `rag_core/retrieval.py`, and eager exports in `rag_core/__init__.py`/`service.py`.
+
+**Phase 2 — Weaviate dependency/API compatibility:**
+- `requirements.weaviate.txt` currently `weaviate-client>=4.6.0,<5.0.0` (isolated, optional). Code uses v4 patterns: `weaviate.connect_to_weaviate_cloud`, `Auth.api_key`, `collections.exists/get/create/delete`, `Configure.Vectors.text2vec_weaviate` with fallback to `Configure.Vectorizer.text2vec_weaviate`, `collection.query.hybrid` with `MetadataQuery` where available, `batch.fixed_size` and `failed_objects`, `aggregate.over_all(total_count=True)`, `client.close()`. Auth/batch/hybrid/metadata/cleanup present. No live API verification performed.
+- Compatibility risk: `weaviate-client` v4 has minor API surface differences across releases; `>=4.6.0,<5.0.0` is plausible but untested in this repo. Recommend pinning to a specific tested version after live smoke test (e.g. `==4.x.y`) and recording it in docs; keep upper bound `<5.0.0` until v5 migration reviewed.
+
+**Phase 3 — Runtime separation assessment:**
+- **A. Required by Weaviate API/query runtime (if refactored):** `weaviate-client`, app framework/runtime (`fastapi`,`uvicorn`,`pydantic`,`python-dotenv`,`httpx`), generation deps if Gemini used (`google-generativeai`), observability as configured (`langfuse` optional).
+- **B. Required only by local Chroma retrieval:** `chromadb`, `sentence-transformers`, `torch`/transformer stack (transitive), `rank_bm25` for hybrid BM25/RRF, local index artifacts/model cache.
+- **C. Required only by PDF ingestion/local rebuild:** `pypdf` and local ingestion/chunking/index-build path; Weaviate ingestion script uses existing chunking/PDF extraction but does not need Chroma/SentenceTransformers.
+- **D. Required only for evaluation/dev:** `pytest`, `ragas`, eval scripts, notebooks/dev tools.
+- Proposed untracked file `requirements.weaviate.runtime.proposed.txt` created as a proposal only; not wired into default deployment. It is not sufficient without import-chain refactor because current app imports still load chromadb/rank_bm25/numpy.
+
+**Phase 4 — Tests (executed):**
+- `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py -q` → **10 passed**.
+- Includes subprocess-based import audits: `weaviate_retriever` module import chain (documents chromadb/rank_bm25/numpy currently imported; torch/sentence_transformers/transformers not imported), and Weaviate-backend service import/query path (same finding). Existing mocked tests cover no Chroma/SentenceTransformer initialization on Weaviate query, missing credentials clear error, no silent fallback, default backend unchanged.
+
+**Phase 5 — Memory assessment (qualitative, code-verified where noted):**
+- *Current Chroma+SentenceTransformers runtime:* highest; loads/imports Chroma/BM25/numpy and initializes SentenceTransformer/PyTorch model tensors on local retrieval path. Render Free 512MB OOM previously observed (Task 23).
+- *Weaviate backend with existing full dependencies:* medium-high; code-verified no local model/index/BM25 initialization on Weaviate query path, but chromadb/rank_bm25/numpy still imported by current module graph; torch/sentence_transformers/transformers not imported in probed path. Memory reduction likely partial at best; not Render-verified.
+- *Weaviate backend with proposed lightweight dependency set + import-chain refactor:* potentially lowest; would exclude torch/sentence-transformers/chromadb/rank_bm25 from image if imports refactored and PDF/local ingest separated. **Not verified by deployment/measurement.** Actual Render Free viability requires measured deploy.
+
+**Remaining risks:** eager import chain prevents true lightweight runtime today; weaviate-client version drift; free-tier quotas/model availability; semantic differences vs MiniLM; need separate deploy image/build target; no live Weaviate or Render measurement.
+
+**Safety checks:** `chroma_db_production/` untouched; default retriever still `chroma`; no deploy/stage/commit/push; no `.env` changes; no credentials exposed.
+---
+
+### Weaviate lightweight runtime import refactor (2026-11-26, Task 26, refactor/no-deploy)
+
+**Status/constraints.** Import/runtime separation only; no retrieval redesign. Default backend remains `chroma`. No embedding/chunking/retrieval algorithm/eval baseline changes. `chroma_db_production/` untouched. No Weaviate cluster/live API calls. No deploy/stage/commit/push. `.env` untouched; no credentials exposed. Existing uncommitted work preserved. No `git add .`.
+
+**Previous eager-import findings (Task 25):** `rag_core/__init__` eager exports, `index.py` top-level `chromadb`, `retrieval.py` top-level `rank_bm25`, and `service.py` top-level rag_core imports caused `chromadb/rank_bm25/numpy` to load on Weaviate-selected app path; `torch/sentence_transformers/transformers/scipy` were not loaded.
+
+**Refactoring performed:**
+- Added `src/rag_core/retrieval_types.py` (lightweight `RetrievedChunk`, `RetrievalResult`; no heavy deps). Updated `index.py`, `retrieval.py`, `weaviate_retriever.py`, `pipeline.py`, `evaluation.py` to use/share it; removed duplicate dataclasses.
+- `index.py`: lazy `import chromadb` in `DenseIndex.__init__` (no top-level chromadb import).
+- `retrieval.py`: lazy `rank_bm25` import in `CorpusIndex.load()`; TYPE_CHECKING-only heavy type imports; re-exports `RetrievedChunk`/`RetrievalResult` for compat.
+- `rag_core/__init__.py`: replaced eager exports with PEP 562 lazy `__getattr__` map; preserves public names/`__all__`.
+- `rag_app/service.py`: moved heavy rag_core imports to TYPE_CHECKING/local lazy imports in properties/methods; lightweight `retrieval_types` import at top; Weaviate path avoids local index/BM25/model initialization. Fixed NameError regression in `_apply_gemini` by local ANSWERED/ABSTAINED import.
+- FastAPI/ingest routes unchanged; `/ingest` still local-imports chunking/index build only when called.
+
+**Subprocess import audit (fresh Python subprocesses, PYTHONPATH=., dummy Weaviate env, mocked retrieval, no live calls):**
+
+| Scenario | torch | sentence_transformers | transformers | chromadb | rank_bm25 | numpy | scipy |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `weaviate_retriever` module import | False | False | False | False | False | False | False |
+| `backend.main` import + Weaviate backend mocked query | False | False | False | False | False | *True\** | False |
+| Chroma default backend import (`DenseIndex/HybridRetriever` resolvable) | n/a | n/a | n/a | n/a | n/a | n/a | n/a |
+
+\*In this environment, `numpy` was imported during `RAGService` init after `backend.main` due to third-party Langfuse serializer (`langfuse._utils.serializer`) when Langfuse was enabled/configured by env; not imported by Weaviate-only service path without that condition. Documented as environment/dependency-sensitive, not a Weaviate code-path requirement.
+
+**Tests executed:**
+- `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py -q` → **11 passed**.
+- `PYTHONPATH=. python -m pytest tests/test_api.py -q` → **17 passed, 4 warnings**.
+- `PYTHONPATH=. python -m pytest tests -q -k "not real_index and not test_api" --maxfail=10` → **132 passed, 17 deselected, 29 warnings**.
+- CI-equivalent eval / full real_index not rerun in this turn.
+
+**Lightweight dependency proposal:** updated `requirements.weaviate.runtime.proposed.txt` (proposal only, not wired into deployment). Still requires import-audit + Render measurement; numpy may be pulled by optional observability deps.
+
+**Remaining risks:** Langfuse/numpy third-party import sensitivity; full Render memory/startup not measured; weaviate-client version pin still needs live smoke; separate Weaviate-only deployment image/build target still needed.
+
+**Safety checks:** `chroma_db_production/` untouched; default `chroma` unchanged; no deploy/stage/commit/push.
+---
+
+### Weaviate Cloud live-experiment preparation (2026-11-26, Task 27, prep/no-live-calls)
+
+**Status/constraints.** Preparation only. No live Weaviate cluster created, no live API calls, no ingestion, no collection deletion, no embedding quota consumed, no deployment/stage/commit/push. `chroma_db_production/` untouched. Default backend remains `chroma`. No `.env` changes; no credentials exposed. Existing uncommitted work preserved.
+
+**1) Collection deletion safety findings/fixes (`scripts/weaviate_ingest.py`):**
+- Before: `--recreate` deleted existing collection without exact-name confirmation; existing collections were reused and ingestion proceeded (potential silent upsert/overwrite).
+- After: default execution never deletes. `--recreate` requires `--confirm-delete-collection <exact-name>` matching `WEAVIATE_COLLECTION`; prints destructive warning with object count before delete. `_assert_safe_collection_name` refuses production-like names (`prod`/`production`) and requires clearly experimental name (`exp`/`experiment`/`test`/`sandbox`). Existing collection is reported with object count and script exits unless `--allow-existing` is explicitly provided. No silent overwrite.
+
+**2) Ingestion idempotency findings/fixes:**
+- Deterministic UUIDs preserved (`uuid5` from `satcom-ngp-weaviate:{chunk_id}`), so explicit `--allow-existing` re-ingest is idempotent by object ID for same chunk IDs. Batch errors are counted; partial failures reported as `partial_failure`. Final collection count is queried via `aggregate.over_all(total_count=True)` and reported; warning emitted when count < selected chunks (non-debug run, no failed objects). Schema compatibility is best-effort by explicit property creation; existing-schema mismatch is not fully auto-validated (remaining risk). 800/160 chunking remains from existing AppConfig defaults.
+
+**3) Evaluation isolation findings/fixes (`evaluation/weaviate_eval.py`):**
+- Same fixed 15-question dataset (`evaluation/ci_golden_dataset.json`) unchanged. Baseline run forces `retriever_backend=chroma`, `retrieval_mode=hybrid`; Weaviate run requires explicit env vars and uses configured Weaviate collection only. Default output now timestamped (`evaluation/results/weaviate_experiment/<UTC timestamp>`); existing non-empty output requires explicit `--overwrite`. Report payload includes dataset/dataset_version/question count, k, generation mode, Weaviate collection, embedding model, alpha, UTC timestamp. No historical baseline files overwritten by default.
+
+**4) Free-tier safeguards (official pricing page https://weaviate.io/pricing, fetched 2026-11-26; verify before live run):**
+- Confirmed on pricing page (subject to change): Free/Sandbox tier — $0, 1 cluster per user, 100,000 objects, 1 GB memory, 10 GB disk, 1 collection, up to 3 tenants, Embeddings 2,000 req/day, Query Agent 1,000 req/mo, Basic Support. Flex starts $45/mo pay-as-you-go; Premium prepaid/contact sales.
+- Account-dependent/verify: region availability, exact embedding model availability, rate-limit enforcement details, cluster creation workflow, billing/upgrade prompts, and any changes after pricing-page fetch. No code path in this repo creates/upgrades clusters or makes paid API calls; live usage requires explicit user authorization and credentials.
+
+**5) Tests executed (mocked, no live credentials/network):**
+- `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py -q` → **16 passed** (5.75s). Added safety tests: refuse prod-like/non-experimental collection names; recreate requires exact confirmation; existing collection stops without `--allow-existing`; eval refuses overwrite without `--overwrite`.
+- `PYTHONPATH=. python -m pytest tests/test_api.py -q` → **17 passed, 4 warnings** (prior Task 26 run in same session; not rerun after Task 27 doc/script edits, but no API code changed in Task 27).
+
+**6) Exact safe procedure for first authorized live experiment (manual, after explicit approval):**
+1. Confirm free-tier cluster exists and embedding model/quota available in Weaviate Cloud console; do not upgrade.
+2. Set env vars in shell only (never commit): `WEAVIATE_URL`, `WEAVIATE_API_KEY`, `WEAVIATE_COLLECTION` (clearly experimental, e.g. `SatcomNgpExp800160`), optional `WEAVIATE_EMBEDDING_MODEL`.
+3. Install isolated deps: `pip install -r requirements.weaviate.txt`.
+4. Dry/safety check: run `python scripts/weaviate_ingest.py --help`; confirm collection name is experimental.
+5. First ingestion (no delete): `python scripts/weaviate_ingest.py --allow-existing` only if intentionally reusing an existing experimental collection; for a new empty collection, script will create it. If collection exists and you did not pass `--allow-existing`, script will report count and stop.
+6. Destructive reset only with explicit authorization: `python scripts/weaviate_ingest.py --recreate --confirm-delete-collection <exact-name> --allow-existing` (or without `--allow-existing` after recreate creates fresh collection - recreate path creates fresh; then run ingestion as needed). Verify exact name before running.
+7. Verify collection count equals expected 61 chunks for default 800/160 config before eval.
+8. Run isolated eval: `PYTHONPATH=. python -m evaluation.weaviate_eval --run-baseline --run-weaviate --k 5 --generation-mode extractive` (writes timestamped output dir by default). Inspect `report.json` and per-mode files.
+9. Record results in `docs/ENGINEERING_LOG.md`; do not overwrite historical baselines.
+
+**Remaining risks:** live schema/model/quota behavior unverified; free-tier limits may change; Weaviate embedding model differs from MiniLM; import/runtime image still not Render-measured; partial ingestion requires manual verification.
+---
+
+### Weaviate experiment diagnostic instrumentation (2026-11-26, Task 28, diagnostics/no-live-eval)
+
+**Status/constraints.** Isolated diagnostics only. No live evaluation, no live Weaviate calls, no ingestion/deletion/collection modification. Default Chroma backend unchanged. No embedding/alpha/chunking/retrieval default/production behavior changes. No `.env`/dependency changes. No stage/commit/push/deploy. Existing evaluation results/historical experiments preserved.
+
+**Changes (additive):**
+- `src/rag_app/schemas.py`: `RetrievedChunkModel` gained optional additive diagnostic fields `score`, `retrieval_scores`, `metadata` (default empty/None).
+- `src/rag_app/service.py`: `_retrieved_model` now populates diagnostic score/metadata (excludes text/content). No retrieval/abstention behavior changes.
+- `evaluation/ci_eval.py`: added `_retrieved_diagnostic`, `_abstention_diagnostics`, and per-question `diagnostics` block in `run_mode` results. Diagnostics include ordered top-k retrieved chunks (IDs/ranks/scores/distance/retrieval_scores/safe metadata), selected citation chunk IDs and expected-evidence satisfaction, abstention decision/reason/raw Weaviate score/distance/best_distance/token_support/selected_lexical_support/retrieval_debug, and latency components (`retrieval_ms`, `selection_and_extractive_ms`, `gemini_generation_ms`, `evaluation_ms`, `total_ms`) with note that remote Weaviate query time is inside `retrieval_ms`.
+- `evaluation/weaviate_eval.py`: reuses ci_eval diagnostic helpers; adds `focus_question_diagnostics` for Q07/Q12/Q14/UNANS-11 in report.
+- `tests/test_weaviate_retriever.py`: added deterministic tests for retrieved diagnostic serialization (excludes text), abstention diagnostic Weaviate score capture, and read-only diagnostic behavior.
+
+**Verification:** `pytest tests/test_weaviate_retriever.py -q` (19 passed in final run) and `pytest tests/test_api.py -q` (17 passed, 4 warnings) after fixes. No live eval run.
+
+**Proposed next diagnostic evaluation command (do not execute now):**
+`PYTHONPATH=. WEAVIATE_URL=... WEAVIATE_API_KEY=... WEAVIATE_COLLECTION=SatcomNgpExp800160 WEAVIATE_EMBEDDING_MODEL=Snowflake/snowflake-arctic-embed-l-v2.0 python -m evaluation.weaviate_eval --run-baseline --run-weaviate --k 5 --generation-mode extractive`
+---
+
+### Weaviate connection resilience configuration (2026-11-26, Task 31, experimental/no-live-calls)
+
+**Status/constraints.** Experimental Weaviate retriever only. No live Weaviate calls/evaluations, no ingestion/deletion/collection modification, no production Chroma changes/defaults changed, no `.env` modifications or secrets exposed, no dependency upgrades, no stage/commit/push/deploy.
+
+**Inspected client API (installed, local):** `weaviate-client==4.24.1`. `weaviate.connect_to_weaviate_cloud(cluster_url, auth_credentials, headers=None, additional_config=None, skip_init_checks=False) -> WeaviateClient` supports `additional_config`. `weaviate.classes.init.AdditionalConfig(timeout=Timeout(...))` / `weaviate.config.Timeout` supported; `Timeout` fields in v4.24.1: `query=30`, `insert=90`, `init=2`, `stream=None` (seconds). This supports configurable connection initialization and query timeouts. REST-only fallback is **not** implemented/exposed in this repo; `skip_init_checks` is not exposed (would hide connectivity problems) and gRPC startup checks remain enabled.
+
+**Implementation (justified by 110722Z gRPC DEADLINE_EXCEEDED init failure):**
+- `src/rag_core/weaviate_retriever.py`: `WeaviateRetrieverConfig` gained `init_timeout_s` (default `2.0`) and `query_timeout_s` (default `30.0`), preserving weaviate-client v4 defaults. `from_env()` reads `WEAVIATE_INIT_TIMEOUT_S`/`RAG_WEAVIATE_INIT_TIMEOUT_S` and `WEAVIATE_QUERY_TIMEOUT_S`/`RAG_WEAVIATE_QUERY_TIMEOUT_S` with validation. `_connect()` passes `AdditionalConfig(timeout=Timeout(init=..., query=...))` when available; connection errors still raise `WeaviateRetrievalError` with type/message (no silent empty retrieval, no retries). Retrieval debug includes configured timeouts.
+- `src/rag_app/config.py`: added `weaviate_init_timeout_s`/`weaviate_query_timeout_s` defaults and env parsing.
+- `src/rag_app/service.py`: passes timeout config through to `WeaviateRetrieverConfig`.
+- `tests/test_weaviate_retriever.py`: added deterministic mocked tests for timeout config passing, default timeout preservation, connection error propagation as `WeaviateRetrievalError`, env parsing/validation, and service config pass-through.
+- `.env.example`, `docs/RUN_LOCAL.md`, `docs/DEPLOYMENT.md`: documented optional experimental timeout env vars.
+
+**Tests run:** `pytest tests/test_weaviate_retriever.py -q` and `pytest tests/test_api.py -q` (see task report for exact results). No live Weaviate calls.
+
+**Remaining connection risks:** gRPC 443 egress/firewall or Weaviate Cloud gRPC instability can still cause DEADLINE_EXCEEDED; increasing init timeout mitigates slow startup but not blocked/unavailable gRPC. No bounded retry added (risk of masking persistent failures / duplicate load). REST-only path not implemented because it requires explicit client-path validation and may change semantics; evaluate separately if gRPC remains unstable after timeout tuning.
+
+**Proposed next evaluation command (do not execute):**
+`PYTHONPATH=. LANGFUSE_ENABLED=false WEAVIATE_URL=... WEAVIATE_API_KEY=... WEAVIATE_COLLECTION=SatcomNgpExp800160 WEAVIATE_EMBEDDING_MODEL=Snowflake/snowflake-arctic-embed-l-v2.0 WEAVIATE_INIT_TIMEOUT_S=10 WEAVIATE_QUERY_TIMEOUT_S=30 python -m evaluation.weaviate_eval --run-baseline --run-weaviate --k 5 --generation-mode extractive`
+---
+
+### Controlled Weaviate connection/retrieval evaluation (2026-11-26, Task 32, blocked)
+
+**Status/constraints.** No live evaluation run completed. No ingestion/deletion/recreation/rename/modification of collection. No chunking/embedding/alpha/dataset/generation/retrieval architecture changes. No production Chroma changes. No retries/fallback added. No dependency changes. No stage/commit/push/deploy. Existing local files/results/uncommitted work preserved. No credentials exposed.
+
+**Pre-flight (performed):**
+- Repo/branch: `main`; worktree dirty with pre-existing uncommitted/untracked work (preserved).
+- `weaviate-client==4.24.1` confirmed.
+- `.env` contains WEAVIATE_URL/WEAVIATE_API_KEY keys (values not inspected/printed); env presence confirmed after safe load.
+- Lightweight Weaviate Cloud connection/collection metadata check attempted with `weaviate.connect_to_weaviate_cloud` default client settings (no Task 31 timeout override applied in this pre-flight script). Result: **failed before collection/count verification**.
+
+**Pre-flight error (exact type):** `WeaviateGRPCUnavailableError` during gRPC health check; gRPC call failed with `DEADLINE_EXCEEDED - Deadline Exceeded` (Weaviate v1.40.5; gRPC 443 health check unavailable). Collection existence and object count could not be confirmed due to connection failure.
+
+**Blocker:** Task 32 requires confirming `SatcomNgpExp800160` exists and contains exactly 61 objects before evaluation; if missing/count differs, stop. Connection failure prevented count verification. Per instructions, stopped and reported; no unrequested workaround applied, no evaluation executed.
+
+**Safety confirmation:** No collection modified/repaired/recreated; no eval run; no secrets exposed.
+
+---
+
+### Controlled Weaviate retrieval strategy experiment (2026-11-26, Task 34, isolated/no-production-change)
+
+**Status/constraints.** Isolated experiment only. No collection creation/ingestion/deletion/recreation/modification. Existing collection `SatcomNgpExp800160` reused (61 objects verified in pre-flight). No production Chroma retriever/default changes. No embedding model/chunking/dataset/generation-model changes. No dependency upgrades. No retries/fallback behavior added. No concurrent runs. No stage/commit/push/deploy. No credentials exposed. Existing uncommitted/untracked work preserved.
+
+**Pre-flight (app config/connection path, init_timeout_s=10, query_timeout_s=30):** `weaviate-client==4.24.1`; connection ready=True; collection `SatcomNgpExp800160` exists; object count=61; client closed cleanly. (Task 32 pre-flight with default connection settings failed gRPC DEADLINE_EXCEEDED; this pre-flight used Task 31 timeout config - insufficient evidence to attribute improvement solely to timeout.)
+
+**API/semantics (weaviate-client 4.24.1):** `collection.query.near_text(query, limit, return_metadata)` used for **dense-only** (server-side text2vec-weaviate vectorizer; avoids local embedding model). `collection.query.bm25(query, limit, return_metadata)` for **BM25-only**. `collection.query.hybrid(query, limit, alpha, return_metadata)` for **hybrid**. alpha=0/1 not used as pure-mode substitutes; explicit methods preferred. Metadata requested: score+distance where supported; BM25 may return score, near_text distance, hybrid score/distance depending on server response.
+
+**Implementation (experimental, backward-compatible):** `WeaviateRetriever.retrieve(..., search_mode, alpha)` supports dense/bm25/hybrid; `WeaviateRetrieverConfig` gained `search_mode`/`alpha` defaults (hybrid, 0.5). `AppConfig` gained `weaviate_alpha`/`weaviate_search_mode` defaults (0.5/hybrid). `RAGService` parses/passes experimental weaviate mode/alpha; defaults unchanged. `QueryResponse.retrieval_mode` broadened to `str` to allow experimental labels (e.g., `weaviate_dense`, `weaviate_hybrid_a0.25`). `evaluation/weaviate_eval.py` supports `--weaviate-modes` and per-run incremental save; stops remaining runs on gRPC/connection failure and preserves partial results.
+
+**Tests:** `pytest tests/test_weaviate_retriever.py -q` => 37 passed. `pytest tests/test_api.py -q` => 17 passed, 4 warnings (existing Pydantic/Chroma deprecation warnings). Added deterministic tests for dense/bm25/hybrid alpha 0.25/0.5/0.75, invalid mode/alpha, default preservation, and Chroma/service behavior; updated two mock retrievers for new retrieve signature.
+
+**Run:** `evaluation/results/weaviate_experiment/20261126T114455Z/` (k=5, extractive, 15-question CI dataset, same collection/model, LANGFUSE_ENABLED=false, WEAVIATE_INIT_TIMEOUT_S=10, WEAVIATE_QUERY_TIMEOUT_S=30). Sequential runs: baseline, dense, bm25, hybrid 0.25, hybrid 0.5 completed (failure_rate 0). `weaviate_hybrid_a0.75` failed with gRPC/connection `DEADLINE_EXCEEDED` for all 15 questions; script stopped early and preserved partial result.
+
+| Run | Recall@5 | Prec@5 | MRR@5 | EvCov | SuppAns | CitSup | AbstAcc | InvCit | p50ms | p95ms | Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| baseline_hybrid_rrf | 0.9236 | 0.3333 | 0.8472 | 0.9236 | 0.8333 | 0.5484 | 1.0000 | 0 | 24.12 | 3612.31 | 0.0 |
+| weaviate_dense | 0.9444 | 0.3167 | 0.7639 | 0.9444 | 0.6667 | 0.5000 | 1.0000 | 0 | 397.58 | 2052.20 | 0.0 |
+| weaviate_bm25 | 0.9236 | 0.3000 | 0.7222 | 0.9236 | 0.7500 | 0.5000 | 0.6667 | 0 | 299.19 | 1098.04 | 0.0 |
+| weaviate_hybrid_a0.25 | 0.9236 | 0.3167 | 0.7778 | 0.9236 | 0.7500 | 0.5000 | 0.6667 | 0 | 386.52 | 1159.86 | 0.0 |
+| weaviate_hybrid (a0.5) | 0.9236 | 0.3167 | 0.7778 | 0.9236 | 0.6667 | 0.4545 | 0.6667 | 0 | 390.67 | 1233.25 | 0.0 |
+| weaviate_hybrid_a0.75 | 0.0000* | 0.0000* | 0.0000* | 0.0000* | 0.0000* | null* | 0.0000* | 0 | 40.95 | 130550.34 | 1.0 |
+
+`*` hybrid_a0.75 is infrastructure-failed (gRPC DEADLINE_EXCEEDED on all 15 questions); exclude from retrieval-quality comparison.
+
+**Question-level findings (successful runs):** Q01 retrieved in all modes (dense lower MRR). Q03 good in all. Q07 retrieved (R@5/MRR 1.0) in all Weaviate modes but answer support/citation degraded vs baseline (generation/citation-selection issue, not recall). Q08 weak retrieval/evidence in all modes including baseline. Q12: dense best (ans/cit supported), bm25/hybrid0.25 partial, hybrid0.5 answer unsupported despite evidence. Q14: bm25/hybrid0.25 stable; dense/hybrid0.5 show citation/answer support degradation despite evidence retrieval. UNANS-11: dense abstained correctly (abstention 1.0 overall for dense), bm25 and hybrids incorrectly answered (abstention regression).
+
+**Interpretation:** Dense-only had best recall/evidence coverage and fixed UNANS-11 abstention, but lower MRR and mixed answer/citation support on Q07/Q14. BM25/hybrid 0.25 improved supported-answer rate over dense/hybrid 0.5 but regressed UNANS-11 abstention. Hybrid 0.25 and 0.5 had same recall/MRR but 0.25 had better supported/citation rates in this run. No single mode dominates on all quality axes; retrieval ranking/abstention behavior differs by mode and answer/citation selection remains a weakness when evidence is present. Hybrid 0.75 not assessable due to infrastructure failure.
+
+**Limitations:** single run per mode; hybrid 0.75 inconclusive due to gRPC failures; extractive generation and citation selection may confound supported/citation metrics; abstention guard is score/lexical-heuristic based and sensitive to retrieval score distributions; no live repeat performed.
+
+---
+
+### Weaviate score distribution and abstention diagnosis (2026-11-26, Task 35, read-only)
+
+**Status/constraints.** Read-only diagnostic. No live Weaviate calls, no new evaluation, no retrieval/threshold/code changes, no collection modification, no Chroma/production default changes, no dependency upgrades, no stage/commit/push/deploy. Analyzed `evaluation/results/weaviate_experiment/20261126T114455Z/`.
+
+**Score semantics (observed in artifacts, weaviate-client 4.24.1 / Weaviate v4 Cloud):** `dense` (near_text) populated `distance` (smaller=closer) and `score=0.0` in metadata; `bm25` populated `score` (BM25F score, larger=better), `distance=None`; `hybrid` populated `score` (fusion score, larger=better), `distance=None`. Baseline Chroma hybrid RRF populated `rrf_score`, `bm25_score`, `dense_distance`, and hit `distance`. Scores are **not directly comparable** across modes.
+
+**UNANS-11 abstention trace (confirmed):** Baseline abstained: `best_distance 1.3031 > hard limit 1.3`. Dense abstained: `best_distance 0.7370` (distance present) but `lexical support 0.25 < 0.5`. BM25/hybrid_a0.25/hybrid_a0.5 answered incorrectly: `best_distance None` because no hit distance populated; pipeline distance-based abstention skipped; `token_support=0.5`, `selected_lexical_support=0.5`, answerability guard `selected_lexical_support < 0.5` was false (boundary equality), so response answered. Root cause: Chroma-distance-based hard/soft abstention and selected-lexical guard threshold were calibrated for Chroma distance semantics; Weaviate BM25/hybrid provide score-not-distance, so distance guard does not fire. This is a score-semantics/threshold-portability issue, not a single-question threshold-tuning conclusion.
+
+**Q07/Q12/Q14 (confirmed from artifacts):** Expected evidence was retrieved (Recall@5=1.0, evidence coverage 1.0 in all successful Weaviate modes). Failures were post-retrieval: citation/selection included non-evidence chunks alongside evidence chunks (e.g., Q07 added `page_1::chunk_2`; Q12 hybrid 0.5 added `page_5::chunk_2`, `page_14::chunk_0`; Q14 added `page_13::chunk_0`/`page_12::chunk_2` in some modes), reducing answer/citation support. Retrieval ranking was adequate; generation/citation selection is the primary weakness for these cases.
+
+**Q08 (confirmed):** Partial evidence missing across all modes including baseline (EvCov 0.3333). Only EXP001-Q08-E01 (page 5, clause 3.4.1) consistently covered; E02/E03 (clauses 3.4.2/3.4.3, page 6) not satisfied by top-5 retrieved/cited chunks. Indicates retrieval gap for multi-evidence question, not only Weaviate.
+
+**Recommended next isolated experiment (no production change):** (1) Instrument/normalize Weaviate abstention inputs: for BM25/hybrid, expose/use comparable distance-or-score calibration signal (or disable distance-only hard gate when distance absent and rely on calibrated score+lexical guard) in an experimental branch only; evaluate on full 15-question set plus additional held-out unanswerables before any threshold change. (2) Separately test citation-selection tightening for already-retrieved-evidence cases (Q07/Q12/Q14) without changing retrieval.
+
+**Limitations:** Single run; artifacts lack full chunk text; hybrid 0.75 quality inconclusive; no live re-check.
+
+---
+
+### Weaviate-specific abstention policy separation (2026-11-26, Task 36, experimental/no-calibration)
+
+**Status/constraints.** Experimental, opt-in only. No live Weaviate calls, no new evaluation runs, no collection changes, no ChromaDB changes, no embedding/chunking/citation-selection changes, no dependency upgrades, no stage/commit/push/deploy. Existing uncommitted/untracked work preserved.
+
+**Confirmed root cause (from Task 35 artifacts/code):** `pipeline.AbstentionPolicy` hard/soft gates depend on `best_distance = min(hit.distance where distance is not None)`. Weaviate BM25/hybrid results provide score (higher=better) but no distance in observed artifacts, so `best_distance=None` and distance gates are skipped. Pipeline lexical gate and service answerability guard (`selected_lexical_support < 0.5`) allowed UNANS-11 to pass at boundary (token_support=0.5, selected_lexical_support=0.5). Dense returns distance and abstained via lexical support.
+
+**Implementation (opt-in, default off):**
+- `src/rag_core/pipeline.py`: `AbstentionPolicy` extended with `missing_distance_behavior` (`skip|reject|score`, default `skip`) and `min_retrieval_score` (default None). Default `skip` preserves existing behavior exactly. `score` mode requires explicit calibrated threshold and uses best available retrieval score (higher=better) only when distance is missing; `reject` explicitly abstains on missing distance. Added `_best_retrieval_score` helper (checks rerank/rrf/weaviate_score/_weaviate_score/score). Distance-present paths unchanged.
+- `src/rag_app/config.py`: added `weaviate_abstention_experimental` (default False), `weaviate_abstention_missing_distance_behavior` (default skip), `weaviate_abstention_min_retrieval_score` (default None).
+- `src/rag_app/service.py`: applies experimental policy only when `backend==weaviate` and `weaviate_abstention_experimental` is True; Chroma path unchanged.
+- `tests/test_weaviate_retriever.py`: added deterministic tests for default policy unchanged, experimental flag default off, Chroma unaffected, dense distance behavior, BM25/hybrid missing distance default/experimental reject/score/boundary/missing-score, and answerable not rejected merely due to missing distance.
+
+**Calibration:** Not justified with current evidence. CI dataset has only 3 unanswerables (UNANS-01/03/11) and 12 answerables; Task 34 shows hybrid scores overlap answerable/unanswerable (UNANS-11 score 0.867-0.934 within answerable range), while BM25 shows separation in this tiny sample but insufficient for reliable threshold. No threshold tuned against UNANS-11 alone. Any score threshold requires a separately documented held-out unanswerable set with trustworthy labels and per-mode score distributions.
+
+**Tests:** `pytest tests/test_weaviate_retriever.py -q` => 47 passed. `pytest tests/test_api.py -q` => 17 passed, 4 warnings (existing).
+
+**Remaining risks/limitations:** No calibrated Weaviate score threshold; experimental score mode assumes higher=better score semantics and must not be used across incomparable modes without calibration; service guard boundary (`< 0.5`) remains unchanged; no live eval performed.
+
+---
+
+### Held-out unanswerable evaluation dataset design (2026-11-26, Task 37, draft/review-only)
+
+**Status/constraints.** Design/documentation only. No retrieval/abstention logic or threshold changes. No experimental Weaviate abstention enabled. No live Weaviate calls/evaluations. No CI dataset changes. No Chroma/production collection modification. No dependency upgrades. No stage/commit/push/deploy. Existing uncommitted/untracked work preserved.
+
+**Inspected:** `evaluation/ci_golden_dataset.json`, `evaluation/ci_eval.py`, `src/rag_core/pipeline.py`, `src/rag_app/service.py`, `evaluation/weaviate_eval.py`, Task 34/35 artifacts, `docs/ENGINEERING_LOG.md`, local SATCOM NGP text extraction (`data/satcom-ngp.pdf`, 15 pages).
+
+**Deliverables (draft, not validated ground truth):**
+- `evaluation/drafts/heldout_unanswerable_candidates_draft.json` — 12 candidate questions (HOLDOUT-U01..U12) across categories: specific value not provided, specific parameter not provided, unsupported detail, outside scope, misleading premise, combined supported+unsupported, unsupported comparison, future/external info. Each candidate includes proposed label, reason, evidence inspected, partial-answerability note, and human-review risk.
+- `evaluation/drafts/heldout_unanswerable_review_report.md` — methodology, label semantics, candidate table, leakage prevention, feasibility/human-review requirements, recommendation.
+
+**Leakage prevention:** Proposed split — dev/calibration (U01,U03,U05,U07,U09,U11), held-out validation (U02,U04,U06,U08,U10,U12), existing CI regression (`ci_golden_dataset.json`) unchanged. No question reused across splits; no threshold tuning on held-out validation; UNANS-11 remains in CI only.
+
+**Readiness:** Not ready for calibration. All candidates require human review against original PDF (including tables/annexes), partial-answer scoring policy decisions (U07/U08), and validated labeling with reviewer metadata/evidence before any calibration or held-out reporting.
+
+---
+
+### Production migration to Weaviate for Render Free 512 MB (2026-11-26, Task 38, prepared/no-deploy)
+
+**Status/constraints.** Prepared and validated locally/preflight only. No deployment/push/stage/commit. No collection creation/deletion/reset/re-ingestion. No CI golden dataset changes. No threshold/experimental abstention changes (Task 36 remains default off). No dependency upgrades beyond adding `requirements.weaviate.runtime.txt` for Weaviate runtime image. No secrets exposed. Existing uncommitted/untracked work preserved. Chroma data and historical evaluation results preserved.
+
+**Architecture decision (recorded):** "Chroma produced better results in some offline quality metrics. Weaviate was selected for production because the available Render Free backend has a 512 MB memory limit, and moving vector storage and hosted embedding outside the application is necessary to pursue deployment within that constraint. Retrieval quality is an acknowledged trade-off to be improved through targeted post-deployment experiments."
+
+**Production target:** FastAPI on Render Free (512 MB) + Weaviate Cloud (`SatcomNgpExp800160`, `Snowflake/snowflake-arctic-embed-l-v2.0`, init 10s/query 30s) + Gemini generation (existing config) + Vercel React/Vite frontend. Chroma remains non-default/offline comparison path; local `chroma_db_production/` and historical eval results untouched.
+
+**Changes:**
+- `render.yaml`: switched to Weaviate production path — build `requirements.weaviate.runtime.txt`; `RAG_RETRIEVER_BACKEND=weaviate`; Weaviate env vars/secrets; removed torch/Chroma runtime assumptions.
+- `Dockerfile`: lightweight Weaviate runtime image (no torch/sentence-transformers/chromadb/rank_bm25); `RAG_RETRIEVER_BACKEND=weaviate` default in container env.
+- `requirements.weaviate.runtime.txt`: minimal runtime for Weaviate production path.
+- `frontend/src/App.jsx`: localhost fallback only in `import.meta.env.DEV`; production build requires `VITE_API_BASE_URL`; health/query guarded with clear error.
+- `frontend/.env.example`: added VITE_API_BASE_URL example.
+- `docs/DEPLOYMENT.md`: updated architecture decision, Render checklist, env vars, deployment steps, preflight, constraints.
+- `docs/RUN_LOCAL.md`: clarified local default vs Render production selection.
+
+**Preflight (read-only, no secrets, Task 38):** Weaviate ready=true, collection exists, object_count=61, smoke retrieve returned 1 hit with text. No collection modification.
+
+**Tests:** `pytest tests/test_weaviate_retriever.py -q` => 47 passed. `pytest tests/test_api.py -q` => 17 passed, 4 warnings (existing Pydantic/Chroma deprecation). Existing import-isolation tests in weaviate suite pass (Weaviate backend path avoids heavy local stack in subprocess checks; numpy may be imported by third-party deps depending on env as previously documented).
+
+**Remaining memory/runtime risks:** 512 MB fit not proven without actual Render deployment measurement. `requirements.weaviate.runtime.txt` still includes langfuse/google-generativeai/pypdf and transitive deps; import-audit in production image needed. /ingest endpoint remains Chroma-oriented (fail-closed by default) - calling it in Weaviate production would be inappropriate/heavy. Render cold start, Weaviate gRPC/REST latency, and OOM must be validated after deploy.
+
+**Blockers to deployment:** explicit deploy approval required; Render/Vercel account access and secrets/env setup required; actual Vercel origin needed for RAG_CORS_ORIGINS; public smoke tests not run.
+
+---
+
+### Final read-only production deployment readiness audit (2026-11-26, Task 39, docs-only/no-code-changes)
+
+**Audit scope:** Read-only review of Task 38 Weaviate production migration before publish/deploy. No application code/config/runtime file changes. No live deployment. No full evaluation suite. No collection modification. No dependency upgrades. No secrets exposed.
+
+**Files inspected (primary):** `render.yaml`, `Dockerfile`, `requirements.weaviate.runtime.txt`, `frontend/src/App.jsx`, `frontend/.env.example`, `docs/DEPLOYMENT.md`, `docs/RUN_LOCAL.md`, `docs/ENGINEERING_LOG.md`, `src/rag_app/config.py`, `src/rag_app/service.py`, `src/rag_core/weaviate_retriever.py`, `src/rag_core/pipeline.py`, `backend/main.py`, `src/rag_app/schemas.py`, `.env.example`, `docker-compose.yml`, git status/diff.
+
+**Task 38 change verification (git diff/status):** Task 38 touched `render.yaml`, `Dockerfile`, `docs/DEPLOYMENT.md`, `docs/ENGINEERING_LOG.md`, `docs/RUN_LOCAL.md`, `frontend/src/App.jsx` and added untracked `frontend/.env.example`, `requirements.weaviate.runtime.txt`. Worktree also contains many pre-existing dirty/untracked files from prior tasks; they were not attributed to Task 38.
+
+**Configuration verification results (confirmed by code inspection):**
+1. `RAG_RETRIEVER_BACKEND=weaviate` selects Weaviate path in `AppConfig.from_env`/`RAGService._retrieve`/`query`; Weaviate query path does not initialize local Chroma/BM25/SentenceTransformer.
+2. Missing Weaviate config fails clearly (`ValueError` in `service.weaviate_retriever` for missing URL/API key/collection; `WeaviateConfigError` in config helper paths).
+3. No silent fallback to Chroma when Weaviate selected; `_retrieve` returns `self.weaviate_retriever.retrieve(...)`.
+4. `WEAVIATE_URL`/`WEAVIATE_API_KEY` read via env in config/retriever (also supports RAG_* aliases).
+5. `render.yaml` sets `WEAVIATE_COLLECTION=SatcomNgpExp800160`; config default matches.
+6. Hosted embedding model set to `Snowflake/snowflake-arctic-embed-l-v2.0` in render/config.
+7. `WEAVIATE_INIT_TIMEOUT_S`/`WEAVIATE_QUERY_TIMEOUT_S` wired through AppConfig -> service -> WeaviateRetrieverConfig -> `AdditionalConfig(timeout=Timeout(init=..., query=...))`.
+8. Gemini config: `RAG_GEMINI_MODEL`, `RAG_GEMINI_TEMPERATURE`, `RAG_GEMINI_MAX_OUTPUT_TOKENS`, `RAG_ALLOW_GEMINI`, API keys via `GOOGLE_API_KEY`/`GEMINI_API_KEY` (used by GeminiGenerator); preserved.
+9. **Generation-mode finding:** `RAG_GENERATION_MODE=extractive` sets default request mode to extractive. `RAG_ALLOW_GEMINI=true` only permits Gemini when a request explicitly asks for `mode=gemini`; it does not make extractive requests call Gemini. Therefore the reported combination is compatible/config-consistent, but Gemini will not be used unless requested per query. This must be reflected in deployment/operator expectations.
+10. CORS: `_parse_cors_origins` defaults to local dev origins when unset/empty; explicit `*` only when configured; credentials disabled for wildcard. `render.yaml` includes `RAG_CORS_ORIGINS` placeholder to be replaced with actual Vercel origin.
+11. `RAG_INGEST_TOKEN` unset by default; `/ingest` fail-closed (403) unless token configured and matched. In Weaviate runtime image, /ingest would be inappropriate/heavy (Chroma-oriented) — keep disabled.
+12. `/healthz` lightweight. `/health` uses `RAGService.health()` which is lightweight and does not trigger SentenceTransformer/Chroma init/recovery/embedding generation; Weaviate backend reports local index unknown/not initialized.
+
+**Runtime dependency/import findings:**
+- `requirements.weaviate.runtime.txt` contains fastapi, uvicorn, pydantic, python-dotenv, httpx, weaviate-client, google-generativeai, langfuse, pypdf; no torch/sentence-transformers/transformers/chromadb/rank_bm25 package entries (comment text mentions them, but packages not required).
+- Import-isolation tests passed in existing suite (subprocess checks for Weaviate backend path). Numpy may still be imported by third-party deps depending on env.
+- **Not measured:** actual Render 512 MB RSS, cold-start memory peak, container image size in Render build environment.
+
+**Deployment configuration findings:** Render build/start commands match FastAPI app (`uvicorn backend.main:app --host 0.0.0.0 --port $PORT`, `/healthz`). Dockerfile uses same lightweight runtime. Frontend has production guard requiring `VITE_API_BASE_URL` at build time; `.env.example` present. `docker-compose.yml` is legacy/dev-oriented and may not reflect Weaviate production split; treat as non-canonical for Render deployment.
+
+**Confirmed blockers:** no explicit deploy approval; no Render/Vercel credentials/access; actual Vercel production origin unknown for CORS; 512 MB fit unproven on Render; Weaviate gRPC reliability under Render networking unproven.
+
+**Non-blocking risks / post-deploy quality:** Weaviate retrieval-quality trade-offs vs Chroma (Task 34); UNANS-11 abstention regression in BM25/hybrid (Tasks 34/35); Q07/Q12/Q14 citation-selection issues; Q08 multi-evidence coverage gap; Task 36 experimental abstention disabled and uncalibrated; cold starts/spin-down; Gemini availability/quota when requested.
+
+**Exact outstanding owner decisions:** approve deploy; provide Render/Vercel access; provide/confirm Vercel origin for CORS; confirm whether Gemini should be used by default in production (currently extractive default) or remain optional; confirm if /ingest must remain disabled.
+
+**Test commands/results:**
+- `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py tests/test_api.py -q` -> **63 passed, 1 failed, 4 warnings**. Failure: `tests/test_weaviate_retriever.py::test_missing_weaviate_credentials_fail_clearly` due to ambient `.env`/dotenv credentials in workspace; passes when Weaviate env vars cleared (`1 passed`). Treated as environment-sensitive test, not a Task 38/39 regression. Warnings: existing Pydantic/Chroma deprecation.
+- Static check: `requirements.weaviate.runtime.txt` contains no heavy runtime package entries (torch/sentence-transformers/transformers/chromadb/rank_bm25).
+
+**Explicit confirmation:** No application code was modified. No Python/JS/Dockerfile/requirements/render.yaml/app config files modified by Task 39. Documentation updates only (`docs/ENGINEERING_LOG.md`, `docs/DEPLOYMENT.md`). No git add/stage/commit/push/deploy performed.
+
+---
+
+### Exact Weaviate production publish manifest (2026-11-26, Task 40, manifest-only/no-stage-no-deploy)
+
+**Status/constraints.** Manifest preparation only. No app code/config changes. No staging/commit/push/deploy. No git add ., no reset/checkout/clean/stash/revert. No secret exposure. Existing dirty/untracked work preserved.
+
+**Repo state:** branch `main`, HEAD `e478a1b` ("Harden deployment: protect ingest, expose boost flag, lock down CORS"), origin `https://github.com/Sivasindhuja/RAG` (fetch/push). 207 tracked changes + 28 untracked files at audit time; no cached staged changes.
+
+**Publish-dependency trace (Weaviate production path):** `backend/main.py` -> `src/rag_app/{config,service,schemas,metrics,observability,langfuse_tracing,prompts,__init__}` -> `src/rag_core/{retrieval_types,weaviate_retriever,pipeline,generation,index,retrieval,chunker,document,evaluation,__init__}` plus runtime/deploy files `requirements.weaviate.runtime.txt`, `render.yaml`, `Dockerfile`, frontend `frontend/src/App.jsx`, `frontend/.env.example`, and validation tests/fixtures. Unchanged tracked files already at HEAD are not in publish diff.
+
+**Proposed exact publish allowlist (dirty/untracked files only; review before staging individually):**
+- INCLUDE: `.dockerignore`, `.gitignore`, `Dockerfile`, `docker-compose.yml`, `frontend/src/App.jsx`, `render.yaml`, `src/rag_app/config.py`, `src/rag_app/schemas.py`, `src/rag_app/service.py`, `src/rag_core/__init__.py`, `src/rag_core/evaluation.py`, `src/rag_core/index.py`, `src/rag_core/pipeline.py`, `src/rag_core/retrieval.py`, `frontend/.env.example`, `requirements.weaviate.runtime.txt`, `src/rag_core/retrieval_types.py`, `src/rag_core/weaviate_retriever.py`.
+- INCLUDE-DOCS: `README.md`, `docs/DEPLOYMENT.md`, `docs/ENGINEERING_LOG.md`, `docs/RUN_LOCAL.md`.
+- INCLUDE-TEST: `tests/test_api.py`, `tests/test_citation_metadata.py`, `tests/test_fixed_chunker.py`, `tests/test_rag_evaluation.py`, `tests/fixtures/exp001/*`, `tests/test_weaviate_retriever.py`.
+
+**Explicit exclusions/reviews:** `.env`/secrets/local data EXCLUDE-LOCAL; `.agents/` EXCLUDE-LOCAL; `evaluation/drafts/` REVIEW (Task 37 drafts); `evaluation/weaviate_eval.py`, `scripts/weaviate_ingest.py`, `requirements.weaviate.txt` REVIEW (useful ops/experiment, not minimal runtime); `requirements.weaviate.runtime.proposed.txt` EXCLUDE-HISTORICAL; all pre-existing deletions/dirty docs/tests/src unrelated to Weaviate runtime REVIEW; `todo.txt` deletion preserved.
+
+**Validation:** `pytest tests/test_weaviate_retriever.py tests/test_api.py -q` => 63 passed, 1 failed, 4 warnings; failure `test_missing_weaviate_credentials_fail_clearly` is environment-sensitive with workspace `.env` present (passes when Weaviate env vars cleared). No ingestion/deletion/live eval/Weaviate mutation performed.
+
+**Blockers/owner actions:** explicit approval to stage exact allowlist; confirm Vercel origin for `RAG_CORS_ORIGINS`; confirm Render/Vercel credentials/access; confirm Gemini default-mode expectation; confirm `/ingest` remains disabled; confirm handling of REVIEW files/deletions before publish.
+
+**Confirmation:** No files staged, committed, pushed, or deployed. No app code/config modified by Task 40.
+
+
+---
+
+### Task 41 - Publish manifest resolution (2026-11-26, manifest-only/no-stage-no-deploy)
+
+**Status/constraints.** Audit/resolution only. No app code/config behavior changes. No staging/commit/push/deploy. No git add ., no reset/checkout/clean/stash/revert. No secret exposure. All existing work preserved.
+
+**Inventory:** 194 tracked changes + 28 untracked files (207+28). No staged changes. HEAD `e478a1b` on `main`, origin `https://github.com/Sivasindhuja/RAG`.
+
+**Resolved allowlist (smallest complete Weaviate production publish; dirty/untracked only; unchanged HEAD runtime files not listed):**
+- **INCLUDE (runtime/deploy/config):** `Dockerfile`, `render.yaml`, `requirements.weaviate.runtime.txt`, `frontend/src/App.jsx`, `frontend/.env.example`, `src/rag_app/config.py`, `src/rag_app/schemas.py`, `src/rag_app/service.py`, `src/rag_core/__init__.py`, `src/rag_core/retrieval_types.py`, `src/rag_core/weaviate_retriever.py`, `src/rag_core/pipeline.py`, `src/rag_core/index.py`, `src/rag_core/retrieval.py`, `src/rag_core/evaluation.py`.
+- **INCLUDE (reviewed hygiene/docs):** `.dockerignore`, `.gitignore`, `.env.example` (template only; no secrets), `docker-compose.yml` (dev parity; thread env vars only), `README.md`, `docs/DEPLOYMENT.md`, `docs/RUN_LOCAL.md`, `docs/ENGINEERING_LOG.md`.
+- **INCLUDE-TEST:** `tests/test_api.py`, `tests/test_citation_metadata.py`, `tests/test_fixed_chunker.py`, `tests/test_rag_evaluation.py`, `tests/test_weaviate_retriever.py`, `tests/fixtures/exp001/chunks.json`, `tests/fixtures/exp001/exp001_ground_truth.json`, `tests/fixtures/exp001/exp001_questions.csv`.
+
+**Resolved exclusions (do not stage in this publish):** `.agents/**`, `evaluation/drafts/*`, `evaluation/weaviate_eval.py`, `scripts/weaviate_ingest.py`, `requirements.weaviate.txt`, `requirements.weaviate.runtime.proposed.txt`, `todo.txt` deletion, all `experiments/results/**` and historical experiment file deletions, `chroma_db*` local data, caches/build outputs, pre-existing legacy deletions under `src/chunking`, `src/config`, `src/generation/models.py`, `src/memory`, `src/metrics`, `src/observability`, `src/restart.py`, `src/retrieval/*`, `api/index.py`, `.github/workflows/rag_eval.yml`, `tests/eval_pipeline.py`, `tests/golden_dataset.csv`, `tests/test_exp001.py`, and dirty docs not required for production (`docs/BACKLOG.md`, `CHUNKING_STRATEGY.md`, `CI_EVALUATION.md`, `EXP-*`, `M4_*`, `PRODUCTION_SLICE.md`, `PROJECT_BRIEF.md`) and `evaluation/ci_eval.py` modification - keep local, owner review for separate cleanup/CI PR.
+
+**Test diagnosis:** `test_missing_weaviate_credentials_fail_clearly` fails when workspace `.env` provides `WEAVIATE_URL/WEAVIATE_API_KEY/WEAVIATE_COLLECTION` because `WeaviateRetrieverConfig.from_env()` reads `os.getenv` and test does not isolate env. Minimal fix (not implemented): add `monkeypatch` and `monkeypatch.delenv`/`setenv(..., "")` for `WEAVIATE_URL`, `WEAVIATE_API_KEY`, `WEAVIATE_COLLECTION`, `RAG_WEAVIATE_URL`, `RAG_WEAVIATE_API_KEY`, `RAG_WEAVIATE_COLLECTION` before calling `from_env()`. No secrets exposed.
+
+**Blockers unchanged:** owner approval for exact staging; Vercel origin for `RAG_CORS_ORIGINS`; Render/Vercel secrets/access; Gemini default-mode confirmation; `/ingest` disabled; Render Free 512MB unverified; Weaviate gRPC/quality trade-offs known.
+
+
+---
+
+### Task 42 - Weaviate credential test isolation and manifest refinement (2026-11-26, no-stage/no-deploy)
+
+**Status/constraints.** Targeted validation only. No staging/commit/push/deploy. No `git add .`/`-A`, no reset/clean/stash/revert. No secrets exposed. No production behavior changes.
+
+**Test isolation:** `tests/test_weaviate_retriever.py::test_missing_weaviate_credentials_fail_clearly` now uses `monkeypatch` to clear `WEAVIATE_URL`, `WEAVIATE_API_KEY`, `WEAVIATE_COLLECTION`, `RAG_WEAVIATE_URL`, `RAG_WEAVIATE_API_KEY`, `RAG_WEAVIATE_COLLECTION` before calling `WeaviateRetrieverConfig.from_env()`. Assertion unchanged.
+
+**Validation:** `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py tests/test_api.py -q` => **64 passed, 0 failed, 0 skipped, 4 warnings** (62.71s). Warnings unchanged: PydanticDeprecatedSince211 from `chromadb/types.py` in real-index smoke test.
+
+**Manifest refinement:** Removed `docker-compose.yml` from minimal production publish allowlist (local dev convenience; no concrete Render/Vercel production dependency). Inspected diffs: `src/rag_core/index.py` (lazy chromadb + retrieval_types; keep), `src/rag_core/retrieval.py` (lazy rank_bm25 + retrieval_types; keep), `src/rag_core/evaluation.py` (retrieval_types import; keep), `.gitignore` (hygiene; keep), `.dockerignore` (deployment build-context hygiene; keep).
+
+**Refined allowlist (31 files):** `.dockerignore`, `.gitignore`, `.env.example`, `Dockerfile`, `render.yaml`, `requirements.weaviate.runtime.txt`, `frontend/src/App.jsx`, `frontend/.env.example`, `src/rag_app/config.py`, `src/rag_app/schemas.py`, `src/rag_app/service.py`, `src/rag_core/__init__.py`, `src/rag_core/retrieval_types.py`, `src/rag_core/weaviate_retriever.py`, `src/rag_core/pipeline.py`, `src/rag_core/index.py`, `src/rag_core/retrieval.py`, `src/rag_core/evaluation.py`, `tests/test_api.py`, `tests/test_citation_metadata.py`, `tests/test_fixed_chunker.py`, `tests/test_rag_evaluation.py`, `tests/test_weaviate_retriever.py`, `tests/fixtures/exp001/*` (3 files), `README.md`, `docs/DEPLOYMENT.md`, `docs/RUN_LOCAL.md`, `docs/ENGINEERING_LOG.md`.
+
+**Blockers unchanged:** owner approval for exact staging; actual Vercel origin for `RAG_CORS_ORIGINS`; Render/Vercel access/secrets; Gemini default-mode confirmation; `RAG_INGEST_TOKEN` unset; Render Free 512MB fit and Weaviate gRPC reliability unverified until smoke/memory evidence.
+
+
+---
+
+### Task 43 - Gemini default grounded answer generation (2026-11-26, no-stage/no-deploy)
+
+**Status/constraints.** Local implementation only. No staging/commit/push/deploy. No `git add .`/`-A`, no reset/clean/stash/revert. No secrets exposed. No Weaviate retrieval ranking/chunking/threshold changes.
+
+**Request flow (after change):** API request -> `QueryRequest.mode` defaults to `gemini` (or explicit `extractive`/`gemini`) -> `RAGService.query` defaults to config `RAG_GENERATION_MODE` (`gemini`) -> retrieve evidence via configured backend (Weaviate/Chroma) -> select/grounded evidence and abstention guard in `GroundedPipeline` -> if insufficient evidence, abstain -> if mode gemini, `GeminiGenerator.generate` receives question + selected statements/citations only; app validates claim source IDs and resolves citations to retrieved chunks -> on Gemini disabled/unavailable/error, explicit grounded extractive fallback (`fallback_to_extractive=true`, status/errors recorded), never ungrounded/fabricated answer.
+
+**Files changed:** `src/rag_app/config.py`, `src/rag_app/schemas.py`, `src/rag_app/service.py`, `tests/test_api.py`, `.env.example`, `render.yaml`, `README.md`, `docs/DEPLOYMENT.md`, `docs/ENGINEERING_LOG.md`.
+
+**Validation:** `PYTHONPATH=. python -m pytest tests/test_weaviate_retriever.py tests/test_api.py tests/test_citation_metadata.py tests/test_rag_evaluation.py -q` => **86 passed, 0 failed, 0 skipped, 31 warnings** (28.19s). Existing chromadb Pydantic deprecation warnings unchanged. During first run, one new Task 43 test was corrected for lexical-support guard (no assertion weakening; test data adjusted to be valid).
+
+**Remaining limitations/blockers:** real Gemini API key/quota/model not exercised in tests (mocked); Render/Vercel not deployed; Render Free 512MB fit and Weaviate gRPC reliability unverified; owner must set Vercel origin, secrets/access, and confirm deploy.
+
+
+---
+
+### Task 44 - Final implementation review and publish manifest reconciliation (2026-11-26, no-stage/no-deploy)
+
+**Status/constraints.** Review/reconciliation only. No app code behavior changes. No staging/commit/push/deploy. No git add/reset/clean/stash/revert. No secrets exposed.
+
+**Task 43 code review:** inspected diffs in `src/rag_app/config.py`, `src/rag_app/schemas.py`, `src/rag_app/service.py`, `tests/test_api.py`, `.env.example`, `render.yaml`, `README.md`, `docs/DEPLOYMENT.md`, `docs/ENGINEERING_LOG.md` and relevant implementation (`RAGService.query/_apply_gemini`, `GeminiGenerator.generate`, `assemble_generated_answer`). Confirmed Gemini default for omitted mode, explicit extractive supported, schema Literal rejects invalid modes, Gemini receives selected evidence only, citations app-resolved against retrieved chunks, insufficient evidence abstains, Gemini disabled/unavailable/error falls back safely to grounded extractive with explicit status/errors. No concrete production defect found.
+
+**Manifest reconciliation:** Task 42 text reported 31 files but enumerated 30; corrected exact publish allowlist count is 30. `docker-compose.yml` remains excluded. All 30 files verified present.
+
+**Validation:** not re-run (no code changes). Last required result: 86 passed, 0 failed, 0 skipped, 31 warnings.
+
+**Repo state:** branch `main`, HEAD `e478a1b`, 207 tracked changes, 28 untracked, 0 staged. Protected/local artifacts preserved (`.env`, `.agents/`, `tests/fixtures/`, `chroma_db_production/`, `todo.txt` deletion).

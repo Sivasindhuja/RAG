@@ -21,7 +21,7 @@ from src.rag_core import (  # noqa: E402
 
 
 PDF_PATH = ROOT / "data" / "satcom-ngp.pdf"
-EXP001_CHUNKS = ROOT / "experiments" / "results" / "exp001_v3" / "chunks.json"
+EXP001_CHUNKS = ROOT / "tests" / "fixtures" / "exp001" / "chunks.json"
 
 
 def _doc(pages):

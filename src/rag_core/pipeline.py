@@ -30,7 +30,8 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Sequence, Set, Tuple
 
-from .index import DenseIndex, RetrievedChunk
+from .index import DenseIndex
+from .retrieval_types import RetrievedChunk
 
 ANSWERED = "answered"
 ABSTAINED = "abstained"
@@ -132,6 +133,12 @@ class AbstentionPolicy:
     soft_max_distance: Optional[float] = 1.10
     min_token_support: float = 0.50
     strict_min_token_support: float = 0.70
+    # Experimental: explicit handling when hit distances are unavailable (e.g., Weaviate BM25/hybrid).
+    # Default preserves existing behavior: distance gates are skipped when best_distance is None.
+    missing_distance_behavior: str = "skip"  # skip|reject|score
+    # Experimental: only used when missing_distance_behavior == "score" and best_distance is None.
+    # Caller must supply a threshold calibrated for the same score semantics; no universal default.
+    min_retrieval_score: Optional[float] = None
 
     def __post_init__(self) -> None:
         if self.min_token_support < 0 or self.min_token_support > 1:
@@ -140,6 +147,10 @@ class AbstentionPolicy:
             raise ValueError("strict_min_token_support must be within [0, 1]")
         if self.strict_min_token_support < self.min_token_support:
             raise ValueError("strict_min_token_support must be >= min_token_support")
+        if self.missing_distance_behavior not in {"skip", "reject", "score"}:
+            raise ValueError("missing_distance_behavior must be one of: skip, reject, score")
+        if self.missing_distance_behavior == "score" and self.min_retrieval_score is None:
+            raise ValueError("min_retrieval_score is required when missing_distance_behavior='score'")
 
 
 @dataclass(frozen=True)
@@ -221,6 +232,26 @@ def token_support(question: str, hits: Sequence[RetrievedChunk]) -> float:
 def _best_distance(hits: Sequence[RetrievedChunk]) -> Optional[float]:
     distances = [hit.distance for hit in hits if hit.distance is not None]
     return min(distances) if distances else None
+
+
+def _best_retrieval_score(hits: Sequence[RetrievedChunk]) -> Optional[float]:
+    """Best available retrieval score (higher=better). Returns None if unavailable."""
+    best: Optional[float] = None
+    for hit in hits:
+        meta = hit.metadata or {}
+        for key in ("rerank_score", "rrf_score", "weaviate_score", "_weaviate_score", "score"):
+            val = meta.get(key)
+            if val is None and key == "score":
+                val = getattr(hit, "score", None)
+            if val is None:
+                continue
+            try:
+                fval = float(val)
+            except Exception:
+                continue
+            if best is None or fval > best:
+                best = fval
+    return best
 
 
 def _sentence_spans(text: str) -> List[tuple[str, int, int]]:
@@ -516,7 +547,7 @@ class GroundedPipeline:
 
     def __init__(
         self,
-        index: DenseIndex,
+        index: Optional[DenseIndex],
         top_k: int = 5,
         policy: Optional[AbstentionPolicy] = None,
         max_answer_sentences: int = 3,
@@ -554,6 +585,8 @@ class GroundedPipeline:
         question = question.strip()
         if not question:
             return self._abstain(question, [], "empty question", 0.0, None)
+        if self.index is None:
+            raise ValueError("GroundedPipeline.index is required for answer(); use answer_from_hits() with precomputed hits.")
         return self.answer_from_hits(question, self.index.search(question, k=self.top_k))
 
     def answer_from_hits(self, question: str, hits: Sequence[RetrievedChunk]) -> GroundedAnswer:
@@ -573,6 +606,36 @@ class GroundedPipeline:
         best_distance = _best_distance(hits)
         support = token_support(question, hits)
         policy = self.policy
+
+        # Experimental: explicit handling when distances are unavailable.
+        # Default "skip" preserves existing behavior (distance gates skipped when best_distance is None).
+        if best_distance is None and policy.missing_distance_behavior != "skip":
+            if policy.missing_distance_behavior == "reject":
+                return self._abstain(
+                    question,
+                    hits,
+                    "distance_unavailable:retrieval_distance_missing",
+                    support,
+                    best_distance,
+                )
+            if policy.missing_distance_behavior == "score":
+                best_score = _best_retrieval_score(hits)
+                if best_score is None:
+                    return self._abstain(
+                        question,
+                        hits,
+                        "distance_unavailable:retrieval_score_missing",
+                        support,
+                        best_distance,
+                    )
+                if policy.min_retrieval_score is not None and best_score < float(policy.min_retrieval_score):
+                    return self._abstain(
+                        question,
+                        hits,
+                        f"distance_unavailable:retrieval_score {best_score:.4f} below min_retrieval_score {float(policy.min_retrieval_score):.4f}",
+                        support,
+                        best_distance,
+                    )
 
         if (
             policy.hard_max_distance is not None

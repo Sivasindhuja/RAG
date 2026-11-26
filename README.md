@@ -1,77 +1,156 @@
----
+# SATCOM NGP RAG
 
-[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/Siva-Sindhuja2646/RAG-chatbot)
+Grounded Retrieval-Augmented Generation (RAG) application for the Indian Satellite Communication (SATCOM) New Generation Policy (NGP) PDF (`data/satcom-ngp.pdf`). The system answers policy questions with citation-backed, evidence-grounded responses and explicit abstention when evidence is insufficient.
 
+## What the application does
 
-A production-grade Retrieval-Augmented Generation (RAG) system designed to query the Indian Satellite Communication Regulatory Policy. This project implements a modular architecture to solve common retrieval challenges in technical and regulatory documentation, validated by automated evaluation metrics.
+- Ingests and chunks the SATCOM NGP PDF into a ChromaDB vector index.
+- Retrieves evidence using hybrid dense + BM25 retrieval with Reciprocal Rank Fusion (RRF).
+- Generates grounded Gemini answers by default when Gemini is enabled/configured; extractive mode remains available. Gemini receives retrieved evidence only, citations remain app-resolved, and insufficient-evidence abstention/fallback behavior is preserved.
+- Returns citations with source metadata/offsets, abstains on insufficient evidence, and exposes health/metrics/dashboard endpoints.
+- Supports protected index rebuild via `POST /ingest` (disabled by default; token-protected when enabled).
 
-## System Architecture
+## Architecture and request flow
 
-The system follows a multi-stage pipeline to ensure high faithfulness and minimize hallucinations.
-
-```mermaid
-graph TD
-    User([User Query]) --> QE[Query Expansion: Gemma-3]
-    QE --> HR[Hybrid Retriever]
-    subgraph Retrieval Layer
-        HR --> VS[Semantic Search: ChromaDB]
-        HR --> BM25[Keyword Search: rank_bm25]
-    end
-    VS --> Rerank[Cohere Rerank v3.0]
-    BM25 --> Rerank
-    Rerank --> Context[Top-K Contextual Chunks]
-    Context --> LLM[Generation: Gemini 1.5 Flash]
-    LLM --> Response([Cited Final Response])
+```text
+data/satcom-ngp.pdf
+  -> extraction/metadata (src/rag_core/document.py)
+  -> chunking (src/rag_core/chunker.py; production default: fixed-character 800/160)
+  -> embeddings (sentence-transformers/all-MiniLM-L6-v2)
+  -> ChromaDB index (src/rag_core/index.py, collection satcom_ngp_production_fixed_char_800_160)
+  -> POST /query (backend/main.py -> src/rag_app/service.py)
+  -> retrieval (src/rag_core/retrieval.py: dense or hybrid dense+BM25 RRF; optional Cohere rerank when configured)
+  -> evidence selection/sufficiency/abstention (src/rag_core/pipeline.py)
+  -> optional Gemini generation with validation/fallback (src/rag_core/generation.py)
+  -> grounded response with citations, trace/timing metadata
 ```
 
-## Core Features
+**Key modules**
+- `backend/main.py` — FastAPI API endpoints.
+- `src/rag_app/` — app config, service composition, schemas, prompts, metrics, Langfuse tracing.
+- `src/rag_core/` — canonical document/chunking/index/retrieval/pipeline/generation/evaluation core.
+- `frontend/` — Vite/React UI.
+- `evaluation/` — deterministic CI evaluation harness, golden dataset, baseline metrics.
+- `docs/` — engineering log, project brief, deployment/evaluation/chunking/retrieval docs.
 
-- **Hybrid Retrieval:** Integrates semantic vector search with BM25 keyword matching to accurately capture domain-specific technical terminology (e.g., GMPCS, INSAT, CAISS).
-- **Query Expansion:** Utilizes Gemma-3-27b to transform underspecified user prompts into optimized search queries.
-- **Reranking:** Employs Cohere’s cross-encoder to resolve semantic relevance before generation, reducing noise in the context window.
-- **Automated Evaluation:** Integrated with Ragas to measure Faithfulness, Answer Correctness, and Context Recall as part of the CI/CD pipeline.
-- **Persistent Storage:** Local ChromaDB implementation with conditional loading to reduce system initialization cold starts.
+## Repository structure
 
-## Technical Stack
+```text
+.
+├── backend/                  # FastAPI app
+├── src/
+│   ├── rag_app/              # Active application layer
+│   └── rag_core/             # Active canonical RAG core
+├── frontend/                 # Vite/React frontend
+├── prompts/                  # Versioned prompt templates/manifest
+├── data/                     # Source PDF
+├── evaluation/               # CI eval harness, dataset, baselines
+├── scripts/                  # Utility scripts (ingest, evaluate)
+├── tests/                    # Pytest suite
+├── docs/                     # Project and engineering documentation
+├── .github/workflows/ci.yml  # Consolidated CI workflow
+├── Dockerfile
+├── docker-compose.yml
+├── render.yaml
+├── requirements.txt
+├── requirements.runtime.txt
+└── .env.example
+```
 
-- **Orchestration:** LangChain
-- **Models:** Google Gemini 1.5 Flash (Generation), Gemma-3-27b (Expansion), Cohere (Reranking)
-- **Vector Database:** ChromaDB
-- **Embeddings:** HuggingFace all-MiniLM-L6-v2
-- **Infrastructure:** GitHub Actions (CI/CD), Hugging Face Spaces (Deployment)
-
-## Performance Metrics (Baseline v1.0.0)
-
-Evaluated using a synthesized "Golden Dataset" of 50 ground-truth question-answer pairs.
-
-| Metric | Score | Note |
-| :--- | :--- | :--- |
-| Faithfulness | 1.00 | Zero instances of hallucination in baseline |
-| Answer Correctness | 0.82 | High alignment with regulatory facts |
-| Context Recall | 0.60 | Primary area for optimization in next release |
-
-## Installation and Deployment
+## Local setup
 
 ### Prerequisites
 - Python 3.11+
-- uv or pip
+- Node.js 20+ (for frontend)
+- A local virtual environment is recommended
 
-### Local Setup
-1. Clone the repository:
-   `git clone https://github.com/Sivasindhuja/RAG.git`
-2. Install dependencies:
-   `pip install -r requirements.txt`
-3. Configure environment variables in a `.env` file:
-   - `GEMINI_API_KEY`
-   - `CO_API_KEY`
+### Backend
 
-### Deployment
-This project is configured for Continuous Deployment. Pushing to the `main` branch triggers a GitHub Action that synchronizes the codebase with the Hugging Face Space.
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# Unix: source .venv/bin/activate
+pip install -r requirements.txt -r requirements.runtime.txt
+cp .env.example .env  # fill required values
+uvicorn backend.main:app --reload --port 8000
+```
 
-## Known Challenges and Future Work
+Build/verify index if needed:
 
-- **Recall Bottleneck:** The current context recall (0.60) suggests that standard recursive chunking misses surrounding context for complex regulatory clauses.
-- **Proposed Optimization:** Transitioning to Parent Document Retrieval (Small-to-Big) to store smaller retrieval units while providing the LLM with broader context windows.
-- **Self-Correction:** Implementing a rerank-score threshold to proactively inform users when the knowledge base does not contain sufficient information.
+```bash
+python scripts/ingest.py
+```
 
----
+### Frontend
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Set `VITE_API_BASE_URL` (default `http://localhost:8000`) for non-local backend targets.
+
+## Environment variables
+
+See `.env.example` for local defaults/placeholders. Key variables:
+
+| Variable | Purpose | Default / note |
+|---|---|---|
+| `GEMINI_API_KEY` / `GOOGLE_API_KEY` | Gemini generation (optional) | Unset disables Gemini use |
+| `CO_API_KEY` / `COHERE_API_KEY` | Cohere rerank (optional) | Unset falls back to non-rerank path |
+| `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`, `LANGFUSE_ENABLED` | Langfuse tracing (optional) | No-op when not configured |
+| `RAG_INGEST_TOKEN` | Protects `POST /ingest` via `X-Ingest-Token` | Unset => `/ingest` returns 403 fail-closed |
+| `RAG_DEFINITION_INTENT_BOOST` | Opt-in definition-intent boost | `false` (default) |
+| `RAG_CORS_ORIGINS` | Comma-separated allowed origins | Local dev defaults when unset; production must set actual frontend origin |
+| `RAG_PERSIST_DIR`, `RAG_COLLECTION_NAME` | Chroma persistence/collection | Defaults match production config |
+| `RAG_RETRIEVAL_MODE`, `RAG_GENERATION_MODE`, `RAG_TOP_K` | Runtime RAG behavior | `hybrid`, `gemini`, `5` |
+| `OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `TOKENIZERS_PARALLELISM` | Conservative runtime threading | `1`, `1`, `false` recommended on constrained hosts |
+
+## Running tests and CI evaluation
+
+```bash
+# Deterministic test suite (same CI exclusion)
+PYTHONPATH=. python -m pytest tests -q -k "not real_index" --maxfail=5
+
+# CI evaluation regression gate
+PYTHONPATH=. python -m evaluation.ci_eval \
+  --dataset evaluation/ci_golden_dataset.json \
+  --baseline evaluation/baseline_metrics.json \
+  --check-regression
+```
+
+## Render backend deployment
+
+- Canonical backend deploy target: **Render** (see `render.yaml`).
+- Health check: `GET /healthz` (liveness). `GET /health` is lightweight config/status and does not trigger model/index initialization.
+- Build/start are defined in `render.yaml` (Python runtime, CPU torch install, `uvicorn backend.main:app`).
+- Set required env vars/secrets in Render dashboard (do not commit secrets). Set `RAG_CORS_ORIGINS` to the actual Vercel frontend origin before public frontend integration.
+
+## Vercel frontend deployment
+
+- Canonical frontend deploy target: **Vercel** with project root `frontend/`.
+- Frontend config: `frontend/vercel.json`.
+- Set `VITE_API_BASE_URL` in Vercel to the deployed Render backend URL.
+- After Vercel URL is known, set Render `RAG_CORS_ORIGINS` to that exact origin.
+
+## Known deployment limitations
+
+- **Render Free memory constraints:** Render Free (512MB) OOM has been confirmed for this workload. Lightweight health checks and conservative thread limits reduce avoidable overhead, but SentenceTransformer + Chroma runtime memory may still exceed 512MB. Treat Render Free as unproven/at-risk until validated with deployment evidence.
+- **Cold starts / ephemeral filesystem:** Render free instances may spin down; Chroma persistence may be lost on ephemeral FS unless index is packaged/recovered appropriately. Index recovery path exists, but recovery can add startup cost.
+- **Optional external services:** Gemini, Cohere rerank, and Langfuse are optional and depend on credentials/configuration; missing credentials should degrade gracefully.
+- **RAG quality is evidence-based, not absolute:** deterministic CI eval/regression gates are used; see `docs/CI_EVALUATION.md`, `docs/RETRIEVAL_COMPARISON.md`, and `docs/ENGINEERING_LOG.md` for measured results and limitations.
+
+
+
+## Isolated Weaviate Cloud experiment (Task 24, opt-in)
+
+An isolated, opt-in Weaviate Cloud retrieval adapter exists for evaluation only. Default backend remains `chroma`; production Chroma/BM25/RRF path is unchanged. See `docs/RUN_LOCAL.md` and `docs/DEPLOYMENT.md` for env vars (names only), ingestion/eval commands, free-tier limitations, and disable instructions. No live Weaviate credentials were used and no deployment was performed as part of this task.
+## Documentation
+
+- `docs/PROJECT_BRIEF.md` — project brief and implementation status.
+- `docs/ENGINEERING_LOG.md` — chronological engineering decisions/investigations/fixes.
+- `docs/DEPLOYMENT.md` — deployment details and constraints.
+- `docs/CI_EVALUATION.md` — CI evaluation and regression gate.
+- `docs/CHUNKING_EXPERIMENT.md` — chunking selection evidence.
+- `docs/RETRIEVAL_COMPARISON.md` — retrieval comparison evidence.

@@ -494,3 +494,285 @@ def test_ingest_protection_does_not_affect_health_or_query(monkeypatch):
     query = client.post("/query", json={"question": "What is sample?", "mode": "extractive"})
     assert query.status_code == 200
     assert query.json()["status"] == "answered"
+
+
+def test_health_does_not_initialize_model_or_index(monkeypatch):
+    import src.rag_core.index as index_mod
+
+    class FailSentenceTransformer:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("SentenceTransformer should not be initialized by /health")
+
+    class FailDenseIndex:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("DenseIndex should not be initialized by /health")
+
+    monkeypatch.setattr(index_mod, "SentenceTransformer", FailSentenceTransformer, raising=False)
+    monkeypatch.setattr(index_mod, "DenseIndex", FailDenseIndex, raising=False)
+
+    service = RAGService(config=AppConfig(allow_gemini=False))
+    resp = service.health()
+    assert resp.status == "ok"
+    assert resp.index_available is False
+    assert resp.index_status == "unknown"
+    assert resp.index_initialized is False
+    assert service._model is None
+    assert service._index is None
+
+
+def test_health_endpoint_does_not_initialize_model_or_index(monkeypatch):
+    import src.rag_core.index as index_mod
+
+    class FailSentenceTransformer:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("SentenceTransformer should not be initialized by /health endpoint")
+
+    class FailDenseIndex:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("DenseIndex should not be initialized by /health endpoint")
+
+    monkeypatch.setattr(index_mod, "SentenceTransformer", FailSentenceTransformer, raising=False)
+    monkeypatch.setattr(index_mod, "DenseIndex", FailDenseIndex, raising=False)
+
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: RAGService(config=AppConfig(allow_gemini=False)))
+
+    client = TestClient(backend_main.app)
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "ok"
+    assert body["index_available"] is False
+    assert body["index_status"] == "unknown"
+    assert body["index_initialized"] is False
+
+
+def test_health_reports_initialized_index_without_loading_model(monkeypatch):
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()])),
+    )
+    resp = fake_service.health()
+    assert resp.index_available is True
+    assert resp.index_status == "available"
+    assert resp.index_initialized is True
+    assert fake_service._model is None
+
+
+def test_healthz_remains_lightweight(monkeypatch):
+    class FailService:
+        def health(self):
+            raise AssertionError("/healthz should not call service health")
+
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: FailService())
+
+    client = TestClient(backend_main.app)
+    resp = client.get("/healthz")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok", "service": "satcom-ngp-rag"}
+
+
+class FakeGeminiAnswered:
+    model = "gemini-test"
+
+    def __init__(self):
+        self.calls = []
+
+    def generate(self, question, statements, citations, evidence_sufficient=True, insufficiency_reason=None):
+        self.calls.append(
+            {
+                "question": question,
+                "statements": list(statements),
+                "citations": list(citations),
+                "evidence_sufficient": evidence_sufficient,
+                "insufficiency_reason": insufficiency_reason,
+            }
+        )
+        return GeneratedAnswer(
+            status="answered",
+            question=question,
+            text="Gemini grounded answer [1]",
+            claims=[GeneratedClaim(text="Gemini grounded answer [1]", source_ids=(1,), markers=("[1]",), invalid_source_ids=())],
+            citations=list(citations),
+            evidence_statements=list(statements),
+            raw_response='{"sentences":[{"text":"Gemini grounded answer","sources":[1]}]}',
+            model="gemini-test",
+            latency_ms=12.0,
+            errors=[],
+            metadata={"prompt_version": "grounded_json_v1"},
+        )
+
+
+def test_task43_default_request_uses_gemini_generation():
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()], token_support=0.9)
+    fake_gemini = FakeGeminiAnswered()
+    service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=fake_gemini,
+    )
+    resp = service.query("What is sample?")  # no mode -> default gemini
+    assert resp.mode == "gemini"
+    assert resp.generation.attempted is True
+    assert resp.generation.mode == "gemini"
+    assert resp.generation.status == "answered"
+    assert resp.generation.fallback_to_extractive is False
+    assert resp.answer == "Gemini grounded answer [1]"
+    assert resp.abstained is False
+
+
+def test_task43_explicit_extractive_mode_still_works():
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()], token_support=0.9)
+    service = RAGService(
+        config=AppConfig(allow_gemini=True),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=FakeGeminiAnswered(),
+    )
+    resp = service.query("What is sample?", mode="extractive")
+    assert resp.mode == "extractive"
+    assert resp.status == "answered"
+    assert resp.generation.attempted is False
+    assert resp.answer == "A grounded answer [1]"
+
+
+def test_task43_gemini_receives_retrieved_evidence_only_selected_evidence():
+    grounded = FakeGrounded(
+        status="answered",
+        statements=[_stmt(text="Sample evidence includes selected policy detail.", chunk_id="c1")],
+        citations=[_cit()],
+        retrieved=[_hit()],
+        token_support=0.9,
+    )
+    fake_gemini = FakeGeminiAnswered()
+    service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=fake_gemini,
+    )
+    resp = service.query("What is sample?")
+    assert len(fake_gemini.calls) == 1
+    call = fake_gemini.calls[0]
+    assert call["question"] == "What is sample?"
+    assert len(call["statements"]) == 1
+    assert call["statements"][0].text == "Sample evidence includes selected policy detail."
+    assert call["evidence_sufficient"] is True
+    assert resp.generation.status == "answered"
+
+
+def test_task43_citations_remain_valid_and_app_resolved():
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit(section="4.2", chunk_id="c1")], retrieved=[_hit(chunk_id="c1")], token_support=0.9)
+    fake_gemini = FakeGeminiAnswered()
+    service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit(chunk_id="c1")]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=fake_gemini,
+    )
+    resp = service.query("What is sample?")
+    assert resp.citation_validation.app_resolved is True
+    assert resp.citations
+    assert resp.citations[0].chunk_id == "c1"
+    assert resp.citations[0].section == "4.2"
+    assert resp.citations[0].start_offset == 100
+    assert resp.citations[0].end_offset == 140
+    assert resp.generation.citations[0].chunk_id == "c1"
+
+
+def test_task43_insufficient_evidence_results_in_abstention_default_gemini():
+    grounded = FakeGrounded(
+        status="answered",
+        statements=[_stmt(text="unrelated words only", chunk_id="c1")],
+        citations=[_cit()],
+        retrieved=[_hit()],
+        token_support=0.2,
+    )
+    service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=FakeGeminiAnswered(),
+    )
+    resp = service.query("completely different question tokens here")
+    assert resp.mode == "gemini"
+    assert resp.abstained is True
+    assert resp.status == "abstained"
+    assert resp.generation.attempted is True
+    assert resp.generation.status == "abstained_insufficient_evidence"
+    assert "insufficient_selected_evidence" in (resp.abstention_reason or "")
+
+
+def test_task43_gemini_disabled_falls_back_safely_without_ungrounded_answer():
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()], token_support=0.9)
+    service = RAGService(
+        config=AppConfig(allow_gemini=False),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=FakeGeminiAnswered(),
+    )
+    resp = service.query("What is sample?")
+    assert resp.mode == "gemini"
+    assert resp.generation.attempted is True
+    assert resp.generation.status == "skipped"
+    assert resp.generation.fallback_to_extractive is True
+    assert resp.status == "answered"
+    assert resp.answer == "A grounded answer [1]"
+    assert resp.abstained is False
+    assert "disabled" in " ".join(resp.generation.errors).lower()
+
+
+def test_task43_gemini_error_does_not_produce_fabricated_answer():
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()], token_support=0.9)
+
+    class ErrorGemini:
+        model = "gemini-test"
+
+        def generate(self, question, statements, citations, evidence_sufficient=True, insufficiency_reason=None):
+            raise RuntimeError("upstream gemini failure")
+
+    service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=ErrorGemini(),
+    )
+    resp = service.query("What is sample?")
+    assert resp.mode == "gemini"
+    assert resp.generation.status == "generation_error"
+    assert resp.generation.fallback_to_extractive is True
+    assert resp.answer == "A grounded answer [1]"
+    assert "fabricated" not in resp.answer.lower()
+    assert "RuntimeError" in " ".join(resp.generation.errors)
+    assert resp.citations[0].chunk_id == "c1"
+
+
+def test_task43_api_compatibility_preserved_default_gemini(monkeypatch):
+    grounded = FakeGrounded(status="answered", statements=[_stmt()], citations=[_cit()], retrieved=[_hit()], token_support=0.9)
+    fake_service = RAGService(
+        config=AppConfig(allow_gemini=True, gemini_sufficiency_threshold=0.5),
+        index=FakeIndex([_hit()]),
+        pipeline=FakePipeline(grounded),
+        gemini_generator=FakeGeminiAnswered(),
+    )
+    if hasattr(backend_main.get_service, "cache_clear"):
+        backend_main.get_service.cache_clear()
+    monkeypatch.setattr(backend_main, "get_service", lambda: fake_service)
+    client = TestClient(backend_main.app)
+    resp = client.post("/query", json={"question": "What is sample?"})  # no mode
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["mode"] == "gemini"
+    assert body["status"] == "answered"
+    assert body["abstained"] is False
+    assert isinstance(body["citations"], list)
+    assert isinstance(body["retrieved"], list)
+    assert "request_id" in body
+    assert "timings_ms" in body
+    assert body["generation"]["attempted"] is True
+    assert body["generation"]["mode"] == "gemini"

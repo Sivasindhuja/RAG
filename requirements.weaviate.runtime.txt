@@ -1,0 +1,19 @@
+# Minimal production runtime for Render Free (512MB target) when RAG_RETRIEVER_BACKEND=weaviate.
+# Excludes heavy local retrieval/model deps: torch, sentence-transformers, transformers, chromadb, rank_bm25.
+# Do not use for Chroma/local-index production path.
+
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.7
+python-dotenv>=1.0
+httpx>=0.27
+
+# Weaviate client (v4 Cloud)
+weaviate-client>=4.6.0,<5.0.0
+
+# Generation/observability
+google-generativeai>=0.8.0
+langfuse>=3.0.0,<5.0.0
+
+# Keep pypdf only if authorized /ingest or local PDF tooling is used in same image.
+pypdf==6.10.2
